@@ -1,10 +1,9 @@
-# This is the initial commit
+# Better MyNTU
 
-if you see this, I want to tell you that
+本組目標為設計一個介面更好看的 MyNTU。
 
-> Never gonna give you up
-> Never gonna let you down
-> Never gonna run around and desert you
-> Never gonna make you cry
-> Never gonna say goodbye
-> Never gonna tell a lie and hurt you
+---
+
+## 進度
+
+* [Week3](./HW_Report/Week03_Report.md)
