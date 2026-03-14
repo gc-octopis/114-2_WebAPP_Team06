@@ -1,0 +1,553 @@
+/* ==========================================================================
+    [1] CSS 變數與全域重置 (Variables & Reset)
+    ========================================================================== */
+:root {
+    /* 統一的單一強調色：深藍色系 (Academic Blue) */
+    --primary-color: #1E40AF;  /* 主藍色 */
+    --primary-hover: #1E3A8A;  /* Hover 時的深藍色 */
+    --primary-light: #DBEAFE;  /* 極淺藍色 (用於徽章背景等) */
+    
+    /* 中性色票 (灰階背景與邊框) */
+    --bg-body: #F8FAFC;
+    --bg-surface: #FFFFFF;
+    --bg-sidebar: #F1F5F9;
+    --bg-hover: #E2E8F0;
+    --border-color: #E2E8F0;
+    
+    /* 文字顏色 */
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+    --text-light: #94A3B8;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+    display: flex; /* 最外層佈局：左右分割 */
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+}
+
+/* 自定義捲動條 */
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+    background-color: #CBD5E1;
+    border-radius: 10px;
+}
+
+/* ==========================================================================
+    [2] 左側邊欄佈局與元件 (Sidebar)
+    ========================================================================== */
+.sidebar {
+    width: 260px;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+/* --- 側邊欄：搜尋與折疊 --- */
+.sidebar-header {
+    height: 64px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.search-container {
+    flex: 1;
+    position: relative;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 8px 8px 8px 32px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-container input:focus {
+    border-color: var(--primary-color);
+}
+
+.search-container svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--text-light);
+}
+
+.fold-btn {
+    padding: 6px;
+    border-radius: 6px;
+    color: var(--text-muted);
+    transition: background-color 0.2s;
+}
+
+.fold-btn:hover {
+    background-color: var(--bg-hover);
+}
+
+/* --- 側邊欄：導覽選單 --- */
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.nav-item {
+    margin-bottom: 4px;
+}
+
+.nav-item summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-main);
+    transition: background-color 0.2s;
+    user-select: none;
+}
+
+.nav-item summary::-webkit-details-marker {
+    display: none; /* 隱藏原生箭頭 */
+}
+
+.nav-item summary:hover {
+    background-color: var(--bg-hover);
+}
+
+.nav-arrow {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    color: var(--text-light);
+    transition: transform 0.2s ease;
+}
+
+.nav-item[open] .nav-arrow {
+    transform: rotate(90deg); /* 展開時旋轉 */
+}
+
+.nav-sub-list {
+    padding: 4px 8px 4px 32px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.nav-sub-list a {
+    display: block;
+    padding: 6px 0;
+    transition: color 0.2s;
+}
+
+.nav-sub-list a:hover {
+    color: var(--primary-color);
+}
+
+/* --- 側邊欄：底部日曆 --- */
+.sidebar-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 16px;
+    background-color: #E2E8F0;
+}
+
+.calendar-month {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    font-size: 12px;
+    font-family: monospace;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.calendar-day-header {
+    font-weight: bold;
+    color: var(--text-main);
+}
+
+.calendar-day-inactive {
+    color: var(--text-light);
+    opacity: 0.5;
+}
+
+.calendar-day-active {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+}
+
+.calendar-link {
+    display: block;
+    text-align: center;
+    padding: 8px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.calendar-link:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+
+/* ==========================================================================
+    [3] 右側主畫面佈局 (Main Wrapper)
+    ========================================================================== */
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-surface);
+}
+
+/* ==========================================================================
+    [4] 上方工具列元件 (Header Components)
+    ========================================================================== */
+.header {
+    height: 64px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.brand-logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--primary-color);
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+.page-title {
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.action-icon-btn {
+    color: var(--primary-color);
+    padding: 4px;
+    transition: opacity 0.2s;
+}
+
+.action-icon-btn:hover {
+    opacity: 0.7;
+}
+
+.action-icon-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.sign-in-btn {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.sign-in-btn:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+/* --- 彈出選單 (Dropdown) --- */
+.dropdown-wrapper {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    z-index: 50;
+    
+    /* 預設隱藏 (利用 hover 觸發) */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+.dropdown-wrapper:hover .dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.menu-pinned { width: 180px; }
+.menu-settings { width: 140px; font-size: 14px; }
+
+.dropdown-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-light);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 6px 0;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.dropdown-menu a:hover {
+    color: var(--primary-color);
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 4px 0;
+}
+
+
+/* ==========================================================================
+    [5] 主內容區塊元件 (Main Content Components)
+    ========================================================================== */
+.content-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px;
+}
+
+.content-container {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* --- 視覺中心：大標題區 --- */
+.hero-section {
+    text-align: center;
+    margin-bottom: 60px;
+    padding-top: 20px;
+}
+
+.hero-logo-mockup {
+    display: inline-flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 8px;
+    color: var(--primary-color);
+    margin-bottom: 24px;
+}
+
+.hero-logo-mockup .tree {
+    font-size: 48px;
+}
+
+.hero-logo-mockup .building {
+    width: 90px;
+    height: 70px;
+    border: 4px solid var(--primary-color);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.hero-logo-mockup .building-base {
+    position: absolute;
+    bottom: -4px;
+    width: 120px;
+    height: 4px;
+    background-color: var(--primary-color);
+}
+
+.hero-title {
+    font-size: 48px;
+    color: var(--primary-color);
+    font-style: italic;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+}
+
+.hero-subtitle {
+    font-size: 14px;
+    color: var(--primary-color);
+    opacity: 0.7;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* --- 各區塊共用樣式 --- */
+.content-section {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: var(--border-color);
+    margin-left: 16px;
+}
+
+/* --- 常用服務卡片 (Favorite) --- */
+.cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.card-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 80px;
+    cursor: pointer;
+}
+
+.card-icon-box {
+    width: 80px;
+    height: 80px;
+    background-color: var(--bg-surface);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    transition: all 0.2s ease;
+}
+
+.card-label {
+    font-weight: bold;
+    color: var(--text-main);
+    transition: color 0.2s ease;
+}
+
+.card-item:hover .card-icon-box {
+    border-color: var(--primary-color);
+    /* hover 時散發淺藍色光暈 */
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15); 
+    transform: translateY(-2px);
+}
+
+.card-item:hover .card-label {
+    color: var(--primary-color);
+}
+
+/* --- 公告清單 (Announcements) --- */
+.announcement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.announcement-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.date-badge {
+    padding: 4px 12px;
+    background-color: var(--primary-light);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    font-family: monospace;
+    font-weight: bold;
+    border-radius: 8px;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.announcement-link {
+    font-weight: 500;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s;
+}
+
+.announcement-item:hover .announcement-link {
+    color: var(--primary-color);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
