@@ -297,6 +297,16 @@ button {
     color: var(--primary-color);
     font-style: italic;
     letter-spacing: 1px;
+    padding: 0.5em;
+    border-radius: 100vmax;
+    scale: 1;
+    transition: all 0.4s;
+}
+
+.brand-logo:hover
+{
+    background-color: var(--menu-shadow);
+    scale: 1.03;
 }
 
 .hamburger-btn {
@@ -350,7 +360,7 @@ button {
     text-align: center;
     padding: 0.5em 0.7em;
     border-radius: 0.5em;
-    transition: all 0.2s ;
+    transition: all 0.4s ;
 }
 
 .sign-in-btn:hover {

@@ -12,6 +12,7 @@
 * CSS Variable
 * CSS transition
 * CSS Grid / Flex
+* CSS Hover
 * JS event listener
 
 ## 組員分工
@@ -30,5 +31,6 @@
     * translate some missed parts to ZH.
     * make sign in button looks more like a button (add animation).
     * Add GitHub link under About Us.
+    * Add Animation to brand.
 * 王凱弘：手機版
 * 孫怡臻：內文
