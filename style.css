@@ -30,9 +30,18 @@ body {
     font-family: 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
     background-color: var(--bg-body);
     color: var(--text-main);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: hidden;
     display: flex; /* 最外層佈局：左右分割 */
+}
+
+/* 確保主內容區在視窗不足時能捲動 */
+.main-wrapper {
+    min-height: 0;
+}
+
+.content-scroll-area {
+    min-height: 0;
 }
 
 a {
@@ -270,6 +279,15 @@ button {
     color: var(--primary-color);
     font-style: italic;
     letter-spacing: 1px;
+}
+
+.hamburger-btn {
+    display: none; /* 預設隱藏，在小螢幕顯示 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: var(--primary-color);
 }
 
 .page-title {
@@ -550,4 +568,190 @@ button {
     color: var(--primary-color);
     text-decoration: underline;
     text-underline-offset: 4px;
+}
+
+/* ==========================================================================
+    [6] 響應式設計 (Responsive Design)
+    ========================================================================== */
+
+/* 平板與手機共用：調整 padding 和 font sizes */
+@media (max-width: 1024px) {
+    .content-scroll-area {
+        padding: 20px;
+    }
+
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .hero-logo-mockup .tree {
+        font-size: 36px;
+    }
+
+    .hero-logo-mockup .building {
+        width: 70px;
+        height: 50px;
+    }
+
+    .section-title {
+        font-size: 20px;
+    }
+
+    .cards-grid {
+        gap: 16px;
+    }
+
+    .card-item {
+        width: 60px;
+    }
+
+    .card-icon-box {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+}
+
+/* 手機：側邊欄隱藏，漢堡選單，調整佈局 */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        overflow: auto; /* 允許頁面捲動 */
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 260px;
+        height: 100vh;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.sidebar-open {
+        transform: translateX(0);
+    }
+
+    .hamburger-btn {
+        display: block;
+        color: var(--primary-color);
+        margin-right: 16px;
+    }
+
+    .header {
+        padding: 0 16px;
+        justify-content: flex-start;
+    }
+
+    .page-title {
+        display: none; /* 在小螢幕隱藏頁面標題 */
+    }
+
+    .content-scroll-area {
+        padding: 16px;
+    }
+
+    .hero-section {
+        margin-bottom: 40px;
+        padding-top: 10px;
+    }
+
+    .hero-title {
+        font-size: 28px;
+    }
+
+    .hero-logo-mockup .tree {
+        font-size: 24px;
+    }
+
+    .hero-logo-mockup .building {
+        width: 50px;
+        height: 35px;
+        font-size: 10px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
+
+    .cards-grid {
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .card-item {
+        width: 50px;
+    }
+
+    .card-icon-box {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+
+    .card-label {
+        font-size: 12px;
+    }
+
+    .announcement-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .announcement-link {
+        white-space: normal;
+    }
+
+    .header-actions {
+        gap: 12px;
+    }
+
+    .action-icon-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* 超小螢幕：進一步調整 */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 24px;
+    }
+
+    .cards-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card-item {
+        width: 60px;
+    }
+
+    .card-icon-box {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+
+    .announcement-list {
+        gap: 12px;
+    }
+
+    .announcement-item {
+        gap: 6px;
+    }
+
+    .date-badge {
+        font-size: 12px;
+        padding: 2px 8px;
+    }
+
+    .announcement-link {
+        font-size: 14px;
+        line-height: 1.4;
+    }
 }
