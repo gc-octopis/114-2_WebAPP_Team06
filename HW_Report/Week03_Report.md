@@ -9,9 +9,26 @@
 
 ## 使用額外技術
 
+* CSS Variable
+* CSS transition
+* CSS Grid / Flex
+* JS event listener
+
 ## 組員分工
 
 * 陳冠瑜：設計排版
-* 陳冠辰：動畫
+* 陳冠辰：細節調整
+    * modify mobile header flex to match desktop
+    * add onclick listener to fold button to let it fold.
+    * remove fold button from desktop mode.
+    * turn calendar active day to have better round edge look.
+    * remove vertical arranging for super small screen.
+    * fix sidebar on mobile not filling height.
+    * turn all colors into variables.
+    * add functional theme switcher.
+    * add rotation animation to settings icon.
+    * translate some missed parts to ZH.
+    * make sign in button looks more like a button (add animation).
+    * Add GitHub link under About Us.
 * 王凱弘：手機版
 * 孫怡臻：內文

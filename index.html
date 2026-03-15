@@ -16,7 +16,7 @@
         <!-- 側邊欄：頂部搜尋與摺疊按鈕 -->
         <div class="sidebar-header">
             <div class="search-container">
-                <input type="text" placeholder="Search">
+                <input type="text" placeholder="搜尋">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
             <button class="fold-btn" title="收合側邊欄">
@@ -128,20 +128,21 @@
 
                 <!-- 設定彈出選單 (Settings Dropdown) -->
                 <div class="dropdown-wrapper">
-                    <button class="action-icon-btn">
+                    <button class="action-icon-btn settings-btn">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </button>
                     <!-- 彈出內容 -->
                     <div class="dropdown-menu menu-settings">
                         <a href="#">EN / 中</a>
-                        <a href="#">☀️ / 🌙 Theme</a>
+                        <a href="#" class="theme-btn">☀️ / 🌙 主題</a>
                         <div class="divider"></div>
-                        <a href="#" style="color: var(--text-muted);">About</a>
+                        <a href="#" style="color: var(--text-muted);">關於我們</a>
+                        <a href="https://github.com/gc-octopis/114-2_WebAPP_Team06" style="color: var(--text-muted);">GitHub</a>
                     </div>
                 </div>
 
                 <!-- 登入按鈕 -->
-                <a href="#" class="sign-in-btn">Sign in</a>
+                <a href="#" class="sign-in-btn">登入</a> <!-- match the rest of the language -->
             </div>
         </header>
 
@@ -165,7 +166,7 @@
 
                 <!-- 區塊 1: Favorite 常用服務 -->
                 <section class="content-section">
-                    <h2 class="section-title">Favorite</h2>
+                    <h2 class="section-title">最愛</h2>
                     
                     <div class="cards-grid">
                         <a href="#" class="card-item">
