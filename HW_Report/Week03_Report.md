@@ -7,6 +7,19 @@
 
 ## 使用上課技術
 
+* HTML attributes
+* title, h1, p tag
+* a tag hyperlink
+* input (text) box
+* div, span, header, section, aside tag
+* CSS font-family
+* CSS color, background-color
+* CSS class selector
+* CSS margin, padding, border
+* CSS display, position
+* CSS box-sizing, width, height
+* CSS z-index
+
 ## 使用額外技術
 
 * CSS Variable
@@ -17,8 +30,8 @@
 
 ## 組員分工
 
-* 陳冠瑜：設計排版
-* 陳冠辰：細節調整
+* 陳冠瑜：設計排版 25%
+* 陳冠辰：細節調整 25%
     * modify mobile header flex to match desktop
     * add onclick listener to fold button to let it fold.
     * remove fold button from desktop mode.
@@ -32,8 +45,8 @@
     * make sign in button looks more like a button (add animation).
     * Add GitHub link under About Us.
     * Add Animation to brand.
-* 王凱弘：響應式設計(RWD)
+* 王凱弘：響應式設計(RWD) 25%
     * Add Responsive Web Design to the project
-* 孫怡臻：About Page製作
+* 孫怡臻：About Page製作 25%
     * 製作About Page
     * 串接index.html與about.html
