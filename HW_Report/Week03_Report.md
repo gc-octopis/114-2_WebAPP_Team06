@@ -32,5 +32,6 @@
     * make sign in button looks more like a button (add animation).
     * Add GitHub link under About Us.
     * Add Animation to brand.
-* 王凱弘：手機版
+* 王凱弘：響應式設計(RWD)
+    * Add Responsive Web Design to the project
 * 孫怡臻：內文
