@@ -34,4 +34,6 @@
     * Add Animation to brand.
 * 王凱弘：響應式設計(RWD)
     * Add Responsive Web Design to the project
-* 孫怡臻：內文
+* 孫怡臻：About Page製作
+    * 製作About Page
+    * 串接index.html與about.html
