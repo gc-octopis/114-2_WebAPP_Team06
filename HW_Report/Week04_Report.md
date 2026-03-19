@@ -1,0 +1,20 @@
+# Week 4
+
+## 目標
+
+
+## 使用上課技術
+
+
+## 使用額外技術
+
+
+## 組員分工
+* 陳冠瑜： 25%
+* 陳冠辰： 25%
+* 王凱弘：設計行事曆頁面 25%
+    * 於台大教務處網站下載calendar.ics
+    * 生成calendar.html
+    * 生成calendar.js以解析ics檔案，並完成calender頁面的功能
+    * 將calendar.html加入RWD
+* 孫怡臻：完善公告功能 25%

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyNTU++ | 首頁</title>
+    <title>行事曆 | MyNTU++</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,7 +24,7 @@
             </button>
         </div>
 
-        <!-- 側邊欄：導航清單 (使用原生 details 實現折疊) -->
+        <!-- 側邊欄：導航清單 -->
         <nav class="sidebar-nav custom-scroll">
             
             <details class="nav-item" open>
@@ -88,30 +88,29 @@
         
         <!-- 上方工具列 (Header) -->
         <header class="header">
-            <!-- 漢堡選單按鈕 (僅在小螢幕顯示) -->
+            <!-- 漢堡選單按鈕 -->
             <button class="hamburger-btn" title="開啟側邊欄">
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
 
-            <!-- 左：Logo -->
+            <!-- Logo -->
             <a href="index.html" class="brand-logo">MyNTU++</a>
 
-            <!-- 中：頁面標題 -->
+            <!-- 頁面標題 -->
             <div class="page-title">
-                首頁 <span>📚</span>
+                行事曆 <span>📅</span>
             </div>
 
-            <!-- 右：操作區 (Nine dots, Settings, Sign in) -->
+            <!-- 右：操作區 -->
             <div class="header-actions">
                 
-                <!-- 常用連結彈出選單 (Nine dots Dropdown) -->
+                <!-- 常用連結彈出選單 -->
                 <div class="dropdown-wrapper">
                     <button class="action-icon-btn">
                         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"></path></svg>
                     </button>
-                    <!-- 彈出內容 -->
                     <div class="dropdown-menu menu-pinned">
                         <div class="dropdown-title">由用戶釘選</div>
                         <ul>
@@ -121,12 +120,11 @@
                     </div>
                 </div>
 
-                <!-- 設定彈出選單 (Settings Dropdown) -->
+                <!-- 設定彈出選單 -->
                 <div class="dropdown-wrapper">
                     <button class="action-icon-btn settings-btn">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </button>
-                    <!-- 彈出內容 -->
                     <div class="dropdown-menu menu-settings">
                         <a href="#">EN / 中</a>
                         <a href="#" class="theme-btn">☀️ / 🌙 主題</a>
@@ -137,65 +135,42 @@
                 </div>
 
                 <!-- 登入按鈕 -->
-                <a href="#" class="sign-in-btn">登入</a> <!-- match the rest of the language -->
+                <a href="#" class="sign-in-btn">登入</a>
             </div>
         </header>
 
         <!-- 主內容捲動區 -->
         <div class="content-scroll-area custom-scroll">
-            <div class="content-container">
+            <div class="content-container calendar-content">
                 
-                <!-- 視覺中心：大標題與 Logo -->
-                <section class="hero-section">
-                    <div class="hero-logo-mockup">
-                        <span class="tree">🌴</span>
-                        <div class="building">
-                            總圖
-                            <div class="building-base"></div>
-                        </div>
-                        <span class="tree">🌴</span>
-                    </div>
-                    <h1 class="hero-title">MyNTU++</h1>
-                    <p class="hero-subtitle">Since 1928</p>
+                <!-- 行事曆控制區 -->
+                <section class="calendar-controls">
+                    <button id="prevMonth" class="calendar-nav-btn">← 前月</button>
+                    <h1 id="currentMonth" class="calendar-title">2026年 3月</h1>
+                    <button id="nextMonth" class="calendar-nav-btn">後月 →</button>
                 </section>
 
-                <!-- 區塊 1: Favorite 常用服務 -->
-                <section class="content-section">
-                    <h2 class="section-title">最愛</h2>
-                    
-                    <div class="cards-grid">
-                        <a href="#" class="card-item">
-                            <div class="card-icon-box">📖</div>
-                            <span class="card-label">選課</span>
-                        </a>
-                        <a href="#" class="card-item">
-                            <div class="card-icon-box">✉️</div>
-                            <span class="card-label">Mail</span>
-                        </a>
-                        <a href="#" class="card-item">
-                            <div class="card-icon-box">🧊</div>
-                            <span class="card-label">Cool</span>
-                        </a>
-                        <a href="#" class="card-item">
-                            <div class="card-icon-box">💯</div>
-                            <span class="card-label">成績</span>
-                        </a>
+                <!-- 行事曆網格 -->
+                <section class="calendar-month-view">
+                    <div class="calendar-weekdays">
+                        <div class="weekday">日</div>
+                        <div class="weekday">一</div>
+                        <div class="weekday">二</div>
+                        <div class="weekday">三</div>
+                        <div class="weekday">四</div>
+                        <div class="weekday">五</div>
+                        <div class="weekday">六</div>
+                    </div>
+                    <div class="calendar-days" id="calendarDays">
+                        <!-- 由 JavaScript 填充 -->
                     </div>
                 </section>
 
-                <!-- 區塊 2: 公告 Announcements -->
-                <section class="content-section">
-                    <h2 class="section-title">公告</h2>
-                    
-                    <div class="announcement-list">
-                        <div class="announcement-item">
-                            <div class="date-badge">3/20</div>
-                            <a href="#" class="announcement-link">114學年度第1學期學士班學生選課注意事項公告</a>
-                        </div>
-                        <div class="announcement-item">
-                            <div class="date-badge">3/22</div>
-                            <a href="#" class="announcement-link">【教務處】期末教學意見調查開放填寫，請同學踴躍上網填答</a>
-                        </div>
+                <!-- 事件列表 -->
+                <section class="events-section">
+                    <h2 class="section-title">活動清單</h2>
+                    <div class="events-list" id="eventsList">
+                        <p class="no-events">選擇日期查看活動</p>
                     </div>
                 </section>
 
