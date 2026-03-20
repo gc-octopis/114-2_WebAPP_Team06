@@ -1,0 +1,6 @@
+# remove .DS_Store from git
+# ignore node_modules and dist folder for future proof.
+
+.DS_Store
+node_modules/
+dist/
