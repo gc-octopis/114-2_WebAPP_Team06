@@ -17,4 +17,5 @@
     * 生成calendar.html
     * 生成calendar.js以解析ics檔案，並完成calender頁面的功能
     * 將calendar.html加入RWD
+    * 修正calendar選取日期時，數字會消失的bug
 * 孫怡臻：完善公告功能 25%

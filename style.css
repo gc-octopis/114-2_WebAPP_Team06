@@ -1214,9 +1214,8 @@ button {
 }
 
 .calendar-date.today {
-    background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg-hover) 100%);
-    border-color: var(--primary-color);
-    border-width: 2px;
+    border: 2px solid var(--primary-color);
+    background-color: var(--bg-hover);
 }
 
 .calendar-date.selected {
@@ -1228,6 +1227,11 @@ button {
 .calendar-date.selected .date-number {
     color: var(--text-invert);
     font-weight: 700;
+}
+
+/* 今天被選中時：保持selected的藍色背景 */
+.calendar-date.today.selected {
+    background-color: var(--primary-color);
 }
 
 .calendar-date.has-events:not(.inactive) .date-number {
@@ -1368,13 +1372,25 @@ button {
 }
 
 .calendar-day:hover {
-    background-color: var(--primary-light);
-    color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: var(--text-invert);
+    border-radius: 4px;
+}
+
+.calendar-day.calendar-day-active:hover {
+    background-color: var(--primary-color);
+    color: var(--text-invert);
+    opacity: 0.9;
 }
 
 .calendar-day.has-events {
     font-weight: 600;
     color: var(--primary-color);
+}
+
+/* Hover時有活動日期也要顯示白色文字 */
+.calendar-day.has-events:hover {
+    color: var(--text-invert);
 }
 
 /* 當日期是今天且有活動時，保持白色文字 */
