@@ -1,235 +1,258 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyNTU++ | 關於我們</title>
+
+    <link rel="stylesheet" href="normalize.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="about.css">
 </head>
+
 <body>
 
     <!-- ==========================================================================
-         左側佈局：側邊欄 (Sidebar)
+         上方佈局：工具列 (Topbar)
          ========================================================================== -->
-    <aside class="sidebar">
-        
-        <!-- 側邊欄：頂部搜尋與摺疊按鈕 -->
-        <div class="sidebar-header">
-            <div class="search-container">
-                <input type="text" placeholder="搜尋">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-            <button class="fold-btn" title="收合側邊欄">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-            </button>
-        </div>
+    <header class="topbar">
 
-        <!-- 側邊欄：導航清單 (使用原生 details 實現折疊) -->
-        <nav class="sidebar-nav custom-scroll">
-            
-            <details class="nav-item">
-                <summary>
-                    <svg class="nav-arrow" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    個人專區
-                </summary>
-                <ul class="nav-sub-list">
-                    <li><a href="index.html">回到首頁</a></li>
-                    <li><a href="#">密碼修改</a></li>
-                </ul>
-            </details>
-
-            <details class="nav-item">
-                <summary>
-                    <svg class="nav-arrow" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    學習課程
-                </summary>
-                <ul class="nav-sub-list">
-                    <li><a href="#">臺大課程網</a></li>
-                    <li><a href="#">選課系統</a></li>
-                </ul>
-            </details>
-
-            <details class="nav-item">
-                <summary>
-                    <svg class="nav-arrow" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    各項申請
-                </summary>
-                <ul class="nav-sub-list">
-                    <li><a href="#">學生請假</a></li>
-                    <li><a href="#">場地借用</a></li>
-                </ul>
-            </details>
-
-            <details class="nav-item">
-                <summary>
-                    <svg class="nav-arrow" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    公告消息
-                </summary>
-                <ul class="nav-sub-list">
-                    <li><a href="#">校園佈告欄</a></li>
-                </ul>
-            </details>
-        </nav>
-
-        <!-- 側邊欄：底部日曆小工具 -->
-        <div class="sidebar-footer">
-            <div class="calendar-month">MAR 2026</div>
-            <div class="calendar-grid">
-                <div class="calendar-day-header">S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
-                <div class="calendar-day-inactive">1</div><div class="calendar-day-inactive">2</div><div class="calendar-day-inactive">3</div><div class="calendar-day-inactive">4</div><div class="calendar-day-inactive">5</div><div class="calendar-day-inactive">6</div><div class="calendar-day-inactive">7</div>
-                <div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div>
-                <div>15</div><div>16</div><div>17</div><div class="calendar-day-active">18</div><div>19</div><div>20</div><div>21</div>
-                <div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div>
-                <div>29</div><div>30</div><div>31</div>
-            </div>
-            <a href="#" class="calendar-link">行事曆</a>
-        </div>
-    </aside>
-
-    <!-- ==========================================================================
-         右側佈局：主畫面 (Main Content)
-         ========================================================================== -->
-    <main class="main-wrapper">
-        
-        <!-- 上方工具列 (Header) -->
-        <header class="header">
-            <!-- 漢堡選單按鈕 (僅在小螢幕顯示) -->
-            <button class="hamburger-btn" title="開啟側邊欄">
+        <!-- 1. 左側按鈕區 -->
+        <div class="topbar-actions">
+            <!-- 漢堡按鈕 -->
+            <button id="hamburger-btn" class="icon-btn" aria-label="開啟側邊欄">
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
 
-            <!-- 品牌 Logo 與頁面標題 -->
-            <a href="index.html" class="brand-logo">MyNTU++</a>
-            <div class="page-title">關於我們</div>
+            <!-- 首頁按鈕 -->
+            <a href="index.html" class="icon-btn" aria-label="回首頁">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+            </a>
+        </div>
 
-            <!-- 右側工具列 -->
-            <div class="header-actions">
-                <button class="action-icon-btn theme-btn" title="切換亮暗模式">
-                    <svg fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <!-- 2. 本頁標題 -->
+        <div class="topbar-title">關於我們</div>
+
+        <!-- 3. 右側按鈕區 -->
+        <div class="topbar-actions">
+            <!-- 網格按鈕 (快捷連結) -->
+            <div class="dropdown-wrapper">
+                <button class="icon-btn" aria-label="快捷連結">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"></path>
+                    </svg>
                 </button>
-                <button class="action-icon-btn settings-btn" title="設定">
-                    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.107.886-.54 2.042-.061 2.287.947.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.107-2.106-.54-.886-.061-2.042.947-2.287 1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.107-.886.54-2.042.061-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
-                </button>
+                <div class="dropdown-menu">
+                    <div class="dropdown-title">快捷服務</div>
+                    <a href="#">📖 快速選課</a>
+                    <a href="#">✉️ 收發信件</a>
+                </div>
             </div>
-        </header>
 
-        <!-- 主內容區 (可捲動) -->
-        <section class="content-scroll-area custom-scroll">
-            <div class="content-container">
+            <!-- 齒輪按鈕 (設定與登入) -->
+            <div class="dropdown-wrapper">
+                <button class="icon-btn" aria-label="系統設定">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+                <div class="dropdown-menu">
+                    <div class="dropdown-title">系統設定</div>
+                    <a href="#" class="login-link">登入系統</a>
+                    <a href="#">切換中英</a>
+                    <a href="#" id="theme-btn">切換主題</a>
+                    <div class="divider"></div>
+                    <a href="about.html">關於我們</a>
+                    <a href="https://github.com/gc-octopis/114-2_WebAPP_Team06">GitHub</a>
+                </div>
+            </div>
+        </div>
 
-                <!-- 關於頁面的 Hero 區塊 -->
+    </header>
+
+    <!-- ==========================================================================
+         下方佈局：主畫面 (Main Wrapper)
+         ========================================================================== -->
+    <div class="main-wrapper">
+
+        <!-- 左側 sidebar -->
+        <aside class="sidebar-wrapper">
+
+            <!-- 1. 搜尋區 -->
+            <div class="sidebar-header">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" placeholder="搜尋" class="search-input">
+            </div>
+
+            <!-- 2. 導覽區 -->
+            <nav class="sidebar-nav">
+                <!-- 導覽1 -->
+                <details class="nav-item" open>
+                    <summary class="nav-summary">個人專區</summary>
+                    <ul class="nav-sub-list">
+                        <li><a href="#">學生基本資料</a></li>
+                        <li><a href="#">密碼修改</a></li>
+                    </ul>
+                </details>
+                <!-- 導覽2 -->
+                <details class="nav-item">
+                    <summary class="nav-summary">學習課程</summary>
+                    <ul class="nav-sub-list">
+                        <li><a href="#">臺大課程網</a></li>
+                        <li><a href="#">選課系統</a></li>
+                    </ul>
+                </details>
+                <!-- 導覽3 -->
+                <details class="nav-item">
+                    <summary class="nav-summary">各項申請</summary>
+                    <ul class="nav-sub-list">
+                        <li><a href="#">學生請假</a></li>
+                        <li><a href="#">場地借用</a></li>
+                    </ul>
+                </details>
+                <!-- 導覽4 -->
+                <details class="nav-item">
+                    <summary class="nav-summary">公告消息</summary>
+                    <ul class="nav-sub-list">
+                        <li><a href="#">校園佈告欄</a></li>
+                    </ul>
+                </details>
+            </nav>
+
+            <!-- 3. 日曆區 -->
+            <div class="sidebar-footer">
+                <div class="calendar-month" id="sidebarMonth">MAR 2026</div>
+                <div class="calendar-grid" id="sidebarCalendar">
+                    <!-- 由 JavaScript 填充 -->
+                </div>
+                <a href="calendar.html" class="calendar-link">行事曆</a>
+            </div>
+
+        </aside>
+
+        <!-- 右側 content -->
+        <main class="content-wrapper">
+            <div class="content-width-limiter">
+
+                <!-- hero section -->
                 <section class="hero-section">
-                    <div class="hero-logo-mockup">
-                        <span class="tree">🏫</span>
-                        <div class="building">
-                            <span>NTU</span>
-                            <div class="building-base"></div>
-                        </div>
+                    <!-- logo -->
+                    <div class="hero-logo">
+                        <span class="tree">🌴</span>
+                        <span class="library">🏫</span>
+                        <span class="tree">🌴</span>
                     </div>
+                    <!-- title -->
                     <h1 class="hero-title">MyNTU++</h1>
-                    <p class="hero-subtitle">臺大學生整合服務平臺</p>
+                    <p class="hero-subtitle">Since 1928</p>
                 </section>
 
-                <!-- 專案簡介 -->
-                <section class="content-section">
+                <!-- 專案簡介 (加上乾淨的 class，不寫行內樣式) -->
+                <section class="general-section">
                     <h2 class="section-title">專案簡介</h2>
-                    <p style="color: var(--text-muted); line-height: 1.8; font-size: 15px; margin-bottom: 16px;">
+                    <p>
                         MyNTU++ 是一個為國立臺灣大學學生打造的整合型服務平臺，致力於提升學生的校園生活體驗。我們將校內各項常用服務集中在一個介面上，讓同學輕鬆快速地完成學業相關的各項事務。
                     </p>
-                    <p style="color: var(--text-muted); line-height: 1.8; font-size: 15px;">
+                    <p>
                         無論是課程選擇、場地借用、行事曆查詢或其他學生服務，MyNTU++ 都能提供一致且友善的使用體驗。
                     </p>
                 </section>
 
                 <!-- 核心特色 -->
-                <section class="content-section">
+                <section class="general-section">
                     <h2 class="section-title">核心特色</h2>
                     <div class="cards-grid">
-                        <div class="card-item">
+                        <div class="card-anchor-item">
                             <div class="card-icon-box">📚</div>
-                            <div class="card-label">課程管理</div>
+                            <span class="card-label">課程管理</span>
                         </div>
-                        <div class="card-item">
+                        <div class="card-anchor-item">
                             <div class="card-icon-box">📋</div>
-                            <div class="card-label">申請服務</div>
+                            <span class="card-label">申請服務</span>
                         </div>
-                        <div class="card-item">
+                        <div class="card-anchor-item">
                             <div class="card-icon-box">📅</div>
-                            <div class="card-label">行事曆</div>
+                            <span class="card-label">行事曆</span>
                         </div>
-                        <div class="card-item">
+                        <div class="card-anchor-item">
                             <div class="card-icon-box">📢</div>
-                            <div class="card-label">公告消息</div>
+                            <span class="card-label">公告消息</span>
                         </div>
-                        <div class="card-item">
+                        <div class="card-anchor-item">
                             <div class="card-icon-box">👤</div>
-                            <div class="card-label">個人資料</div>
+                            <span class="card-label">個人資料</span>
                         </div>
-                        <div class="card-item">
+                        <div class="card-anchor-item">
                             <div class="card-icon-box">⚙️</div>
-                            <div class="card-label">帳戶設定</div>
+                            <span class="card-label">帳戶設定</span>
                         </div>
                     </div>
                 </section>
 
-                <!-- 開發團隊 -->
-                <section class="content-section">
+                <!-- 開發團隊 (套用新寫好的網格 class) -->
+                <section class="general-section">
                     <h2 class="section-title">開發團隊</h2>
-                    <div class="team-grid">
-                        <div class="team-card">
-                            <div class="team-avatar">👨‍💼</div>
-                            <h3 class="team-name">專案經理</h3>
-                            <p class="team-role">負責專案規劃與進度管理</p>
+                    <div class="auto-grid">
+                        <div class="info-card">
+                            <div class="info-card-icon">👨‍💼</div>
+                            <h3 class="info-card-title">專案經理</h3>
+                            <p class="info-card-desc">負責專案規劃與進度管理</p>
                         </div>
-                        <div class="team-card">
-                            <div class="team-avatar">👩‍💻</div>
-                            <h3 class="team-name">前端工程師</h3>
-                            <p class="team-role">負責使用者介面與互動設計</p>
+                        <div class="info-card">
+                            <div class="info-card-icon">👩‍💻</div>
+                            <h3 class="info-card-title">前端工程師</h3>
+                            <p class="info-card-desc">負責使用者介面與互動設計</p>
                         </div>
-                        <div class="team-card">
-                            <div class="team-avatar">👨‍💻</div>
-                            <h3 class="team-name">後端工程師</h3>
-                            <p class="team-role">負責伺服器與資料庫管理</p>
+                        <div class="info-card">
+                            <div class="info-card-icon">👨‍💻</div>
+                            <h3 class="info-card-title">後端工程師</h3>
+                            <p class="info-card-desc">負責伺服器與資料庫管理</p>
                         </div>
-                        <div class="team-card">
-                            <div class="team-avatar">🎨</div>
-                            <h3 class="team-name">設計師</h3>
-                            <p class="team-role">負責視覺設計與使用者體驗</p>
+                        <div class="info-card">
+                            <div class="info-card-icon">🎨</div>
+                            <h3 class="info-card-title">設計師</h3>
+                            <p class="info-card-desc">負責視覺設計與使用者體驗</p>
                         </div>
                     </div>
                 </section>
 
-                <!-- 我們的願景 -->
-                <section class="content-section">
+                <!-- 我們的願景 (套用新寫好的卡片 class) -->
+                <section class="general-section">
                     <h2 class="section-title">我們的願景</h2>
-                    <div class="vision-cards">
-                        <div class="vision-item">
-                            <div class="vision-number">1</div>
-                            <h3>簡化流程</h3>
-                            <p>整合分散的服務，減少學生的操作步驟</p>
+                    <div class="auto-grid">
+                        <div class="info-card">
+                            <div class="info-card-icon">1</div>
+                            <h3 class="info-card-title">簡化流程</h3>
+                            <p class="info-card-desc">整合分散的服務，減少學生的操作步驟</p>
                         </div>
-                        <div class="vision-item">
-                            <div class="vision-number">2</div>
-                            <h3>提升體驗</h3>
-                            <p>設計直覺友善的介面，提供流暢的使用體驗</p>
+                        <div class="info-card">
+                            <div class="info-card-icon">2</div>
+                            <h3 class="info-card-title">提升體驗</h3>
+                            <p class="info-card-desc">設計直覺友善的介面，提供流暢的使用體驗</p>
                         </div>
-                        <div class="vision-item">
-                            <div class="vision-number">3</div>
-                            <h3>持續創新</h3>
-                            <p>不斷改進功能，把握學生需求</p>
+                        <div class="info-card">
+                            <div class="info-card-icon">3</div>
+                            <h3 class="info-card-title">持續創新</h3>
+                            <p class="info-card-desc">不斷改進功能，把握學生需求</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- 聯絡資訊 -->
-                <section class="content-section">
+                <section class="general-section">
                     <h2 class="section-title">聯絡我們</h2>
-                    <div class="contact-info">
+                    <div class="contact-info info-panel">
                         <div class="contact-item">
                             <span class="contact-label">電子郵件：</span>
-                            <a href="mailto:hello@myntu.ntu.edu.tw" class="contact-link">support@myntu.ntu.edu.tw</a>
+                            <a href="mailto:support@myntu.ntu.edu.tw" class="contact-link">support@myntu.ntu.edu.tw</a>
                         </div>
                         <div class="contact-item">
                             <span class="contact-label">位置：</span>
@@ -242,14 +265,13 @@
                     </div>
                 </section>
 
-                <!-- 頁尾留白 -->
-                <div style="height: 40px;"></div>
-
             </div>
-        </section>
+        </main>
 
-    </main>
+    </div>
 
-    <script src="rwd.js"></script>
+    <script src="script.js"></script>
+    <script src="calendar.js"></script>
 </body>
+
 </html>

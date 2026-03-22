@@ -1,0 +1,365 @@
+/* ==========================================================================
+   [8] 行事曆專用區塊 (Calendar Page Styles)
+   ========================================================================== */
+
+/* --- 行事曆內容容器 --- */
+.calendar-content {
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    width: 100%;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+/* 1024px 以上才使用両列 */
+@media (min-width: 1024px) {
+    .calendar-content {
+        grid-template-columns: 1fr 1fr;
+        max-width: 1600px;
+    }
+}
+
+/* --- 行事曆控制區 (月份導航) --- */
+.calendar-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+    gap: 16px;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    grid-row: 1;
+}
+
+.calendar-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary-color);
+    flex: 1;
+    text-align: center;
+    margin: 0;
+}
+
+.calendar-nav-btn {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: var(--text-invert);
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex: 0 1 auto;
+}
+
+.calendar-nav-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+/* --- 月份日曆網格 --- */
+.calendar-month-view {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    grid-column: 1 / -1;
+    grid-row: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 1024px 以上时，左侧排列 */
+@media (min-width: 1024px) {
+    .calendar-month-view {
+        grid-column: 1 / 2;
+        grid-row: 2;
+    }
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.weekday {
+    font-weight: 700;
+    color: var(--primary-color);
+    padding: 12px 4px;
+    font-size: 14px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    min-height: 420px;
+}
+
+.calendar-date {
+    min-height: 80px;
+    padding: 8px;
+    background-color: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.calendar-date:hover:not(.inactive) {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.1);
+    transform: translateY(-2px);
+}
+
+.calendar-date.inactive {
+    background-color: var(--bg-body);
+    color: var(--text-light);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.calendar-date.today {
+    border: 2px solid var(--primary-color);
+    background-color: var(--bg-hover);
+}
+
+.calendar-date.selected {
+    background-color: var(--primary-color);
+    color: var(--text-invert);
+    border-color: var(--primary-color);
+}
+
+/* 今天被選中時：保持selected的藍色背景 */
+.calendar-date.today.selected {
+    background-color: var(--primary-color);
+}
+
+.calendar-date.selected .date-number {
+    color: var(--text-invert);
+    font-weight: 700;
+}
+
+.calendar-date.has-events:not(.inactive) .date-number {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.calendar-date.selected.has-events .date-number {
+    color: var(--text-invert);
+}
+
+.event-indicator {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background-color: var(--primary-color);
+    color: var(--text-invert);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.calendar-date.selected .event-indicator {
+    background-color: var(--text-invert);
+    color: var(--primary-color);
+}
+
+/* --- 事件列表 --- */
+.events-section {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    grid-column: 1 / -1;
+    grid-row: auto;
+    min-width: 0;
+    width: 100%;
+    max-height: none;
+    overflow-y: visible;
+}
+
+/* 1024px 以上時，侧边排列 */
+@media (min-width: 1024px) {
+    .events-section {
+        grid-column: 2 / 3;
+        grid-row: 2;
+        max-height: 700px;
+        overflow-y: auto;
+    }
+}
+
+.events-list {
+    margin-top: 16px;
+}
+
+.no-events {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 32px 16px;
+    font-size: 14px;
+}
+
+.events-date-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 16px;
+    margin-top: 0;
+}
+
+.event-item {
+    background-color: var(--bg-hover);
+    border-left: 4px solid var(--primary-color);
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    transition: all 0.3s;
+    min-width: 0;
+    overflow-wrap: break-word;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.event-item:hover {
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.1);
+    transform: translateX(4px);
+}
+
+.event-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    line-height: 1.4;
+    width: 100%;
+    display: block;
+}
+
+.event-date {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.event-detail {
+    font-size: 14px;
+    color: var(--text-main);
+    margin-top: 8px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    width: 100%;
+    display: block;
+}
+
+/* --- 側邊欄日曆互動 --- */
+.calendar-day {
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.calendar-day:hover {
+    background-color: var(--primary-color);
+    color: var(--text-invert);
+    border-radius: 4px;
+}
+
+.calendar-day.calendar-day-active:hover {
+    background-color: var(--primary-color);
+    color: var(--text-invert);
+    opacity: 0.9;
+}
+
+.calendar-day.has-events {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Hover時有活動日期也要顯示白色文字 */
+.calendar-day.has-events:hover {
+    color: var(--text-invert);
+}
+
+/* 當日期是今天且有活動時，保持白色文字 */
+.calendar-day.calendar-day-active.has-events {
+    color: var(--text-invert);
+    font-weight: 600;
+}
+
+/* 側邊行事曆連結 active 狀態 */
+.calendar-link.active {
+    font-weight: bold;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* ==========================================================================
+    響應式設計：行動版 (Mobile RWD)
+    ========================================================================== */
+@media (max-width: 768px) {
+    .calendar-content {
+        gap: 1rem;
+    }
+    .calendar-controls {
+        flex-direction: row;
+        gap: 0.5rem;
+        justify-content: space-between;
+    }
+    .calendar-title {
+        font-size: 1.25rem;
+        flex: auto;
+    }
+    .calendar-days {
+        min-height: 280px;
+        gap: 4px;
+    }
+    .calendar-date {
+        min-height: 50px;
+        padding: 4px;
+        font-size: 0.75rem;
+    }
+    .event-indicator {
+        width: 16px;
+        height: 16px;
+        font-size: 9px;
+        bottom: 2px;
+        right: 2px;
+    }
+    .event-item {
+        padding: 0.75rem;
+    }
+}

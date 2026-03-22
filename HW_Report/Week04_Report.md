@@ -11,6 +11,12 @@
 
 ## 組員分工
 * 陳冠瑜： 25%
+    * 重新設計 index.html 骨架佈局，確立 topbar、sidebar 與 content 的層級關係
+    * 優化 sidebar 收合互動，並加入與主頁獨立的專屬捲軸
+    * 調整暗色佈景 (Dark Theme) 配色，提升視覺和諧度
+    * 建立共用模板架構，並將新設計無縫套用至 about.html 與 calendar.html
+    * 重構 CSS 檔案架構，拆分出 calendar.css 與 about.css 以利後續維護
+    * 模組化公告功能，獨立出 announcements.js 與 announcements.css
 * 陳冠辰： 25%
 * 王凱弘：設計行事曆頁面 25%
     * 於台大教務處網站下載calendar.ics

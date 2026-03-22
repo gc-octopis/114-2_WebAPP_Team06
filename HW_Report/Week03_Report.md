@@ -31,6 +31,11 @@
 ## 組員分工
 
 * 陳冠瑜：設計排版 25%
+    * 建立 MyNTU++ 首頁整體版面架構（左側邊欄與右側主內容區塊）。
+    * 定義 CSS 全域變數系統（色彩計畫與中性色票）與基礎樣式重置。
+    * 實作左側邊欄（Sidebar）功能視覺，包含原生的折疊導覽選單與底部日曆小工具。
+    * 實作上方工具列（Header）及互動式彈出選單（Dropdown Menu）排版。
+    * 設計主內容區視覺（Main Content），完成 Hero 區塊（總圖 Mockup）、Favorite 常用服務卡片與公告清單的介面切版。    
 * 陳冠辰：細節調整 25%
     * modify mobile header flex to match desktop
     * add onclick listener to fold button to let it fold.
