@@ -1,209 +1,156 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyNTU++ | 首頁</title>
+
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="announcement.css">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <!-- ==========================================================================
-         左側佈局：側邊欄 (Sidebar)
+         上方佈局：工具列 (Topbar)
          ========================================================================== -->
-    <aside class="sidebar">
-        
-        <!-- 側邊欄：頂部搜尋與摺疊按鈕 -->
-        <div class="sidebar-header">
-            <div class="search-container">
-                <input type="text" placeholder="搜尋">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-            <button class="fold-btn" title="收合側邊欄">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-            </button>
-        </div>
+    <header class="topbar">
 
-        <!-- 側邊欄：導航清單 (使用原生 details 實現折疊) -->
-        <nav class="sidebar-nav custom-scroll">
-            
-            <details class="nav-item" open>
-                <summary>
-                    <svg class="nav-arrow" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    個人專區
-                </summary>
-                <ul class="nav-sub-list">
-                    <li><a href="#">學生基本資料</a></li>
-                    <li><a href="#">密碼修改</a></li>
-                </ul>
-            </details>
-
-            <details class="nav-item">
-                <summary>
-                    <svg class="nav-arrow" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    學習課程
-                </summary>
-                <ul class="nav-sub-list">
-                    <li><a href="#">臺大課程網</a></li>
-                    <li><a href="#">選課系統</a></li>
-                </ul>
-            </details>
-
-            <details class="nav-item">
-                <summary>
-                    <svg class="nav-arrow" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    各項申請
-                </summary>
-                <ul class="nav-sub-list">
-                    <li><a href="#">學生請假</a></li>
-                    <li><a href="#">場地借用</a></li>
-                </ul>
-            </details>
-
-            <details class="nav-item">
-                <summary>
-                    <svg class="nav-arrow" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    公告消息
-                </summary>
-                <ul class="nav-sub-list">
-                    <li><a href="#">校園佈告欄</a></li>
-                </ul>
-            </details>
-        </nav>
-
-        <!-- 側邊欄：底部日曆小工具 -->
-        <div class="sidebar-footer">
-            <div class="calendar-month" id="sidebarMonth">MAR 2026</div>
-            <div class="calendar-grid" id="sidebarCalendar">
-                <!-- 由 JavaScript 填充 -->
-            </div>
-            <a href="calendar.html" class="calendar-link">行事曆</a>
-        </div>
-    </aside>
-
-    <!-- ==========================================================================
-         右側佈局：主畫面 (Main Content)
-         ========================================================================== -->
-    <main class="main-wrapper">
-        
-        <!-- 上方工具列 (Header) -->
-        <header class="header">
-            <!-- 漢堡選單按鈕 (僅在小螢幕顯示) -->
-            <button class="hamburger-btn" title="開啟側邊欄">
+        <!-- 1. 左側按鈕區 -->
+        <div class="topbar-actions">
+            <!-- 漢堡按鈕 -->
+            <button id="hamburger-btn" class="icon-btn" aria-label="開啟側邊欄">
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
 
-            <!-- 左：Logo -->
-            <a href="index.html" class="brand-logo">MyNTU++</a>
+            <!-- 首頁按鈕 -->
+            <a href="index.html" class="icon-btn" aria-label="回首頁">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+            </a>
+        </div>
 
-            <!-- 中：頁面標題 -->
-            <div class="page-title">
-                首頁 <span>📚</span>
+        <!-- 2. 本頁標題 -->
+        <div class="topbar-title">首頁</div>
+
+        <!-- 3. 右側按鈕區 -->
+        <div class="topbar-actions">
+            <!-- 網格按鈕 (快捷連結) -->
+            <div class="dropdown-wrapper">
+                <button class="icon-btn" aria-label="快捷連結">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"></path>
+                    </svg>
+                </button>
+                <div class="dropdown-menu">
+                    <div class="dropdown-title">快捷服務</div>
+                    <a href="#">📖 快速選課</a>
+                    <a href="#">✉️ 收發信件</a>
+                </div>
             </div>
 
-            <!-- 右：操作區 (Nine dots, Settings, Sign in) -->
-            <div class="header-actions">
-                
-                <!-- 常用連結彈出選單 (Nine dots Dropdown) -->
-                <div class="dropdown-wrapper">
-                    <button class="action-icon-btn">
-                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"></path></svg>
-                    </button>
-                    <!-- 彈出內容 -->
-                    <div class="dropdown-menu menu-pinned">
-                        <div class="dropdown-title">由用戶釘選</div>
-                        <ul>
-                            <li><a href="#">📖 快速選課</a></li>
-                            <li><a href="#">✉️ 收發信件</a></li>
-                        </ul>
-                    </div>
+            <!-- 齒輪按鈕 (設定與登入) -->
+            <div class="dropdown-wrapper">
+                <button class="icon-btn" aria-label="系統設定">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+                <div class="dropdown-menu">
+                    <div class="dropdown-title">系統設定</div>
+                    <a href="#" class="login-link">登入系統</a>
+                    <a href="#">切換中英</a>
+                    <a href="#" id="theme-btn">切換主題</a>
+                    <div class="divider"></div>
+                    <a href="about.html">關於我們</a>
+                    <a href="https://github.com/gc-octopis/114-2_WebAPP_Team06" target="_blank" rel="noopener noreferrer">GitHub</a>
                 </div>
-
-                <!-- 設定彈出選單 (Settings Dropdown) -->
-                <div class="dropdown-wrapper">
-                    <button class="action-icon-btn settings-btn">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    </button>
-                    <!-- 彈出內容 -->
-                    <div class="dropdown-menu menu-settings">
-                        <a href="#">EN / 中</a>
-                        <a href="#" class="theme-btn">☀️ / 🌙 主題</a>
-                        <div class="divider"></div>
-                        <a href="about.html" style="color: var(--text-muted);">關於我們</a>
-                        <a href="https://github.com/gc-octopis/114-2_WebAPP_Team06" style="color: var(--text-muted);">GitHub</a>
-                    </div>
-                </div>
-
-                <!-- 登入按鈕 -->
-                <a href="#" class="sign-in-btn">登入</a> <!-- match the rest of the language -->
             </div>
-        </header>
+        </div>
 
-        <!-- 主內容捲動區 -->
-        <div class="content-scroll-area custom-scroll">
-            <div class="content-container">
-                
-                <!-- 視覺中心：大標題與 Logo -->
+    </header>
+
+    <!-- ==========================================================================
+         下方佈局：主畫面 (Main Wrapper)
+         ========================================================================== -->
+    <div class="main-wrapper">
+
+        <!-- 左側 sidebar -->
+        <aside class="sidebar-wrapper">
+
+            <!-- 1. 搜尋區 -->
+            <div class="sidebar-header">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" placeholder="搜尋" class="search-input">
+            </div>
+
+            <!-- 2. 導覽區：分類按鈕由 favorites.js 動態填充 -->
+            <nav class="sidebar-nav" id="categoryNav">
+                <!-- JS 會自動插入分類按鈕 -->
+            </nav>
+
+            <!-- 3. 日曆區 -->
+            <div class="sidebar-footer">
+                <div class="calendar-month" id="sidebarMonth">MAR 2026</div>
+                <div class="calendar-grid" id="sidebarCalendar">
+                    <!-- 由 JavaScript 填充 -->
+                </div>
+                <a href="calendar.html" class="calendar-link">行事曆</a>
+            </div>
+
+        </aside>
+
+        <!-- 右側 content -->
+        <main class="content-wrapper">
+            <div class="content-width-limiter">
+
+                <!-- hero section -->
                 <section class="hero-section">
-                    <div class="hero-logo-mockup">
+                    <!-- logo -->
+                    <div class="hero-logo">
                         <span class="tree">🌴</span>
-                        <div class="building">
-                            總圖
-                            <div class="building-base"></div>
-                        </div>
+                        <span class="library">🏫</span>
                         <span class="tree">🌴</span>
                     </div>
+                    <!-- title -->
                     <h1 class="hero-title">MyNTU++</h1>
                     <p class="hero-subtitle">Since 1928</p>
                 </section>
 
-                <!-- 區塊 1: Favorite 常用服務 -->
-                <section class="content-section">
-                    <h2 class="section-title">最愛</h2>
-                    
-                    <div class="cards-grid">
-                        <a href="#" class="card-item">
-                            <div class="card-icon-box">📖</div>
-                            <span class="card-label">選課</span>
-                        </a>
-                        <a href="#" class="card-item">
-                            <div class="card-icon-box">✉️</div>
-                            <span class="card-label">Mail</span>
-                        </a>
-                        <a href="#" class="card-item">
-                            <div class="card-icon-box">🧊</div>
-                            <span class="card-label">Cool</span>
-                        </a>
-                        <a href="#" class="card-item">
-                            <div class="card-icon-box">💯</div>
-                            <span class="card-label">成績</span>
-                        </a>
+                <!-- favorite section -->
+                <section class="general-section">
+                    <h2 class="section-title" id="favoritesTitle">📚  教學</h2>
+                    <!-- cards grid：由 favorites.js 動態填充 -->
+                    <div class="cards-grid" id="favoritesGrid">
                     </div>
                 </section>
 
-                <!-- 區塊 2: 公告 Announcements -->
-                <section class="content-section">
-                    <h2 class="section-title">公告</h2>
-                    
-                    <div class="announcement-list">
-                        <div class="announcement-item">
-                            <div class="date-badge">3/20</div>
-                            <a href="#" class="announcement-link">114學年度第1學期學士班學生選課注意事項公告</a>
-                        </div>
-                        <div class="announcement-item">
-                            <div class="date-badge">3/22</div>
-                            <a href="#" class="announcement-link">【教務處】期末教學意見調查開放填寫，請同學踴躍上網填答</a>
-                        </div>
+                <!-- announcements section -->
+                <section class="general-section">
+                    <h2 class="section-title">公告清單</h2>
+                    <!-- list -->
+                    <div class="announcement-list" id="announcementList">
+                        <!-- JS 會自動插入公告 -->
                     </div>
                 </section>
 
             </div>
-        </div>
-    </main>
+        </main>
 
-    <script src="rwd.js"></script>
+    </div>
+
+    <script src="script.js"></script>
     <script src="calendar.js"></script>
+    <script src="announcement.js"></script>
+    <script src="favorites.js"></script>
 </body>
+
 </html>

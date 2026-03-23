@@ -1,0 +1,33 @@
+/* ==========================================================================
+   About Page 專用
+   ========================================================================== */
+
+/* 1. 聯絡資訊 */
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+}
+.contact-label {
+    font-weight: bold;
+    color: var(--text-main);
+    min-width: 5.5rem;
+}
+.contact-text {
+    color: var(--text-muted);
+}
+.contact-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+    transition: text-decoration 0.2s;
+}
+.contact-link:hover {
+    text-decoration: underline;
+}
