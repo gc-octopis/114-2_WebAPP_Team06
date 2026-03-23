@@ -1,6 +1,34 @@
 # 陳冠瑜
 
 # 陳冠辰
+USER: how to remove already existing .DS_Store from git repo
+Agent:
+To remove `.DS_Store` files that are already tracked by Git, you need to untrack them and then remove them from the repository. Here’s how you can do it:
+
+1. **Untrack the `.DS_Store` files:**
+
+   Add the following line to your `.gitignore` file if it's not already there:
+   ```plaintext
+   .DS_Store
+   ```
+
+2. **Remove `.DS_Store` files from the repository:**
+
+   Use the following commands to remove the `.DS_Store` files from the Git repository:
+
+   ```bash
+   git rm --cached .DS_Store
+   git commit -m "Remove .DS_Store files"
+   ```
+
+3. **Optionally, remove all untracked `.DS_Store` files from your working directory:**
+
+   You can use the `find` command to locate and delete all `.DS_Store` files:
+   ```bash
+   find . -name ".DS_Store" -type f -delete
+   ```
+
+By following these steps, you ensure that `.DS_Store` files are no longer tracked by Git and are removed from your repository.
 
 # 王凱弘
 USER: 
