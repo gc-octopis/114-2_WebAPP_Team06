@@ -69,7 +69,7 @@
                     <a href="#" id="theme-btn">切換主題</a>
                     <div class="divider"></div>
                     <a href="about.html">關於我們</a>
-                    <a href="https://github.com/gc-octopis/114-2_WebAPP_Team06">GitHub</a>
+                    <a href="https://github.com/gc-octopis/114-2_WebAPP_Team06" target="_blank" rel="noopener noreferrer">GitHub</a>
                 </div>
             </div>
         </div>
@@ -92,39 +92,9 @@
                 <input type="text" placeholder="搜尋" class="search-input">
             </div>
 
-            <!-- 2. 導覽區 -->
-            <nav class="sidebar-nav">
-                <!-- 導覽1 -->
-                <details class="nav-item" open>
-                    <summary class="nav-summary">個人專區</summary>
-                    <ul class="nav-sub-list">
-                        <li><a href="#">學生基本資料</a></li>
-                        <li><a href="#">密碼修改</a></li>
-                    </ul>
-                </details>
-                <!-- 導覽2 -->
-                <details class="nav-item">
-                    <summary class="nav-summary">學習課程</summary>
-                    <ul class="nav-sub-list">
-                        <li><a href="#">臺大課程網</a></li>
-                        <li><a href="#">選課系統</a></li>
-                    </ul>
-                </details>
-                <!-- 導覽3 -->
-                <details class="nav-item">
-                    <summary class="nav-summary">各項申請</summary>
-                    <ul class="nav-sub-list">
-                        <li><a href="#">學生請假</a></li>
-                        <li><a href="#">場地借用</a></li>
-                    </ul>
-                </details>
-                <!-- 導覽4 -->
-                <details class="nav-item">
-                    <summary class="nav-summary">公告消息</summary>
-                    <ul class="nav-sub-list">
-                        <li><a href="#">校園佈告欄</a></li>
-                    </ul>
-                </details>
+            <!-- 2. 導覽區：分類按鈕由 favorites.js 動態填充 -->
+            <nav class="sidebar-nav" id="categoryNav">
+                <!-- JS 會自動插入分類按鈕 -->
             </nav>
 
             <!-- 3. 日曆區 -->
@@ -157,29 +127,9 @@
 
                 <!-- favorite section -->
                 <section class="general-section">
-                    <h2 class="section-title">最愛</h2>
-                    <!-- cards grid -->
-                    <div class="cards-grid">
-                        <!-- 卡片1 -->
-                        <a href="#" class="card-anchor-item">
-                            <div class="card-icon-box">📖</div>
-                            <span class="card-label">選課</span>
-                        </a>
-                        <!-- 卡片2 -->
-                        <a href="#" class="card-anchor-item">
-                            <div class="card-icon-box">✉️</div>
-                            <span class="card-label">Mail</span>
-                        </a>
-                        <!-- 卡片3 -->
-                        <a href="#" class="card-anchor-item">
-                            <div class="card-icon-box">🧊</div>
-                            <span class="card-label">Cool</span>
-                        </a>
-                        <!-- 卡片4 -->
-                        <a href="#" class="card-anchor-item">
-                            <div class="card-icon-box">💯</div>
-                            <span class="card-label">成績</span>
-                        </a>
+                    <h2 class="section-title" id="favoritesTitle">📚  教學</h2>
+                    <!-- cards grid：由 favorites.js 動態填充 -->
+                    <div class="cards-grid" id="favoritesGrid">
                     </div>
                 </section>
 
@@ -200,6 +150,7 @@
     <script src="script.js"></script>
     <script src="calendar.js"></script>
     <script src="announcement.js"></script>
+    <script src="favorites.js"></script>
 </body>
 
 </html>

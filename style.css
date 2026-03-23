@@ -289,70 +289,54 @@ p {
     overflow-y: auto;
     padding: 1rem 1.25rem;
 }
-
-.nav-item {
-    margin-bottom: 0.5rem;
-}
-
-.nav-summary {
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    font-weight: bold;
-    color: var(--text-main);
-    transition: background-color 0.2s;
-    user-select: none;
-    /* 為了讓清單箭頭對齊標題 */
+/* 分類按鈕（由 favorites.js 動態產生） */
+.cat-btn {
     display: flex;
     align-items: center;
-}
-
-.nav-summary::-webkit-details-marker {
-    /* 隱藏原生清單箭頭 */
-    display: none;
-}
-
-.nav-summary::before {
-    /* 偽元素製作清單箭頭 */
-    content: "";
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    margin-right: 0.5rem;
-    /* 把 SVG 當作模板，用背景顏色上色 */
-    background-color: var(--text-light);
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill-rule='evenodd' d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z'/%3E%3C/svg%3E") no-repeat center / contain;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill-rule='evenodd' d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z'/%3E%3C/svg%3E") no-repeat center / contain;
-    transition: transform 0.2s ease;
-}
-
-.nav-item[open] .nav-summary::before {
-    transform: rotate(90deg);
-}
-
-.nav-summary:hover {
-    background-color: var(--bg-hover);
-}
-
-.nav-sub-list {
-    list-style: none;
-    padding: 0.5rem 1rem 0.5rem 2rem;
-    margin: 0;
-}
-
-.nav-sub-list a {
-    display: block;
-    padding: 0.5rem 0;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.25rem;
+    background: none;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.15s ease, color 0.15s ease;
     color: var(--text-muted);
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: color 0.2s;
+    font-size: 0.9rem;
+    font-family: inherit;
 }
 
-.nav-sub-list a:hover {
-    color: var(--primary-color);
+.cat-btn:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-main);
 }
+
+.cat-btn.active {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.cat-btn-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    width: 1.8rem;
+    text-align: center;
+}
+
+.cat-btn-label {
+    flex: 1;
+}
+
+/* card emoji（純 emoji，不需要圖片樣式）*/
+.card-emoji {
+    font-size: 1.8rem;
+}
+
 /* 下方日曆區 */
+
 .sidebar-footer {
     padding: 1rem 1.25rem;
     border-top: 1px solid var(--border-color);
@@ -557,6 +541,14 @@ p {
 
 .card-anchor-item:hover .card-label {
     color: var(--primary-color);
+}
+
+/* 當 icon 是圖片時（從 NTU 入口網抓取的縮圖） */
+.card-icon-img {
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: contain;
+    border-radius: 0.5rem;
 }
 
 /* announcements section */
