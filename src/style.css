@@ -1,7 +1,7 @@
 /* ==========================================================================
    Theme
    ========================================================================== */
-:root {
+.light {
     color-scheme: light;
 
     /* 強調色 */
@@ -68,6 +68,11 @@ body {
     background: var(--bg-body);
     color: var(--text-main);
 
+    margin: 0;
+    padding: 0;
+}
+
+#root {
     display: flex;
     flex-direction: column;
     height: 100vh;
