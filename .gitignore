@@ -2,5 +2,30 @@
 # ignore node_modules and dist folder for future proof.
 
 .DS_Store
+Thumbs.db
+
+# Frontend
+
 node_modules/
 dist/
+
+# Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django sensitive data
+db.sqlite3
+.env
+local_settings.py
+
+# Machine Learning / Transformers
+*.log
+.cache/
+/models/
