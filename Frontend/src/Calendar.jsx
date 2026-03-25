@@ -2,20 +2,32 @@ import Layout from "./Layout";
 import './calendar.css';
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ICSParser } from "./icsParser"; // 引入剛才建立的工具
+import { CalendarEventAPI } from "./calendarAPI";
+import { useLanguage, useText } from "./LanguageContext";
 
 const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+const monthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function Calendar() {
-    const title = "行事曆";
+    const { lang } = useLanguage();
+    const t = useText();
+    const title = t.calendar;
     const [searchParams] = useSearchParams();
     
     // 狀態管理
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(null);
     const [events, setEvents] = useState([]);
-    const [parser] = useState(new ICSParser());
+    const [loading, setLoading] = useState(false);
 
+    // Helper function to parse API date string to Date object
+    const parseDate = (dateStr) => {
+        if (!dateStr) return null;
+        const [year, month, day] = dateStr.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    };
+
+    // Fetch events when language or month changes
     useEffect(() => {
         document.title = "MyNTU++ | " + title;
         
@@ -30,16 +42,33 @@ function Calendar() {
             setSelectedDate(initDate);
         }
 
-        // 載入 ICS 檔案
-        parser.loadICS('calendar.ics').then(() => {
-            // 強制觸發重新渲染以顯示載入後的事件
-            setEvents([...parser.events]); 
+        // 從API載入該月份的events
+        setLoading(true);
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        
+        CalendarEventAPI.getEventsForMonth(year, month, lang).then(apiEvents => {
+            // Convert API events to internal format
+            const convertedEvents = apiEvents.map(evt => ({
+                ...evt,
+                dateStart: parseDate(evt.dateStart),
+                dateEnd: evt.dateEnd ? parseDate(evt.dateEnd) : null,
+            }));
+            setEvents(convertedEvents);
+            setLoading(false);
         });
-    }, [searchParams, parser]);
+    }, [currentDate, lang, searchParams, title]);
 
     // 切換月份
     const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
     const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+
+    // Helper function to get events for a specific date
+    const getEventsForDate = (date) => {
+        if (!date) return [];
+        const dateStr = date.toISOString().split('T')[0];
+        return events.filter(event => event.dateStart.toISOString().split('T')[0] === dateStr);
+    };
 
     // 計算日曆網格資料
     const calendarDays = useMemo(() => {
@@ -59,7 +88,7 @@ function Calendar() {
         // 這個月的日期
         for (let day = 1; day <= daysInMonth; day++) {
             const dateObj = new Date(year, month, day);
-            const dayEvents = parser.getEventsForDate(dateObj);
+            const dayEvents = getEventsForDate(dateObj);
             const isToday = new Date().toDateString() === dateObj.toDateString();
             const isSelected = selectedDate?.toDateString() === dateObj.toDateString();
             
@@ -73,22 +102,24 @@ function Calendar() {
         }
         
         return days;
-    }, [currentDate, events, selectedDate, parser]);
+    }, [currentDate, events, selectedDate]);
 
-    const selectedEvents = useMemo(() => parser.getEventsForDate(selectedDate), [selectedDate, events, parser]);
+    const selectedEvents = useMemo(() => getEventsForDate(selectedDate), [selectedDate, events]);
 
     return (
         <Layout title={title}>
             <div className="calendar-content">
+                {loading && <div className="loading-indicator">{t.loading || 'Loading...'}</div>}
+                
                 <section className="calendar-controls">
-                    <button onClick={prevMonth} className="calendar-nav-btn">← 前月</button>
-                    <h1 className="calendar-title">{currentDate.getFullYear()}年 {monthNames[currentDate.getMonth()]}</h1>
-                    <button onClick={nextMonth} className="calendar-nav-btn">後月 →</button>
+                    <button onClick={prevMonth} className="calendar-nav-btn">← {t.prevMonth}</button>
+                    <h1 className="calendar-title">{lang === 'en' ? `${monthNamesEn[currentDate.getMonth()]} ${currentDate.getFullYear()}` : `${currentDate.getFullYear()}年 ${monthNames[currentDate.getMonth()]}`}</h1>
+                    <button onClick={nextMonth} className="calendar-nav-btn">{t.nextMonth} →</button>
                 </section>
 
                 <section className="calendar-month-view">
                     <div className="calendar-weekdays">
-                        {['日', '一', '二', '三', '四', '五', '六'].map(day => (
+                        {(lang === 'en' ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : ['日', '一', '二', '三', '四', '五', '六']).map(day => (
                             <div key={day} className="weekday">{day}</div>
                         ))}
                     </div>
@@ -113,21 +144,21 @@ function Calendar() {
                 </section>
 
                 <section className="events-section">
-                    <h2 className="section-title">活動清單</h2>
+                    <h2 className="section-title">{t.eventList}</h2>
                     <div className="events-list">
                         {!selectedDate ? (
-                            <p className="no-events">選擇日期查看活動</p>
+                            <p className="no-events">{t.selectDateHint}</p>
                         ) : selectedEvents.length === 0 ? (
-                            <p className="no-events">{selectedDate.toLocaleDateString('zh-TW')} 沒有活動</p>
+                            <p className="no-events">{selectedDate.toLocaleDateString(lang === 'en' ? 'en-US' : 'zh-TW')} {t.noEventsOnDate}</p>
                         ) : (
                             <>
-                                <h3 className="events-date-title">{selectedDate.toLocaleDateString('zh-TW')}</h3>
+                                <h3 className="events-date-title">{selectedDate.toLocaleDateString(lang === 'en' ? 'en-US' : 'zh-TW')}</h3>
                                 {selectedEvents.map((ev, i) => (
                                     <div key={i} className="event-item">
                                         <div className="event-title">{ev.summary}</div>
-                                        {ev.location && <div className="event-detail"><strong>地點:</strong> {ev.location}</div>}
-                                        <div className="event-date">{ev.dateStart.toLocaleDateString('zh-TW')}</div>
-                                        {ev.description && <div className="event-detail"><strong>說明:</strong> {ev.description}</div>}
+                                        {ev.location && <div className="event-detail"><strong>{t.location}:</strong> {ev.location}</div>}
+                                        <div className="event-date">{ev.dateStart.toLocaleDateString(lang === 'en' ? 'en-US' : 'zh-TW')}</div>
+                                        {ev.description && <div className="event-detail"><strong>{t.description}:</strong> {ev.description}</div>}
                                     </div>
                                 ))}
                             </>

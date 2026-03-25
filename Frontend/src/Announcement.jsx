@@ -1,8 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import './announcement.css';
+import { useLanguage, useText, getLocalizedValue } from './LanguageContext';
 
 function Announcement()
 {
+    const { lang } = useLanguage();
+    const t = useText();
     const [data, setData] = useState(null);
     const ITEMS_PER_PAGE = 10;
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,13 +19,30 @@ function Announcement()
 
     useEffect(() => {
         (async function () {
-        const res = await fetch("announcements.json"); // 你的 JSON
-        const rawData = await res.json();
-        const data = rawData.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setData(data);
-        setFilteredData(data);
+        try {
+            const dataFile = lang === 'en' ? 'announcements.en.json' : 'announcements.json';
+            let res = await fetch(dataFile);
+            if (!res.ok && dataFile !== 'announcements.json') {
+                res = await fetch('announcements.json');
+            }
+
+            let rawData = await res.json();
+            if (dataFile !== 'announcements.json' && Array.isArray(rawData) && rawData.length === 0) {
+                const fallbackRes = await fetch('announcements.json');
+                rawData = await fallbackRes.json();
+            }
+
+            const nextData = rawData.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setData(nextData);
+            setFilteredData(nextData);
+            setCurrentPage(1);
+            setCategory("");
+        } catch (error) {
+            setData([]);
+            setFilteredData([]);
+        }
         })();
-    }, []);
+    }, [lang]);
 
     useEffect(() => {
         if (filteredData)
@@ -43,9 +63,9 @@ function Announcement()
     }, [currentPage, filteredData]);
     
     useEffect(() => {
-        if (filteredData)
+        if (filteredData && data)
         {
-            if (category != '')
+            if (category !== '')
             {
                 setFilteredData(data.filter(item => item.category === category));
             }
@@ -56,38 +76,87 @@ function Announcement()
 
             setCurrentPage(1);
         }
-    }, [category])
+    }, [category, data])
 
-    if (data)
-    {
-        if (totalPages > 0 && currentPage > totalPages) {
-            setCurrentPage(totalPages)
+    useEffect(() => {
+        if (!filteredData) {
+            return;
         }
-        if (totalPages === 0) {
-            setCurrentPage(1);
+
+        if (totalPages.current === 0) {
+            if (currentPage !== 1) {
+                setCurrentPage(1);
+            }
+            return;
         }
-    }
+
+        if (currentPage > totalPages.current) {
+            setCurrentPage(totalPages.current);
+        }
+    }, [filteredData, currentPage]);
 
     function formatDate(dateString) {
-        if (!dateString) return "日期未提供";
+        if (!dateString) return t.missingDate;
         return dateString.replaceAll("-", "/");
     }
 
-    function getCategoryBadgeClass(category) {
-        const categoryMap = {
-            "緊急": "category-badge--urgent",
-            "一般": "category-badge--general",
-            "徵才": "category-badge--recruit",
-            "標案": "category-badge--tender"
+    function normalizeCategoryType(category) {
+        const categoryText = String(category || "").trim();
+        const lower = categoryText.toLowerCase();
+
+        const exactMap = {
+            "緊急": "urgent",
+            "一般": "general",
+            "徵才": "recruit",
+            "標案": "tender",
+            "urgent": "urgent",
+            "general": "general",
+            "recruitment": "recruit",
+            "job openings": "recruit",
+            "tender": "tender",
+            "activities": "general",
+            "speech": "general",
         };
-        return categoryMap[category] || "category-badge--default";
+
+        if (exactMap[lower]) {
+            return exactMap[lower];
+        }
+
+        if (lower.includes("urgent")) return "urgent";
+        if (lower.includes("job") || lower.includes("recruit")) return "recruit";
+        if (lower.includes("tender") || lower.includes("bid") || lower.includes("procurement")) return "tender";
+
+        return "general";
+    }
+
+    function localizeCategory(category) {
+        const normalized = normalizeCategoryType(category);
+        const map = {
+            urgent: t.categories.urgent,
+            general: t.categories.general,
+            recruit: t.categories.recruitment,
+            tender: t.categories.tender,
+        };
+
+        return map[normalized] || category || t.genericCategory;
+    }
+
+    function getCategoryBadgeClass(category) {
+        const type = normalizeCategoryType(category);
+        const classMap = {
+            urgent: "category-badge--urgent",
+            general: "category-badge--general",
+            recruit: "category-badge--recruit",
+            tender: "category-badge--tender",
+        };
+        return classMap[type] || "category-badge--default";
     }
 
     function goToPage(inputValue) {
-        // if (totalPages.current === 0) {
-        //     setCurrentPage(1);
-        //     return;
-        // }
+        if (totalPages.current === 0) {
+            setCurrentPage(1);
+            return;
+        }
 
         const sanitized = String(inputValue).replace(/\D/g, "").slice(0, 3);
         let nextPage = Number.parseInt(sanitized, 10);
@@ -106,18 +175,18 @@ function Announcement()
     <>
     {/*announcements section*/}
     <section className="general-section">
-        <h2 className="section-title">公告清單</h2>
+        <h2 className="section-title">{t.announcements}</h2>
         { data && <>
         <div className="announcement-toolbar">
             <select className="announcement-select" onChange={(e) => setCategory(e.target.value)}>
-                <option value="">全部類別</option>
+                <option value="">{t.allCategories}</option>
                 {[...new Set(data.map(item => item.category))]
-                    .map((category) => <option value={category} key={category}>{category}</option>)}
+                    .map((itemCategory) => <option value={itemCategory} key={itemCategory}>{localizeCategory(itemCategory)}</option>)}
             </select>
             <div className="announcement-pagination">
                 <button type="button" className="announcement-page-btn"
                         disabled={totalPages.current === 0 || currentPage <= 1}
-                        onClick={() => goToPage(currentPage - 1)}>上一頁</button>
+                        onClick={() => goToPage(currentPage - 1)}>{t.prevPage}</button>
                 <div className="announcement-page-status">
                     <input type="text" className="announcement-page-input" inputMode='numeric'
                            pattern='[0-9]*' maxLength={3}
@@ -130,18 +199,18 @@ function Announcement()
                 </div>
                 <button type='button' className="announcement-page-btn"
                         disabled={totalPages.current === 0 || currentPage >= totalPages.current}
-                        onClick={() => goToPage(currentPage + 1)}>下一頁</button>
+                        onClick={() => goToPage(currentPage + 1)}>{t.nextPage}</button>
             </div>
         </div>
         <div className="announcement-list" id="announcementList">
             {
                 pagedData.length === 0 ?
-                <p className="announcement-empty">找不到符合條件的公告</p> :
+                <p className="announcement-empty">{t.noAnnouncement}</p> :
                 pagedData.map((item, iter) => 
                     <article className="announcement-item" key={iter}>
-                        <span className={"category-badge " + getCategoryBadgeClass(item.category)}>{item.category || "一般"}</span>
+                        <span className={"category-badge " + getCategoryBadgeClass(item.category)}>{localizeCategory(item.category)}</span>
                         <a href={item.link} className="announcement-link"
-                           target='_blank' rel="noopener noreferrer">{item.title || "未命名公告"}</a>
+                           target='_blank' rel="noopener noreferrer">{getLocalizedValue(item, lang, 'title', t.untitledAnnouncement)}</a>
                         <time dateTime={item.date || ""} className="announcement-time">{formatDate(item.date)}</time>
                     </article>
                 )

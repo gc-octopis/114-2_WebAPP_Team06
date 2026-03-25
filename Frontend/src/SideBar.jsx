@@ -1,29 +1,50 @@
 import { UseLinkContext } from "./LinkContext";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
-import { ICSParser } from "./icsParser";
+import { CalendarEventAPI } from "./calendarAPI";
+import { useText, useLanguage, getLocalizedCategoryLabel } from "./LanguageContext";
 
 const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+const monthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function SideBar({ toggled = false }) {
+    const { lang } = useLanguage();
+    const t = useText();
     const toggledClass = toggled ? ' toggled' : '';
     const navigate = useNavigate();
-    const location = useLocation();
     const { categories, activeCatIdx, setActiveCatIdx } = UseLinkContext();
 
     const [events, setEvents] = useState([]);
-    const [parser] = useState(new ICSParser());
     
     // 側邊欄固定顯示當前真實時間的月份
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
 
+    // Helper function to parse API date string to Date object
+    const parseDate = (dateStr) => {
+        if (!dateStr) return null;
+        const [year, month, day] = dateStr.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    };
+
     useEffect(() => {
-        parser.loadICS('calendar.ics').then(() => {
-            setEvents([...parser.events]);
+        // 從API載入該月份的events
+        CalendarEventAPI.getEventsForMonth(year, month, lang).then(apiEvents => {
+            // Convert API events to internal format
+            const convertedEvents = apiEvents.map(evt => ({
+                ...evt,
+                dateStart: parseDate(evt.dateStart),
+            }));
+            setEvents(convertedEvents);
         });
-    }, [parser]);
+    }, [year, month, lang]);
+
+    // Helper function to check if a date has events
+    const hasEventsOnDate = (dateObj) => {
+        const dateStr = dateObj.toISOString().split('T')[0];
+        return events.some(event => event.dateStart.toISOString().split('T')[0] === dateStr);
+    };
 
     const miniCalendarDays = useMemo(() => {
         const firstDay = new Date(year, month, 1).getDay();
@@ -40,7 +61,7 @@ function SideBar({ toggled = false }) {
         // 本月
         for (let day = 1; day <= daysInMonth; day++) {
             const dateObj = new Date(year, month, day);
-            const hasEvents = parser.getEventsForDate(dateObj).length > 0;
+            const hasEvents = hasEventsOnDate(dateObj);
             const isToday = now.toDateString() === dateObj.toDateString();
             
             days.push({ day, isCurrentMonth: true, dateObj, hasEvents, isToday });
@@ -53,7 +74,7 @@ function SideBar({ toggled = false }) {
         }
         
         return days;
-    }, [year, month, events, parser]);
+    }, [year, month, events]);
 
     const handleDayClick = (dateObj) => {
         const y = String(dateObj.getFullYear()).padStart(4, '0');
@@ -70,7 +91,7 @@ function SideBar({ toggled = false }) {
                 <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
-                <input type="text" placeholder="搜尋" className="search-input"/>
+                <input type="text" placeholder={t.searchPlaceholder} className="search-input"/>
             </div>
 
             {/* 2. 導覽區：分類按鈕由 favorites.js 動態填充*/}
@@ -82,7 +103,7 @@ function SideBar({ toggled = false }) {
                                     navigate(`/?cat=${cat.id}`);
                                     setActiveCatIdx(index);}}>
                             <span className="cat-btn-icon">{cat.icon}</span>
-                            <span className="cat-btn-label">{cat.label}</span>
+                            <span className="cat-btn-label">{getLocalizedCategoryLabel(cat, lang)}</span>
                         </button>
                     )
                 }
@@ -90,11 +111,11 @@ function SideBar({ toggled = false }) {
             </nav>
             
             <div className="sidebar-footer">
-                <div className="calendar-month">{year}年 {monthNames[month]}</div>
+                <div className="calendar-month">{lang === 'en' ? `${monthNamesEn[month]} ${year}` : `${year}年 ${monthNames[month]}`}</div>
                 <div className="calendar-grid">
                     {/* 星期標題 */}
-                    {['日', '一', '二', '三', '四', '五', '六'].map(d => (
-                        <div key={d} className="calendar-day-header">{d}</div>
+                    {(lang === 'en' ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : ['日', '一', '二', '三', '四', '五', '六']).map((d, idx) => (
+                        <div key={`${lang}-weekday-${idx}`} className="calendar-day-header">{d}</div>
                     ))}
                     
                     {/* 日期網格 */}
@@ -111,7 +132,7 @@ function SideBar({ toggled = false }) {
                         </div>
                     ))}
                 </div>
-                <Link to="/calendar" className="calendar-link">行事曆</Link>
+                <Link to="/calendar" className="calendar-link">{t.calendar}</Link>
             </div>
         </aside>
     );

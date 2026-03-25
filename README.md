@@ -63,6 +63,60 @@ Windows:
 powershell -File ./setup.ps1
 ```
 
+### 雙語資料更新（中英切換用）
+
+**新架構說明**: Calendar events 現已存放在後端資料庫，前端通過 REST API 動態獲取。其他資料（公告、快捷連結）仍使用靜態 JSON 檔案。
+
+#### 後端伺服器啟動
+開發時需要啟動 Django 後端伺服器：
+```bash
+cd Backend/
+source .venv/bin/activate
+python manage.py runserver 8000
+```
+
+#### 資料同步命令
+
+在 `Backend` 目錄下執行：
+
+```bash
+source .venv/bin/activate
+
+# 產生英文公告（輸出到 Frontend/public/announcements.en.json）
+python scripts/announcement_scraper.py --lang en
+
+# 產生英文快捷連結（輸出到 Frontend/public/links.en.json）
+python scripts/links_en_builder.py
+
+# 同步英文行事曆到資料庫（從 acaEN xls/xlsx 解析）
+python scripts/calendar_en_builder.py
+
+# 同步中文版行事曆到資料庫（從 OWA 下載）
+python scripts/calendar_zh_builder.py
+```
+
+中文公告同步：
+```bash
+python scripts/announcement_scraper.py --lang zh
+```
+
+#### API 端點
+前端在以下地址調用 Calendar API：
+- **URL**: `http://localhost:8000/api/calendar/`
+- **查詢參數**:
+  - `lang`: 語言代碼 ('zh' 或 'en') - **必填**
+  - `start_date`: 開始日期 (YYYY-MM-DD 格式) - 可選
+  - `end_date`: 結束日期 (YYYY-MM-DD 格式) - 可選
+
+**範例**:
+```bash
+# 獲取所有中文行事曆事件
+curl "http://localhost:8000/api/calendar/?lang=zh"
+
+# 獲取特定日期範圍的英文事件
+curl "http://localhost:8000/api/calendar/?lang=en&start_date=2025-03-28&end_date=2025-04-30"
+```
+
 ---
 
 ## Report 文件生成

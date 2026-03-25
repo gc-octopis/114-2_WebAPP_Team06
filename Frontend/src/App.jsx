@@ -2,15 +2,18 @@ import Layout from "./Layout";
 import Hero from "./Hero";
 import Favorites from "./Favorites";
 import Announcement from "./Announcement";
+import { useText } from "./LanguageContext";
 
 import { useEffect } from "react";
 
 function App()
 {
-    const title = "首頁";
+    const t = useText();
+    const title = t.home;
+
     useEffect(() => {
         document.title = "MyNTU++ | " + title;
-    }, []);
+    }, [title]);
 
     return (
         <Layout title={title}>       
