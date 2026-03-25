@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ReactDOM from "react-dom/client";
 import './style.css';
+import './normalize.css';
 
 import LinkProvider from './LinkContext';
 import App from "./App";

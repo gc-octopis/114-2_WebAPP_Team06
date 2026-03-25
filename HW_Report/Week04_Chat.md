@@ -644,6 +644,350 @@ function LinkGrid({ category }) {
 
 Would you like me to show you how to add **Staggered Animations** (where cards fly in one by one) using the Framer Motion approach?
 
+USER:
+Here are 3 files: calendar.js is written with vanilla in mind and SideBar.jsx and Calendar.jsx is the react port of the structure, tell me what is needed to add in those two file to also port the logic from the first file.
+
+Agent:
+To port your vanilla JavaScript calendar logic into React, you need to shift from an **imperative approach** (manually querying DOM elements and updating `.innerHTML`/`.classList`) to a **declarative approach** (using state variables to drive the UI). 
+
+Since both `Calendar.jsx` and `SideBar.jsx` need to fetch and parse the `.ics` file, the cleanest approach is to extract the `ICSParser` logic into a pure utility class, and then use React hooks (`useState`, `useEffect`) to manage the calendar grid calculations.
+
+Here is how you can update your files to make this work.
+
+### 1. Extract the Parser Utility
+Create a new file called `icsParser.js`. Copy your vanilla `ICSParser` class directly into it and export it. Remove the DOM-manipulating `CalendarManager` entirely.
+
+```javascript
+// icsParser.js
+export class ICSParser {
+    constructor() {
+        this.events = [];
+    }
+
+    async loadICS(filePath) {
+        try {
+            const response = await fetch(filePath);
+            const text = await response.text();
+            this.parseICS(text);
+            return this.events; // Return events for React state
+        } catch (error) {
+            console.error('無法載入 ICS 檔案:', error);
+            return [];
+        }
+    }
+
+    parseICS(content) {
+        this.events = [];
+        const eventBlocks = content.split('BEGIN:VEVENT');
+        
+        for (let i = 1; i < eventBlocks.length; i++) {
+            const blockContent = 'BEGIN:VEVENT' + eventBlocks[i];
+            const event = this.parseEvent(blockContent);
+            if (event) this.events.push(event);
+        }
+
+        this.events.sort((a, b) => new Date(a.dateStart) - new Date(b.dateStart));
+    }
+
+    parseEvent(blockContent) {
+        const event = {};
+        const unfolded = this.unfoldICSLines(blockContent);
+
+        const summaryMatch = unfolded.match(/SUMMARY:([^\r\n]+)/);
+        if (summaryMatch) event.summary = summaryMatch[1].trim();
+
+        const dtStartMatch = unfolded.match(/DTSTART[^:]*:(\d{8})/);
+        if (dtStartMatch) event.dateStart = this.parseICSDate(dtStartMatch[1]);
+
+        const dtEndMatch = unfolded.match(/DTEND[^:]*:(\d{8})/);
+        if (dtEndMatch) event.dateEnd = this.parseICSDate(dtEndMatch[1]);
+
+        const locationMatch = unfolded.match(/LOCATION:([^\r\n]*)/);
+        event.location = locationMatch ? locationMatch[1].trim() : '';
+
+        const descMatch = unfolded.match(/DESCRIPTION:([^\r\n]+)/);
+        event.description = descMatch ? descMatch[1].trim() : '';
+
+        return event.summary ? event : null;
+    }
+
+    unfoldICSLines(text) {
+        return text.replace(/\r?\n[ \t]/g, '');
+    }
+
+    parseICSDate(dateStr) {
+        const year = parseInt(dateStr.substring(0, 4));
+        const month = parseInt(dateStr.substring(4, 6));
+        const day = parseInt(dateStr.substring(6, 8));
+        return new Date(year, month - 1, day);
+    }
+
+    getEventsForDate(date) {
+        if (!date) return [];
+        const dateStr = date.toISOString().split('T')[0];
+        return this.events.filter(event => 
+            event.dateStart.toISOString().split('T')[0] === dateStr
+        );
+    }
+}
+```
+
+### 2. Porting Logic to `Calendar.jsx`
+Update your component to use state for the current viewing month, the selected date, and the loaded events. We will map over an array of calculated dates to render the grid cleanly.
+
+```jsx
+import Layout from "./Layout";
+import './calendar.css';
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { ICSParser } from "./icsParser"; // 引入剛才建立的工具
+
+const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+function Calendar() {
+    const title = "行事曆";
+    const [searchParams] = useSearchParams();
+    
+    // 狀態管理
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [events, setEvents] = useState([]);
+    const [parser] = useState(new ICSParser());
+
+    useEffect(() => {
+        document.title = "MyNTU++ | " + title;
+        
+        // 解析 URL 參數中的日期
+        const dateParam = searchParams.get('date');
+        if (dateParam && dateParam.length === 8) {
+            const year = parseInt(dateParam.substring(0, 4));
+            const month = parseInt(dateParam.substring(4, 6)) - 1;
+            const day = parseInt(dateParam.substring(6, 8));
+            const initDate = new Date(year, month, day);
+            setCurrentDate(initDate);
+            setSelectedDate(initDate);
+        }
+
+        // 載入 ICS 檔案
+        parser.loadICS('/asset/calendar.ics').then(() => {
+            // 強制觸發重新渲染以顯示載入後的事件
+            setEvents([...parser.events]); 
+        });
+    }, [searchParams, parser]);
+
+    // 切換月份
+    const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+
+    // 計算日曆網格資料
+    const calendarDays = useMemo(() => {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+        
+        const days = [];
+        
+        // 上個月的日期
+        for (let i = firstDay - 1; i >= 0; i--) {
+            days.push({ day: daysInPrevMonth - i, isCurrentMonth: false });
+        }
+        
+        // 這個月的日期
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateObj = new Date(year, month, day);
+            const dayEvents = parser.getEventsForDate(dateObj);
+            const isToday = new Date().toDateString() === dateObj.toDateString();
+            const isSelected = selectedDate?.toDateString() === dateObj.toDateString();
+            
+            days.push({ day, isCurrentMonth: true, dateObj, dayEvents, isToday, isSelected });
+        }
+        
+        // 下個月的日期
+        const remaining = 42 - days.length;
+        for (let day = 1; day <= remaining; day++) {
+            days.push({ day, isCurrentMonth: false });
+        }
+        
+        return days;
+    }, [currentDate, events, selectedDate, parser]);
+
+    const selectedEvents = useMemo(() => parser.getEventsForDate(selectedDate), [selectedDate, events, parser]);
+
+    return (
+        <Layout title={title}>
+            <div className="calendar-content">
+                <section className="calendar-controls">
+                    <button onClick={prevMonth} className="calendar-nav-btn">← 前月</button>
+                    <h1 className="calendar-title">{currentDate.getFullYear()}年 {monthNames[currentDate.getMonth()]}</h1>
+                    <button onClick={nextMonth} className="calendar-nav-btn">後月 →</button>
+                </section>
+
+                <section className="calendar-month-view">
+                    <div className="calendar-weekdays">
+                        {['日', '一', '二', '三', '四', '五', '六'].map(day => (
+                            <div key={day} className="weekday">{day}</div>
+                        ))}
+                    </div>
+                    <div className="calendar-days">
+                        {calendarDays.map((d, idx) => (
+                            <div 
+                                key={idx} 
+                                className={`calendar-date 
+                                    ${!d.isCurrentMonth ? 'inactive' : ''} 
+                                    ${d.isToday ? 'today' : ''} 
+                                    ${d.isSelected ? 'selected' : ''} 
+                                    ${d.dayEvents?.length > 0 ? 'has-events' : ''}`}
+                                onClick={() => d.isCurrentMonth && setSelectedDate(d.dateObj)}
+                            >
+                                <span className="date-number">{d.day}</span>
+                                {d.dayEvents?.length > 0 && (
+                                    <div className="event-indicator">{d.dayEvents.length}</div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="events-section">
+                    <h2 className="section-title">活動清單</h2>
+                    <div className="events-list">
+                        {!selectedDate ? (
+                            <p className="no-events">選擇日期查看活動</p>
+                        ) : selectedEvents.length === 0 ? (
+                            <p className="no-events">{selectedDate.toLocaleDateString('zh-TW')} 沒有活動</p>
+                        ) : (
+                            <>
+                                <h3 className="events-date-title">{selectedDate.toLocaleDateString('zh-TW')}</h3>
+                                {selectedEvents.map((ev, i) => (
+                                    <div key={i} className="event-item">
+                                        <div className="event-title">{ev.summary}</div>
+                                        {ev.location && <div className="event-detail"><strong>地點:</strong> {ev.location}</div>}
+                                        <div className="event-date">{ev.dateStart.toLocaleDateString('zh-TW')}</div>
+                                        {ev.description && <div className="event-detail"><strong>說明:</strong> {ev.description}</div>}
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                    </div>
+                </section>
+            </div>
+        </Layout>
+    );
+}
+
+export default Calendar;
+```
+
+### 3. Porting Logic to `SideBar.jsx`
+You'll apply a similar grid calculation method here, but locked strictly to the current real-world month.
+
+```jsx
+import { UseLinkContext } from "./LinkContext";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { ICSParser } from "./icsParser";
+
+const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+function SideBar({ toggled = false }) {
+    const toggledClass = toggled ? ' toggled' : '';
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { categories, activeCatIdx, setActiveCatIdx } = UseLinkContext();
+
+    const [events, setEvents] = useState([]);
+    const [parser] = useState(new ICSParser());
+    
+    // 側邊欄固定顯示當前真實時間的月份
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    useEffect(() => {
+        parser.loadICS('/asset/calendar.ics').then(() => {
+            setEvents([...parser.events]);
+        });
+    }, [parser]);
+
+    const miniCalendarDays = useMemo(() => {
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+        
+        const days = [];
+        
+        // 上個月
+        for (let i = firstDay - 1; i >= 0; i--) {
+            days.push({ day: daysInPrevMonth - i, isCurrentMonth: false });
+        }
+        
+        // 本月
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateObj = new Date(year, month, day);
+            const hasEvents = parser.getEventsForDate(dateObj).length > 0;
+            const isToday = now.toDateString() === dateObj.toDateString();
+            
+            days.push({ day, isCurrentMonth: true, dateObj, hasEvents, isToday });
+        }
+        
+        // 下個月
+        const remaining = 42 - days.length;
+        for (let day = 1; day <= remaining; day++) {
+            days.push({ day, isCurrentMonth: false });
+        }
+        
+        return days;
+    }, [year, month, events, parser]);
+
+    const handleDayClick = (dateObj) => {
+        const y = String(dateObj.getFullYear()).padStart(4, '0');
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        
+        navigate(`/calendar?date=${y}${m}${d}`);
+    };
+
+    return (
+        <aside className={'sidebar-wrapper' + toggledClass}>
+            {/* ... 搜尋與導覽區保持不變 ... */}
+            
+            <div className="sidebar-footer">
+                <div className="calendar-month">{year}年 {monthNames[month]}</div>
+                <div className="calendar-grid">
+                    {/* 星期標題 */}
+                    {['日', '一', '二', '三', '四', '五', '六'].map(d => (
+                        <div key={d} className="calendar-day-header">{d}</div>
+                    ))}
+                    
+                    {/* 日期網格 */}
+                    {miniCalendarDays.map((d, idx) => (
+                        <div 
+                            key={idx}
+                            className={
+                                !d.isCurrentMonth ? 'calendar-day-inactive' : 
+                                `calendar-day ${d.isToday ? 'calendar-day-active' : ''} ${d.hasEvents ? 'has-events' : ''}`
+                            }
+                            onClick={() => d.isCurrentMonth && handleDayClick(d.dateObj)}
+                        >
+                            {d.day}
+                        </div>
+                    ))}
+                </div>
+                <Link to="/calendar" className="calendar-link">行事曆</Link>
+            </div>
+        </aside>
+    );
+}
+
+export default SideBar;
+```
+
+---
+
+Right now, `SideBar.jsx` and `Calendar.jsx` both independently fetch the `.ics` file using their own instances of `ICSParser`. Would you like me to walk you through hoisting this state into your existing `LinkContext` (or creating a new `CalendarContext`) so the file is only downloaded and parsed once per session?
+
 # 王凱弘
 USER: 
 **請幫我新增一個行事曆的頁面，並且可以透過index.html連過去，接著請運用我在asset資料夾裡面放的ics檔案把資料填上去 ，讓我可以在行事曆的頁面點擊並查看活動，以及在index.html也可以點選日期查看活動**
