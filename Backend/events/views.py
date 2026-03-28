@@ -2,8 +2,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
-from .models import CalendarEvent
-from .serializers import CalendarEventSerializer
+import math
+from .models import CalendarEvent, Announcement
+from .serializers import CalendarEventSerializer, AnnouncementSerializer
+
+
+def _normalize_language(lang: str) -> str:
+    value = (lang or 'zh').strip().lower()
+    if value in ['zh', 'zh-tw', 'zh_tw']:
+        return 'zh'
+    if value == 'en':
+        return 'en'
+    return ''
 
 
 class CalendarEventListView(APIView):
@@ -62,6 +72,96 @@ class CalendarEventListView(APIView):
                 'events': serializer.data
             })
 
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class AnnouncementListView(APIView):
+    """
+    API endpoint to list announcements.
+
+    Query parameters:
+    - lang: 'zh' or 'en' (optional, default 'zh')
+    - category: category exact match (optional)
+    - page: page number, starts from 1 (optional, default 1)
+    - page_size: items per page (optional, default 10, max 100)
+    """
+
+    def get(self, request):
+        try:
+            lang = _normalize_language(request.query_params.get('lang', 'zh'))
+            if not lang:
+                return Response(
+                    {'error': 'Invalid language. Use "zh" or "en".'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            announcements_qs = Announcement.objects.filter(language=lang)
+            source_language = lang
+
+            # Keep behavior aligned with old frontend fallback:
+            # use Chinese announcements when English source is empty/missing.
+            if lang == 'en' and not announcements_qs.exists():
+                announcements_qs = Announcement.objects.filter(language='zh')
+                source_language = 'zh'
+
+            announcements_qs = announcements_qs.order_by('-date', '-id')
+
+            # Collect all categories before filtering so frontend can build selector.
+            all_categories = sorted({
+                item
+                for item in announcements_qs.values_list('category', flat=True)
+                if str(item).strip()
+            })
+
+            category = (request.query_params.get('category') or '').strip()
+            filtered_qs = announcements_qs
+            if category:
+                filtered_qs = filtered_qs.filter(category__iexact=category)
+
+            page_raw = request.query_params.get('page', '1')
+            page_size_raw = request.query_params.get('page_size', '10')
+            try:
+                page = int(page_raw)
+                page_size = int(page_size_raw)
+            except ValueError:
+                return Response(
+                    {'error': 'Invalid page or page_size. Use positive integers.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if page < 1 or page_size < 1:
+                return Response(
+                    {'error': 'Invalid page or page_size. Use positive integers.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            page_size = min(page_size, 100)
+            total_count = filtered_qs.count()
+            total_pages = math.ceil(total_count / page_size) if total_count > 0 else 0
+
+            if total_pages > 0 and page > total_pages:
+                page = total_pages
+
+            start_index = (page - 1) * page_size
+            end_index = start_index + page_size
+            paged_qs = filtered_qs[start_index:end_index]
+            paged_announcements = AnnouncementSerializer(paged_qs, many=True).data
+
+            return Response({
+                'count': total_count,
+                'language': lang,
+                'source_language': source_language,
+                'category': category,
+                'categories': all_categories,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': total_pages,
+                'announcements': paged_announcements,
+            })
         except Exception as e:
             return Response(
                 {'error': str(e)},

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CalendarEvent
+from .models import CalendarEvent, Announcement
 
 
 class CalendarEventSerializer(serializers.ModelSerializer):
@@ -15,3 +15,11 @@ class CalendarEventSerializer(serializers.ModelSerializer):
 
     def get_dateEnd(self, obj):
         return obj.date_end.isoformat() if obj.date_end else None
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    date = serializers.DateField(format='%Y-%m-%d')
+
+    class Meta:
+        model = Announcement
+        fields = ['category', 'unit', 'title', 'date', 'link']

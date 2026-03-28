@@ -12,7 +12,7 @@ URLS = {
     "en": "https://ann.cc.ntu.edu.tw/eng/index.asp?Page={}&catalog=",
 }
 
-HEADERS = {
+HEADERS = { 
     "User-Agent": "Mozilla/5.0",
 }
 
@@ -21,7 +21,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Scrape NTU announcement board.")
     parser.add_argument("--lang", choices=["zh", "en"], default="zh", help="source language")
     parser.add_argument("--max-pages", type=int, default=None, help="limit scraped pages")
-    parser.add_argument("--output", type=str, default=None, help="output json path")
+    parser.add_argument("--output", type=str, default=None, help="optional json output path")
     return parser.parse_args()
 
 
@@ -93,7 +93,13 @@ def scrape_announcements(lang: str, max_pages: int | None = None):
             if len(cells) < 4:
                 continue
 
-            category = cells[0].get_text(strip=True)
+            # English rows put category inside the first cell's centered div.
+            # Fall back to the full first-cell text for Chinese pages or layout changes.
+            category_node = cells[0].find("div", attrs={"align": "center"})
+            if category_node:
+                category = category_node.get_text(strip=True)
+            else:
+                category = cells[0].get_text(strip=True)
             unit = cells[1].get_text(strip=True)
 
             a_tag = cells[2].find("a", href=True)
@@ -101,7 +107,9 @@ def scrape_announcements(lang: str, max_pages: int | None = None):
                 continue
 
             title = " ".join(a_tag.get_text().split())
-            link = urljoin("https://ann.cc.ntu.edu.tw/", a_tag["href"])
+            # Resolve relative links from the current page URL.
+            # English listing uses href like "ShowContents.asp?..." under /eng/.
+            link = urljoin(response.url, a_tag["href"])
             date = cells[3].get_text(strip=True)
 
             if not title:
@@ -122,18 +130,6 @@ def scrape_announcements(lang: str, max_pages: int | None = None):
     return all_data
 
 
-def resolve_output_path(args_lang: str, output: str | None) -> Path:
-    if output:
-        return Path(output).resolve()
-
-    script_dir = Path(__file__).resolve().parent
-    project_root = script_dir.parent.parent
-    frontend_public = project_root / "Frontend" / "public"
-
-    file_name = "announcements.en.json" if args_lang == "en" else "announcements.json"
-    return frontend_public / file_name
-
-
 def main():
     args = parse_args()
     data = scrape_announcements(args.lang, args.max_pages)
@@ -144,11 +140,13 @@ def main():
         df = df.sort_values(by="date", ascending=False)
         df["date"] = df["date"].dt.strftime("%Y-%m-%d")
 
-    output_path = resolve_output_path(args.lang, args.output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_json(output_path, orient="records", force_ascii=False, indent=2)
-
-    print(f"\nDone. {len(df)} announcements saved to: {output_path}")
+    if args.output:
+        output_path = Path(args.output).resolve()
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        df.to_json(output_path, orient="records", force_ascii=False, indent=2)
+        print(f"\nDone. {len(df)} announcements saved to: {output_path}")
+    else:
+        print(f"\nDone. {len(df)} announcements scraped. No file written (use --output to export JSON).")
 
 
 if __name__ == "__main__":

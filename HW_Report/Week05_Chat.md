@@ -1029,3 +1029,97 @@ Python 腳本錯誤檢查通過（兩支 calendar builder 無錯誤）。
 ---
 
 # 孫怡臻
+
+USER:
+**將 announcements 的資料從前端移到後端，需要時再從後端撈取資料到前端**
+
+AGENT:
+我先盤點目前公告資料流，然後會完成三件事：
+1. 後端新增 announcements API。
+2. 前端改用 API 請求，不再讀取 Frontend/public 的公告檔。
+3. 把 scraper 輸出改到後端資料夾，統一資料來源。
+
+已完成：
+- 新增後端 API：`/api/announcements/?lang=zh|en`。
+- 前端 `Announcement.jsx` 改為透過 `announcementAPI.js` 動態抓資料。
+- 既有 `announcements.json` / `announcements.en.json` 已移至 `Backend/data/`。
+- `announcement_scraper.py` 預設輸出改為 `Backend/data/`。
+
+---
+
+USER:
+**英文公告的連結抓不到，壞掉了**
+
+AGENT:
+原因是英文頁面的連結是相對於 `/eng/`，原本用站台根目錄拼接會變成錯誤 URL。
+
+已修正：
+- `announcement_scraper.py` 連結改為 `urljoin(response.url, href)`。
+- 重新同步英文公告後，連結格式正確為：
+    `https://ann.cc.ntu.edu.tw/eng/ShowContents.asp?...`
+
+---
+
+USER:
+**英文的 category 抓錯了，結構是 `<td><div align=\"center\">General</div></td>`**
+
+AGENT:
+已依英文頁結構修正 category 擷取邏輯：
+- 優先取第一欄 `div[align="center"]`。
+- 若抓不到才 fallback 到 `cells[0].get_text(strip=True)`。
+
+修正後英文分類可正常得到 `General / Activities / Speech / Job Openings`。
+
+---
+
+USER:
+**前端為什麼 NVIDIA 那筆顯示 General，不是 Activities**
+
+AGENT:
+原因是前端有分類正規化邏輯，原本把 `activities` / `speech` 都映射成 `general`。
+
+已修正：
+- 前端分類對應改為保留 `activities`、`speech`。
+- 同步補上中英文文案與對應樣式。
+
+---
+
+USER:
+**中文的 badge 樣式都有不一樣，請比照中文的**
+
+AGENT:
+已完成英文分類 badge 視覺同步：
+- `Activities`、`Speech` 改為獨立 badge class。
+- 在 `announcement.css` 新增對應樣式，避免與 `General` 看起來相同。
+
+驗證結果：
+- 前端 `bun run build` 通過。
+- 後端公告 API 與排程指令可正常運作。
+
+---
+
+USER:
+**請把公告存進django的splite3**
+
+AGENT:
+已完成公告資料庫化（SQLite3），並把整條流程改成 DB 為主：
+
+- 新增 `Announcement` model 與 migration。
+- `/api/announcements/` 改為從資料庫查詢，保留 `lang/category/page/page_size` 與英文 fallback。
+- 新增 `sync_announcements` management command，直接爬取並寫入 DB。
+- `run_announcement_scheduler` 改為呼叫 `sync_announcements`（不再只寫 JSON）。
+- 實測同步結果：zh 612 筆、en 37 筆。
+- API 實測可回傳資料（zh/en 皆正常）。
+
+---
+
+USER:
+**那我舊的json檔是否可以幫我刪除了**
+
+AGENT:
+已刪除舊公告 JSON 檔案：
+
+- `Backend/data/announcements.json`
+- `Backend/data/announcements.en.json`
+
+另外已把 `announcement_scraper.py` 改為預設不輸出 JSON，只有明確加 `--output` 才會寫檔，避免再次產生舊檔。

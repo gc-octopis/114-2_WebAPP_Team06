@@ -65,7 +65,7 @@ powershell -File ./setup.ps1
 
 ### 雙語資料更新（中英切換用）
 
-**新架構說明**: Calendar events 現已存放在後端資料庫，前端通過 REST API 動態獲取。其他資料（公告、快捷連結）仍使用靜態 JSON 檔案。
+**新架構說明**: Calendar events 與 Announcements 現已由後端 API 提供，前端按需動態獲取。快捷連結仍使用靜態 JSON 檔案。
 
 #### 後端伺服器啟動
 開發時需要啟動 Django 後端伺服器：
@@ -82,8 +82,11 @@ python manage.py runserver 8000
 ```bash
 source .venv/bin/activate
 
-# 產生英文公告（輸出到 Frontend/public/announcements.en.json）
-python scripts/announcement_scraper.py --lang en
+# 同步英文公告到 SQLite
+python manage.py sync_announcements --lang en
+
+# 同步中文公告到 SQLite
+python manage.py sync_announcements --lang zh
 
 # 產生英文快捷連結（輸出到 Frontend/public/links.en.json）
 python scripts/links_en_builder.py
@@ -95,18 +98,42 @@ python scripts/calendar_en_builder.py
 python scripts/calendar_zh_builder.py
 ```
 
-中文公告同步：
+#### 公告定時同步（後端排程）
+
+可使用 Django management command 在後端定時執行公告爬蟲：
+
 ```bash
-python scripts/announcement_scraper.py --lang zh
+cd Backend/
+source .venv/bin/activate
+
+# 每 60 分鐘同步一次（zh + en）
+python manage.py run_announcement_scheduler --interval-minutes 60
+
+# 只執行一次（測試用）
+python manage.py run_announcement_scheduler --once
+```
+
+Windows 可搭配工作排程器（Task Scheduler）定時啟動一次性同步：
+
+```ps1
+powershell -NoProfile -Command "Set-Location 'D:\NTU\Web\114-2_WebAPP_Team06\Backend'; .\.venv\Scripts\python.exe manage.py run_announcement_scheduler --once"
 ```
 
 #### API 端點
-前端在以下地址調用 Calendar API：
-- **URL**: `http://localhost:8000/api/calendar/`
-- **查詢參數**:
+前端在以下地址調用 API：
+
+- **Calendar URL**: `http://localhost:8000/api/calendar/`
+- **Calendar 查詢參數**:
   - `lang`: 語言代碼 ('zh' 或 'en') - **必填**
   - `start_date`: 開始日期 (YYYY-MM-DD 格式) - 可選
   - `end_date`: 結束日期 (YYYY-MM-DD 格式) - 可選
+
+- **Announcements URL**: `http://localhost:8000/api/announcements/`
+- **Announcements 查詢參數**:
+  - `lang`: 語言代碼 ('zh' 或 'en') - 可選，預設 `zh`
+  - `category`: 公告分類精準比對（可選）
+  - `page`: 頁碼（可選，預設 1）
+  - `page_size`: 每頁筆數（可選，預設 10，最大 100）
 
 **範例**:
 ```bash
@@ -115,6 +142,12 @@ curl "http://localhost:8000/api/calendar/?lang=zh"
 
 # 獲取特定日期範圍的英文事件
 curl "http://localhost:8000/api/calendar/?lang=en&start_date=2025-03-28&end_date=2025-04-30"
+
+# 獲取英文公告
+curl "http://localhost:8000/api/announcements/?lang=en"
+
+# 獲取中文「活動」公告第 2 頁，每頁 10 筆
+curl "http://localhost:8000/api/announcements/?lang=zh&category=活動&page=2&page_size=10"
 ```
 
 ---

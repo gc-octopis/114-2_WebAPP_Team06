@@ -15,6 +15,7 @@ def health_check(request):
         'message': 'MyNTU++ Backend API',
         'api_endpoints': {
             'calendar': '/api/calendar/?lang=zh|en',
+            'announcements': '/api/announcements/?lang=zh|en',
             'documentation': 'See CALENDAR_MIGRATION.md for API details'
         }
     })

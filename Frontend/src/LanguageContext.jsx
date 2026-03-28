@@ -39,6 +39,8 @@ const messages = {
             general: "一般",
             recruitment: "徵才",
             tender: "標案",
+            activities: "活動",
+            speech: "演講",
         },
     },
     en: {
@@ -75,6 +77,8 @@ const messages = {
             general: "General",
             recruitment: "Recruitment",
             tender: "Tender",
+            activities: "Activities",
+            speech: "Speech",
         },
     },
 };

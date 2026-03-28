@@ -49,3 +49,33 @@ class CalendarEvent(models.Model):
             'location': self.location,
             'description': self.description,
         }
+
+
+class Announcement(models.Model):
+    """Announcement item scraped from NTU announcement pages."""
+    LANGUAGE_CHOICES = [
+        ('zh', '中文'),
+        ('en', 'English'),
+    ]
+
+    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default='zh', db_index=True)
+    category = models.CharField(max_length=120, blank=True, default='')
+    unit = models.CharField(max_length=255, blank=True, default='')
+    title = models.CharField(max_length=500)
+    date = models.DateField(db_index=True)
+    link = models.URLField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['language', 'date']),
+            models.Index(fields=['language', 'category']),
+        ]
+        ordering = ['-date', '-id']
+        constraints = [
+            models.UniqueConstraint(fields=['language', 'link'], name='uniq_announcement_lang_link'),
+        ]
+
+    def __str__(self):
+        return f"[{self.language}] {self.title} ({self.date})"

@@ -114,6 +114,20 @@
     font-weight: 600;
 }
 
+.category-badge--activities {
+    background-color: #eaf6ff;
+    color: #0b5cab;
+    border-color: #74b5ef;
+    font-weight: 600;
+}
+
+.category-badge--speech {
+    background-color: #fff5e8;
+    color: #9f4b00;
+    border-color: #efb87b;
+    font-weight: 600;
+}
+
 .category-badge--default {
     background-color: var(--bg-hover);
     color: var(--text-muted);
