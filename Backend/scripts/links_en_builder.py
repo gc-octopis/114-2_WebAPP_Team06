@@ -4,6 +4,9 @@ from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 SOURCE_URL = "https://my.ntu.edu.tw/Default.aspx?lang=eng"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
@@ -26,7 +29,7 @@ def normalize_url(url: str) -> str:
 
 
 def collect_english_labels() -> dict[str, str]:
-    response = requests.get(SOURCE_URL, headers=HEADERS, timeout=15)
+    response = requests.get(SOURCE_URL, headers=HEADERS, timeout=15, verify=False)
     response.raise_for_status()
     response.encoding = "utf-8"
 

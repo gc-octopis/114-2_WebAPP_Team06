@@ -162,7 +162,8 @@ p {
     transition: all 0.2s ease;
 }
 
-.dropdown-wrapper:hover .dropdown-menu {
+.dropdown-wrapper:hover .dropdown-menu,
+.dropdown-wrapper.force-open .dropdown-menu {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
@@ -661,4 +662,56 @@ p {
     font-weight: bold;
     border-radius: 0.5rem;
     font-size: 0.875rem;
+}
+
+/* Drag and Drop Pinned Items Styles */
+.pinned-link-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    min-height: 2.5rem;
+}
+
+.empty-pin-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 2.5rem;
+    padding: 0.5rem;
+    margin: 0.25rem 0.5rem 0.5rem 0.5rem;
+    border: 2px dashed var(--primary-color);
+    border-radius: 0.5rem;
+    color: var(--primary-color);
+    font-size: 0.85rem;
+    background-color: var(--primary-light);
+    transition: all 0.2s;
+}
+
+/* 插入陰影：讓 @dnd-kit's SortableContext 接管一切，這裡只留空選單樣式 */
+
+.remove-pin-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-color-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    padding: 0 4px;
+}
+
+.pinned-link-item:hover .remove-pin-btn {
+    opacity: 1;
+}
+
+.remove-pin-btn:hover {
+    color: var(--ntu-red);
+}
+
+/* Drag preview styling */
+.card-anchor-item {
+    cursor: grab;
+}
+.card-anchor-item:active {
+    cursor: grabbing;
 }

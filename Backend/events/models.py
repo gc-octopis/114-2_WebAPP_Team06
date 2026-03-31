@@ -79,3 +79,18 @@ class Announcement(models.Model):
 
     def __str__(self):
         return f"[{self.language}] {self.title} ({self.date})"
+
+
+class UserPreference(models.Model):
+    """Store user preferences based on a generated device UUID or user ID."""
+    user_id = models.CharField(max_length=255, unique=True, db_index=True)
+    pinned_links = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'User Preference'
+        verbose_name_plural = 'User Preferences'
+
+    def __str__(self):
+        return f"Preferences for {self.user_id}"

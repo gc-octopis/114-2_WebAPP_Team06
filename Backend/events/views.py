@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
 import math
-from .models import CalendarEvent, Announcement
+from .models import CalendarEvent, Announcement, UserPreference
 from .serializers import CalendarEventSerializer, AnnouncementSerializer
 
 
@@ -167,3 +167,31 @@ class AnnouncementListView(APIView):
                 {'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class UserPreferenceView(APIView):
+    """
+    API endpoint to get or update user preferences.
+    """
+
+    def get(self, request):
+        user_id = request.headers.get('X-User-Id')
+        if not user_id:
+            return Response({'error': 'X-User-Id header is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        pref, _ = UserPreference.objects.get_or_create(user_id=user_id)
+        return Response({'pinned_links': pref.pinned_links})
+
+    def post(self, request):
+        user_id = request.headers.get('X-User-Id')
+        if not user_id:
+            return Response({'error': 'X-User-Id header is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        pinned_links = request.data.get('pinned_links')
+        if not isinstance(pinned_links, list):
+            return Response({'error': 'pinned_links must be a list'}, status=status.HTTP_400_BAD_REQUEST)
+
+        pref, _ = UserPreference.objects.get_or_create(user_id=user_id)
+        pref.pinned_links = pinned_links
+        pref.save()
+        return Response({'pinned_links': pref.pinned_links})

@@ -1,16 +1,97 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useLanguage, useText } from "./LanguageContext";
+import { useLanguage, useText, getLocalizedValue } from "./LanguageContext";
+import { UseLinkContext } from "./LinkContext";
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+    useSortable,
+} from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
+
+// 單一個可排序的釘選項目
+function SortablePinItem({ item, lang, onRemove, isHighlighted, isGrayedOut }) {
+    const linkLabel = getLocalizedValue(item, lang, "label", "");
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+        id: item.url,
+        data: { item },
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0 : isGrayedOut ? 0.3 : 1,
+        height: isDragging ? 0 : undefined,
+        overflow: isDragging ? "hidden" : undefined,
+        outline: isHighlighted ? "2px solid var(--primary-color)" : undefined,
+        borderRadius: isHighlighted ? "0.4rem" : undefined,
+        background: isHighlighted ? "var(--primary-light)" : undefined,
+    };
+
+    return (
+        <a
+            ref={setNodeRef}
+            style={style}
+            href={isDragging ? undefined : item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pinned-link-item"
+            onClick={isDragging ? (e) => e.preventDefault() : undefined}
+            {...attributes}
+            {...listeners}
+        >
+            <span style={{ display: "flex", alignItems: "center", gap: "8px", pointerEvents: "none" }}>
+                <img src={item.icon} alt={linkLabel} style={{width: "16px", height: "16px"}} />
+                {linkLabel}
+            </span>
+            <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemove(item.url); }}
+                className="remove-pin-btn"
+                title={lang === "en" ? "Remove pin" : "移除釘選"}
+                // 按鈕不傳遞拖曳事件
+                onPointerDown={(e) => e.stopPropagation()}
+            >
+                ✕
+            </button>
+        </a>
+    );
+}
+
+// 空選單時的 droppable 容器
+function EmptyDropZone({ lang }) {
+    const { setNodeRef, isOver } = useDroppable({ id: "pinned-dropzone" });
+    return (
+        <div
+            ref={setNodeRef}
+            className="empty-pin-placeholder"
+            style={isOver ? { borderColor: "var(--primary-color)", background: "var(--primary-light)" } : {}}
+        >
+            {lang === "en" ? "Drop here to pin" : "放開以釘選捷徑"}
+        </div>
+    );
+}
 
 function TopBar({setSideBarToggled, title})
 {
     const { lang, toggleLanguage } = useLanguage();
     const t = useText();
     const [isDarkTheme, setIsDarkTheme] = useState(false);
+    const { pinnedLinks, updatePinnedLinks, activeItem, dragOverPinnedUrl, isDuplicateDrag, duplicateUrl } = UseLinkContext();
+
+    const isFromFavorites = activeItem !== null && !pinnedLinks.some(l => l.url === activeItem.url);
+    const isDragging = activeItem !== null;
+
+    const handleRemovePin = (urlToRemove) => {
+        const newPins = pinnedLinks.filter(link => link.url !== urlToRemove);
+        updatePinnedLinks(newPins);
+    };
 
     useEffect(() => {
         document.body.className = isDarkTheme ? "dark" : "light";
     }, [isDarkTheme]);
+
+    const pinnedIds = pinnedLinks.map(l => l.url);
 
     return (
     <>
@@ -41,7 +122,7 @@ function TopBar({setSideBarToggled, title})
         {/*3. 右側按鈕區*/}
         <div className="topbar-actions">
             {/*網格按鈕 (快捷連結)*/}
-            <div className="dropdown-wrapper">
+            <div className={`dropdown-wrapper ${isDragging ? "force-open" : ""}`}>
                 <button className="icon-btn" aria-label={t.quickLinks}>
                     <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"></path>
@@ -49,8 +130,51 @@ function TopBar({setSideBarToggled, title})
                 </button>
                 <div className="dropdown-menu">
                     <div className="dropdown-title">{t.quickServices}</div>
-                    <a href="#">📖 {t.quickCourseSelect}</a>
-                    <a href="#">✉️ {t.mailInbox}</a>
+                    {pinnedLinks.length === 0 ? (
+                        <EmptyDropZone lang={lang} />
+                    ) : (
+                        (() => {
+                            // 從 Favorites 拖入時，在 dragOverPinnedUrl 位置插入一個占位符
+                            // 讓 SortableContext 驅動項目自動讓位
+                            let displayList = [...pinnedLinks];
+                            if (isFromFavorites && dragOverPinnedUrl) {
+                                const overIdx = displayList.findIndex(l => l.url === dragOverPinnedUrl);
+                                const placeholderItem = { url: "__placeholder__", icon: "", label: "", label_en: "" };
+                                if (overIdx >= 0) {
+                                    displayList.splice(overIdx, 0, placeholderItem);
+                                } else {
+                                    displayList.push(placeholderItem); // dropzone = 插到最後
+                                }
+                            }
+                            const displayIds = displayList.map(l => l.url);
+                            return (
+                                <SortableContext items={displayIds} strategy={verticalListSortingStrategy}>
+                                    {displayList.map((item) => {
+                                        if (item.url === "__placeholder__") {
+                                            return (
+                                                <div key="__placeholder__" className="empty-pin-placeholder" style={{
+                                                    minHeight: "36px",
+                                                    padding: 0,
+                                                    margin: "2px 4px",
+                                                    pointerEvents: "none",
+                                                }}></div>
+                                            );
+                                        }
+                                        return (
+                                            <SortablePinItem
+                                                key={item.url}
+                                                item={item}
+                                                lang={lang}
+                                                onRemove={handleRemovePin}
+                                                isHighlighted={isDuplicateDrag && item.url === duplicateUrl}
+                                                isGrayedOut={isDuplicateDrag && item.url !== duplicateUrl}
+                                            />
+                                        );
+                                    })}
+                                </SortableContext>
+                            );
+                        })()
+                    )}
                 </div>
             </div>
 

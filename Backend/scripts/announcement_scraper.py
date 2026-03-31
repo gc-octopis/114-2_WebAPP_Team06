@@ -6,6 +6,9 @@ from urllib.parse import parse_qs, urljoin, urlparse
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 URLS = {
     "zh": "https://ann.cc.ntu.edu.tw/index.asp?Page={}&catalog=",
@@ -26,7 +29,7 @@ def parse_args():
 
 
 def get_last_page(base_url: str, lang: str) -> int:
-    response = requests.get(base_url.format(1), headers=HEADERS, timeout=10)
+    response = requests.get(base_url.format(1), headers=HEADERS, timeout=10, verify=False)
     response.encoding = "utf-8"
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -78,7 +81,7 @@ def scrape_announcements(lang: str, max_pages: int | None = None):
     for page in range(1, last_page + 1):
         print(f"Scraping page {page}")
 
-        response = requests.get(base_url.format(page), headers=HEADERS, timeout=10)
+        response = requests.get(base_url.format(page), headers=HEADERS, timeout=10, verify=False)
         response.encoding = "utf-8"
         soup = BeautifulSoup(response.text, "html.parser")
 
