@@ -88,6 +88,9 @@ python manage.py sync_announcements --lang en
 # 同步中文公告到 SQLite
 python manage.py sync_announcements --lang zh
 
+# 建立 links （含向量）到 SQLite
+python manage.py import_links
+
 # 產生英文快捷連結（輸出到 Frontend/public/links.en.json）
 python scripts/links_en_builder.py
 

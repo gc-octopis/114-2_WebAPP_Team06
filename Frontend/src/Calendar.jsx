@@ -38,7 +38,6 @@ function Calendar() {
             const month = parseInt(dateParam.substring(4, 6)) - 1;
             const day = parseInt(dateParam.substring(6, 8));
             const initDate = new Date(year, month, day);
-            setCurrentDate(initDate);
             setSelectedDate(initDate);
         }
 

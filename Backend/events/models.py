@@ -94,3 +94,25 @@ class UserPreference(models.Model):
 
     def __str__(self):
         return f"Preferences for {self.user_id}"
+
+class LinkCategory(models.Model):
+    slug = models.CharField(max_length=50, unique=True) # e.g., 'teaching', 'library'
+    icon = models.CharField(max_length=10)
+    label = models.CharField(max_length=100)
+    label_en = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.label} ({self.slug})"
+
+class LinkItem(models.Model):
+    category = models.ForeignKey(LinkCategory, related_name='links', on_delete=models.CASCADE)
+    label = models.CharField(max_length=200)
+    label_en = models.CharField(max_length=200, blank=True, null=True)
+    url = models.URLField(max_length=500)
+    icon = models.URLField(max_length=500)
+    
+    # Store the vector embedding as a JSON list of floats
+    embedding = models.JSONField(blank=True, null=True)
+
+    def __str__(self):
+        return self.label

@@ -17,7 +17,7 @@ function hasEnglishMapping(item) {
     return true;
 }
 
-// 每個可拖曳的連結卡片
+// 每個可拖曳的連結卡片import { useLanguage } from './LanguageContext';
 function DraggableCard({ item, lang }) {
     const linkLabel = getLocalizedValue(item, lang, "label", "");
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({

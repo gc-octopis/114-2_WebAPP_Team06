@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
 import math
-from .models import CalendarEvent, Announcement, UserPreference
-from .serializers import CalendarEventSerializer, AnnouncementSerializer
-
+from .models import CalendarEvent, Announcement, UserPreference, LinkCategory, LinkItem
+from .serializers import CalendarEventSerializer, AnnouncementSerializer, LinkCategorySerializer, LinkItemSerializer
+from .search_service import SemanticSearchService
 
 def _normalize_language(lang: str) -> str:
     value = (lang or 'zh').strip().lower()
@@ -195,3 +195,48 @@ class UserPreferenceView(APIView):
         pref.pinned_links = pinned_links
         pref.save()
         return Response({'pinned_links': pref.pinned_links})
+
+class LinkListView(APIView):
+    """
+    Returns the full list of categories and links, identical to links.json.
+    """
+    def get(self, request):
+        categories = LinkCategory.objects.all()
+        serializer = LinkCategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+class LinkSearchView(APIView):
+    """
+    Takes a ?q= parameter, vectorizes it, and returns the most relevant links.
+    """
+    def get(self, request):
+        query = request.query_params.get('q', '').strip()
+        
+        # If the search query is empty, return an empty list
+        if not query:
+            return Response([])
+
+        # 1. Vectorize the user's search query
+        query_embedding = SemanticSearchService.encode_query(query)
+        
+        # 2. Fetch all links that have an embedding (in-memory fetch is fast for ~50 links)
+        all_links = LinkItem.objects.exclude(embedding__isnull=True)
+        
+        # 3. Calculate cosine similarity for each link
+        results = []
+        for link in all_links:
+            sim_score = SemanticSearchService.cosine_similarity(query_embedding, link.embedding)
+            results.append({
+                'link': link,
+                'score': sim_score
+            })
+        
+        # 4. Sort results by highest similarity score
+        results.sort(key=lambda x: x['score'], reverse=True)
+        
+        # 5. Filter out low-confidence matches (threshold 0.3) and take the top 10
+        top_results = [r['link'] for r in results if r['score'] > 0.5]
+        
+        # 6. Serialize and return the top matching links
+        serializer = LinkItemSerializer(top_results, many=True)
+        return Response(serializer.data)

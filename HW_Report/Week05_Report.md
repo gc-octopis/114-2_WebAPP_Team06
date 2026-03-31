@@ -18,6 +18,7 @@
 * Django REST Framework（APIView、Serializer、Response）
 * Python 爬蟲（requests / BeautifulSoup）抓取公告與行事曆資料
 * Python 解析 ICS 檔案
+* Python sentence transformers 向量化文字
 
 ## 組員分工
 
@@ -28,6 +29,13 @@
     * 後端新增使用者偏好設定 API，以裝置唯一識別碼追蹤匿名使用者，無需帳號即可保留個人釘選資料
 
 * 陳冠辰： 25%
+    * 設定 monorepo 配置
+    * 新增 `generate.sh` 方便生成 Report
+    * 合併中英文 `links.json` 並納入後端資料庫
+    * 使用 sentence transformers 將 links 的資料向量化
+    * 新增 `/api/links` 取代 `links.json` 和 `links.en.json`
+    * 新增 `/api/search` 回傳透過 sentence transformers 搜尋到的結果
+    * 新增前端搜尋結果顯示列表，並使之相容於拖曳釘選選單
 
 * 王凱弘： 中英文版切換 25%
     * 製作英文版網站，並且能流暢在中英文之間切換

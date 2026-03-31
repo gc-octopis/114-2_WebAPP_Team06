@@ -603,6 +603,524 @@ Since you are in a monorepo, you can now run your frontend and backend in two se
 
 **Next Step:** Would you like me to show you how to write the `fetch` call in **React** to get data from this new endpoint?
 
+USER:
+https://github.com/gc-octopis/114-2_WebAPP_Team06
+.
+├── Backend
+│   ├── core
+│   │   ├── asgi.py
+│   │   ├── __init__.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── events
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── __init__.py
+│   │   ├── management
+│   │   │   ├── commands
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── run_announcement_scheduler.py
+│   │   │   │   └── sync_announcements.py
+│   │   │   └── __init__.py
+│   │   ├── migrations
+│   │   │   ├── 0001_initial.py
+│   │   │   ├── 0002_announcement.py
+│   │   │   ├── 0003_alter_announcement_options_and_more.py
+│   │   │   ├── 0004_userpreference.py
+│   │   │   └── __init__.py
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── manage.py
+│   ├── requirements.txt
+│   ├── scripts
+│   │   ├── announcement_scraper.py
+│   │   ├── calendar_en_builder.py
+│   │   ├── calendar_zh_builder.py
+│   │   └── links_en_builder.py
+│   ├── setup.ps1
+│   └── setup.sh
+├── CALENDAR_MIGRATION.md
+├── Frontend
+│   ├── bun.lock
+│   ├── index.html
+│   ├── package.json
+│   ├── public
+│   │   ├── links.en.json
+│   │   └── links.json
+│   ├── src
+│   │   ├── about.css
+│   │   ├── About.jsx
+│   │   ├── announcementAPI.js
+│   │   ├── announcement.css
+│   │   ├── Announcement.jsx
+│   │   ├── App.jsx
+│   │   ├── calendarAPI.js
+│   │   ├── calendar.css
+│   │   ├── Calendar.jsx
+│   │   ├── Favorites.jsx
+│   │   ├── Hero.jsx
+│   │   ├── LanguageContext.jsx
+│   │   ├── Layout.jsx
+│   │   ├── LinkContext.jsx
+│   │   ├── main.jsx
+│   │   ├── normalize.css
+│   │   ├── SideBar.jsx
+│   │   ├── style.css
+│   │   └── TopBar.jsx
+│   └── vite.config.js
+├── .gitignore
+├── HW_Report
+│   ├── generate.sh
+│   ├── Week03_Chat.md
+│   ├── Week03_Report.md
+│   ├── Week04_Chat.md
+│   ├── Week04_Report.md
+│   ├── Week05_Chat.md
+│   └── Week05_Report.md
+└── README.md
+
+I am currently working on this repo (please read into the URL) with the structure above. And my current goal is to add search functionality to the website. So there must be an API in backend for search and the frontend search will GET into it. The full list to search from is currently in Frontend/public, it also needs to be move into the backend database so there must also be an API to fetch the original version. The search is done by vectorizing the labels and cos-sim with the query. The links.json structure is like this:
+[
+  {
+    "id": "teaching",
+    "icon": "📚",
+    "label": "教學",
+    "links": [
+      {
+        "label": "通識課程地圖",
+        "url": "https://cge.ntu.edu.tw/cl_n_195217.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/428.png"
+      },...
+and the search is done natively in the server with transformers pipeline.
+
+Please help me plan the step to reach the goals
+
+Agent:
+Based on your repository structure and the requirement to move from static JSON to a dynamic, vector-search-enabled backend, here is a structured plan to achieve your goal.
+
+---
+
+## Phase 1: Backend Data Modeling & Migration
+First, you need to represent the structure of `links.json` in your Django database.
+
+### 1. Define Models
+In `Backend/events/models.py`, create models for categories and links.
+* **Category**: Stores `id` (slug), `icon`, and `label`.
+* **Link**: Stores `label`, `url`, `icon`, and a foreign key to `Category`.
+* **Note**: To optimize search, consider adding a field to store the pre-computed **vector embedding** for each Link label to avoid re-calculating them on every request.
+
+### 2. Create a Data Ingestion Script
+Create a new management command in `Backend/events/management/commands/import_links.py`.
+* This script should read `Frontend/public/links.json`.
+* Iterate through the JSON and populate the `Category` and `Link` tables.
+* **Vectorization**: During import, use your `transformers` pipeline to generate embeddings for each link label and save them to the database.
+
+---
+
+## Phase 2: Implementing the Search Engine
+Since you want to use `transformers` natively on the server, you'll need to set up a service layer.
+
+### 1. Dependencies
+Add the following to your `requirements.txt`:
+* `sentence-transformers` (The easiest way to use `transformers` for cos-sim).
+* `torch` or `tensorflow`.
+* `numpy`.
+
+### 2. Search Service
+Create a utility file (e.g., `Backend/events/search_service.py`):
+* Initialize the model (e.g., `paraphrase-multilingual-MiniLM-L12-v2` for good Chinese/English support).
+* **Function 1**: `get_embedding(text)` — Returns the vector.
+* **Function 2**: `search_links(query_text)` — Vectorizes the query and performs a cosine similarity calculation against the stored embeddings in your database.
+
+---
+
+## Phase 3: Backend API Development
+Update `Backend/events/views.py` and `urls.py`.
+
+### 1. The "Original List" API
+* **Endpoint**: `GET /api/links/`
+* **Logic**: Query all categories and their related links, then serialize them back into the nested JSON format your frontend currently expects. This ensures existing features don't break.
+
+### 2. The Search API
+* **Endpoint**: `GET /api/search/?q=...`
+* **Logic**: 
+    1. Take the query parameter `q`.
+    2. Pass it to your Search Service.
+    3. Return a ranked list of links based on the similarity score.
+
+---
+
+## Phase 4: Frontend Integration
+Now that the backend is ready, you need to swap the data source in your React app.
+
+### 1. Update `LinkContext.jsx` or Data Fetching
+In your frontend, locate where `links.json` is imported. 
+* Replace the static import with a `useEffect` hook that performs a `fetch()` to `http://localhost:8000/api/links/`.
+* This keeps the UI populated on load.
+
+### 2. Add the Search UI
+* Create a Search Bar component (or update `TopBar.jsx`).
+* As the user types (or on Enter), trigger a GET request to `/api/search/?q=...`.
+* Display the results in a dropdown or a dedicated search results section in `Hero.jsx` or `Announcement.jsx`.
+
+---
+
+## Recommended Workflow
+
+| Step | Action | Files Involved |
+| :--- | :--- | :--- |
+| **1** | Define `Category` and `Link` models. | `Backend/events/models.py` |
+| **2** | Write the import script to move JSON to DB. | `Backend/events/management/commands/` |
+| **3** | Integrate `sentence-transformers` for embeddings. | `Backend/requirements.txt`, `search_service.py` |
+| **4** | Create the API views (List & Search). | `Backend/events/views.py`, `urls.py` |
+| **5** | Update React to fetch from API instead of JSON. | `Frontend/src/...` |
+
+### A Note on Performance
+Because you are running `transformers` natively, the first time you initialize the model in the Django process, it might take a few seconds to load into memory. In a production environment, you might want to load the model in `apps.py` inside the `ready()` method so it stays resident in memory.
+
+How large is the `links.json` file? If it's very large, we should discuss using a vector database (like FAISS or pgvector), but for a standard list of links, a simple NumPy cosine similarity check will be lightning fast.
+
+Would you like me to provide a code snippet for the Django model or the Search service logic?
+
+USER:
+The files isn't large, here they are. First step, give me all the code / commands to add them into database and merge into one. 
+
+Agent:
+Here is the complete step-by-step code to create the models, merge your Chinese and English JSON files, compute the vector embeddings, and save everything into your Django database.
+
+Since your dataset is small (around 50 links), we can safely store the vector embeddings in a standard Django `JSONField`. This avoids the need for a complex vector database right now, and doing a cosine similarity calculation in memory on 50 vectors will be virtually instantaneous.
+
+### 1. Install Dependencies
+First, install `sentence-transformers` for generating the vector embeddings natively on your backend.
+
+```bash
+cd Backend
+pip install sentence-transformers
+pip freeze > requirements.txt
+```
+
+### 2. Define the Models
+Update your `Backend/events/models.py` to include the Category and Link models. We will add `label_en` to support the English translations from your `links.en.json`.
+
+```python
+# Backend/events/models.py
+from django.db import models
+
+class LinkCategory(models.Model):
+    slug = models.CharField(max_length=50, unique=True) # e.g., 'teaching', 'library'
+    icon = models.CharField(max_length=10)
+    label = models.CharField(max_length=100)
+    label_en = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.label} ({self.slug})"
+
+class LinkItem(models.Model):
+    category = models.ForeignKey(LinkCategory, related_name='links', on_delete=models.CASCADE)
+    label = models.CharField(max_length=200)
+    label_en = models.CharField(max_length=200, blank=True, null=True)
+    url = models.URLField(max_length=500)
+    icon = models.URLField(max_length=500)
+    
+    # Store the vector embedding as a JSON list of floats
+    embedding = models.JSONField(blank=True, null=True)
+
+    def __str__(self):
+        return self.label
+```
+
+### 3. Create and Apply Migrations
+Run these commands in your terminal to create the tables in your database:
+
+```bash
+python manage.py makemigrations events
+python manage.py migrate
+```
+
+### 4. Create the Import & Vectorize Script
+Django management commands are perfect for this. We will create a script that reads both JSON files, merges the English labels based on matching URLs/IDs, vectorizes the combined text, and saves it.
+
+Create a new file: `Backend/events/management/commands/import_links.py`
+
+```python
+# Backend/events/management/commands/import_links.py
+import json
+import os
+from django.core.management.base import BaseCommand
+from events.models import LinkCategory, LinkItem
+from sentence_transformers import SentenceTransformer
+
+class Command(BaseCommand):
+    help = 'Imports links from JSON, merges English labels, and generates vector embeddings'
+
+    def handle(self, *args, **kwargs):
+        # Resolve paths assuming the script is run from inside the Backend folder
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        project_root = os.path.dirname(base_dir) # Go up one more level to repo root
+        
+        zh_path = os.path.join(project_root, 'Frontend', 'public', 'links.json')
+        en_path = os.path.join(project_root, 'Frontend', 'public', 'links.en.json')
+
+        self.stdout.write("Reading JSON files...")
+        with open(zh_path, 'r', encoding='utf-8') as f:
+            zh_data = json.load(f)
+        with open(en_path, 'r', encoding='utf-8') as f:
+            en_data = json.load(f)
+
+        # Create a dictionary lookup for English categories by ID
+        en_cat_lookup = {cat['id']: cat for cat in en_data}
+
+        self.stdout.write("Loading sentence-transformers model (this might take a moment)...")
+        # paraphrase-multilingual-MiniLM-L12-v2 is lightweight and excellent for Chinese + English
+        model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+
+        self.stdout.write("Clearing old link data...")
+        LinkCategory.objects.all().delete()
+
+        self.stdout.write("Processing and embedding data...")
+        for zh_cat in zh_data:
+            cat_id = zh_cat['id']
+            en_cat = en_cat_lookup.get(cat_id, {})
+            
+            # 1. Create Category
+            category = LinkCategory.objects.create(
+                slug=cat_id,
+                icon=zh_cat['icon'],
+                label=zh_cat['label'],
+                label_en=en_cat.get('label_en', '')
+            )
+
+            # Create a lookup for english links by URL (URLs act as unique identifiers)
+            en_links_lookup = {link['url']: link for link in en_cat.get('links', [])}
+
+            # 2. Process and Create Links
+            for zh_link in zh_cat['links']:
+                en_link = en_links_lookup.get(zh_link['url'], {})
+                label_en = en_link.get('label_en', '')
+                
+                # Combine Chinese and English labels for a richer search vector
+                text_to_embed = zh_link['label']
+                if label_en:
+                    text_to_embed += f" {label_en}"
+                    
+                # Generate embedding and convert to standard Python list for JSONField
+                embedding_vector = model.encode(text_to_embed).tolist()
+
+                LinkItem.objects.create(
+                    category=category,
+                    label=zh_link['label'],
+                    label_en=label_en,
+                    url=zh_link['url'],
+                    icon=zh_link['icon'],
+                    embedding=embedding_vector
+                )
+
+        self.stdout.write(self.style.SUCCESS('Successfully imported, merged, and vectorized all links!'))
+```
+
+### 5. Run the Script
+Finally, execute the script to ingest the data:
+
+```bash
+python manage.py import_links
+```
+
+*(Note: The first time you run this, it will download the ~470MB `paraphrase-multilingual-MiniLM-L12-v2` model from Hugging Face. Subsequent runs will use the cached model.)*
+
+Once this finishes, your database will have a fully merged set of categories and links, complete with bilingual text and pre-calculated vectors. 
+
+Let me know when you're ready for the next step: building the Search API endpoint that computes the cosine similarity against these vectors!
+
+USER:
+Given the drag drop logic from the other files, build a float list of search result under the search bar from side bar and also draggable and can be added to pinned.
+
+Agent:
+To implement a draggable floating search result list in the sidebar that integrates with your existing pinning logic, we need to update `SideBar.jsx` to handle the search state and create a new draggable component for the results.
+
+Since your `LinkContext.jsx` already contains logic to handle IDs starting with `fav-` for pinning, we will use that same prefix for search results to ensure they are immediately compatible with your "Drop to Pin" functionality.
+
+### 1. The Draggable Search Result Component
+First, we create a small component to handle the draggable state for each result. 
+
+Add this to the top of `SideBar.jsx`:
+
+```jsx
+import { useDraggable } from "@dnd-kit/core";
+import { getLocalizedValue } from "./LanguageContext";
+
+function DraggableSearchResult({ item, lang }) {
+    const linkLabel = getLocalizedValue(item, lang, "label", "");
+    const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+        // Using 'fav-' prefix allows LinkContext to treat this as a pinnable item
+        id: `fav-search-${item.url}`, 
+        data: { item },
+    });
+
+    const style = {
+        opacity: isDragging ? 0.4 : 1,
+        cursor: isDragging ? "grabbing" : "grab",
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="search-result-item">
+            <img src={item.icon} alt="" className="search-result-icon" />
+            <div className="search-result-info">
+                <div className="search-result-label">{linkLabel}</div>
+                <div className="search-result-url">{item.url}</div>
+            </div>
+        </div>
+    );
+}
+```
+
+### 2. Update SideBar.jsx
+Now, we add the search logic and the floating UI. We'll use a `useEffect` with a small debounce to avoid spamming your new Django API.
+
+```jsx
+// Inside SideBar function...
+const [searchQuery, setSearchQuery] = useState("");
+const [searchResults, setSearchResults] = useState([]);
+const [isSearching, setIsSearching] = useState(false);
+
+useEffect(() => {
+    if (!searchQuery.trim()) {
+        setSearchResults([]);
+        return;
+    }
+
+    const delayDebounceFn = setTimeout(async () => {
+        setIsSearching(true);
+        try {
+            const res = await fetch(`http://localhost:8000/api/search/?q=${encodeURIComponent(searchQuery)}`);
+            if (res.ok) {
+                const data = await res.json();
+                setSearchResults(data);
+            }
+        } catch (error) {
+            console.error("Search failed", error);
+        } finally {
+            setIsSearching(false);
+        }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(delayDebounceFn);
+}, [searchQuery]);
+```
+
+### 3. The Updated SideBar Layout
+Update the `sidebar-header` and add the floating results container:
+
+```jsx
+return (
+    <aside className={'sidebar-wrapper' + toggledClass}>
+        {/* 1. 搜尋區*/}
+        <div className="sidebar-header" style={{ position: 'relative' }}>
+            <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input 
+                type="text" 
+                placeholder={t.searchPlaceholder} 
+                className="search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+            />
+
+            {/* Floating Search Results */}
+            {searchQuery && (
+                <div className="search-results-float">
+                    {isSearching ? (
+                        <div className="search-status">Searching...</div>
+                    ) : searchResults.length > 0 ? (
+                        searchResults.map((item) => (
+                            <DraggableSearchResult 
+                                key={item.url} 
+                                item={item} 
+                                lang={lang} 
+                            />
+                        ))
+                    ) : (
+                        <div className="search-status">No results found</div>
+                    )}
+                </div>
+            )}
+        </div>
+
+        {/* 2. 導覽區 (Rest of your navigation...) */}
+        <nav className="sidebar-nav"> ... </nav>
+    </aside>
+);
+```
+
+### 4. Required CSS for Floating Effect
+Add these styles to your CSS file to make the list "float" and look like a modern search dropdown:
+
+```css
+.search-results-float {
+    position: absolute;
+    top: 100%;
+    left: 10px;
+    right: 10px;
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    margin-top: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    transition: background 0.2s;
+    border-bottom: 1px solid var(--border-color, #f1f5f9);
+}
+
+.search-result-item:hover {
+    background: var(--bg-hover, #f8fafc);
+}
+
+.search-result-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.search-result-label {
+    font-size: 14px;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.search-result-url {
+    font-size: 11px;
+    color: var(--text-muted, #64748b);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-status {
+    padding: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+}
+```
+
+### Why this works:
+1.  **Semantic Search:** It hits your Django backend to provide results based on meaning rather than just exact keywords.
+2.  **Instant Integration:** Because we prefixed the ID with `fav-`, your `LinkContext.handleDragEnd` will recognize the item as a valid "favorite" and allow users to drag it directly from the search list into the `TopBar` pinned section.
+3.  **UI Performance:** The debounce ensures that typing doesn't lag the UI, and the floating menu stays contained within the sidebar context.
+
 # 王凱弘
 USER:
 **我已經有切換中英的按鈕了，我希望按下去之後可以自由在中文跟英文版網頁之間切換，這功能應該做在前端還是後端比較好，請給一些建議，英文版的資料請參照https://my.ntu.edu.tw/Default.aspx?lang=eng 這個網站**

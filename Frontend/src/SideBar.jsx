@@ -3,9 +3,35 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import { CalendarEventAPI } from "./calendarAPI";
 import { useText, useLanguage, getLocalizedCategoryLabel } from "./LanguageContext";
+import { useDraggable } from "@dnd-kit/core";
+import { getLocalizedValue } from "./LanguageContext";
+import './SideBar.css';
 
 const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
 const monthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function DraggableSearchResult({ item, lang }) {
+    const linkLabel = getLocalizedValue(item, lang, "label", "");
+    const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+        // Using 'fav-' prefix allows LinkContext to treat this as a pinnable item
+        id: `fav-search-${item.url}`, 
+        data: { item },
+    });
+
+    const style = {
+        opacity: isDragging ? 0.4 : 1,
+        cursor: isDragging ? "grabbing" : "grab",
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="search-result-item">
+            <img src={item.icon} alt="" className="search-result-icon" />
+            <div className="search-result-info">
+                <div className="search-result-label">{linkLabel}</div>
+            </div>
+        </div>
+    );
+}
 
 function SideBar({ toggled = false }) {
     const { lang } = useLanguage();
@@ -15,6 +41,10 @@ function SideBar({ toggled = false }) {
     const { categories, activeCatIdx, setActiveCatIdx } = UseLinkContext();
 
     const [events, setEvents] = useState([]);
+
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
     
     // 側邊欄固定顯示當前真實時間的月份
     const now = new Date();
@@ -39,6 +69,30 @@ function SideBar({ toggled = false }) {
             setEvents(convertedEvents);
         });
     }, [year, month, lang]);
+
+    useEffect(() => {
+        if (!searchQuery.trim()) {
+            setSearchResults([]);
+            return;
+        }
+
+        const delayDebounceFn = setTimeout(async () => {
+            setIsSearching(true);
+            try {
+                const res = await fetch(`http://localhost:8000/api/search/?q=${encodeURIComponent(searchQuery)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setSearchResults(data);
+                }
+            } catch (error) {
+                console.error("Search failed", error);
+            } finally {
+                setIsSearching(false);
+            }
+        }, 300); // 300ms debounce
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchQuery]);
 
     // Helper function to check if a date has events
     const hasEventsOnDate = (dateObj) => {
@@ -87,11 +141,36 @@ function SideBar({ toggled = false }) {
     return (
         <aside className={'sidebar-wrapper' + toggledClass}>
             {/* 1. 搜尋區*/}
-            <div className="sidebar-header">
+            <div className="sidebar-header" style={{ position: 'relative' }}>
                 <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
-                <input type="text" placeholder={t.searchPlaceholder} className="search-input"/>
+                <input 
+                    type="text" 
+                    placeholder={t.searchPlaceholder} 
+                    className="search-input"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+
+                {/* Floating Search Results */}
+                {searchQuery && (
+                    <div className="search-results-float">
+                        {isSearching ? (
+                            <div className="search-status">Searching...</div>
+                        ) : searchResults.length > 0 ? (
+                            searchResults.map((item) => (
+                                <DraggableSearchResult 
+                                    key={item.url} 
+                                    item={item} 
+                                    lang={lang} 
+                                />
+                            ))
+                        ) : (
+                            <div className="search-status">No results found</div>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* 2. 導覽區：分類按鈕由 favorites.js 動態填充*/}

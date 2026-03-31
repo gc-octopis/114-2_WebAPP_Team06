@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useLanguage } from './LanguageContext';
 import {
     DndContext,
     DragOverlay,
@@ -19,7 +18,6 @@ export function UseLinkContext()
 
 export default function LinkProvider({ children })
 {
-    const { lang } = useLanguage();
     const [categories, setCategories] = useState([]);
     const [activeCatIdx, setActiveCatIdx] = useState(0);
     const [pinnedLinks, setPinnedLinks] = useState([]);
@@ -140,19 +138,9 @@ export default function LinkProvider({ children })
                 const selectedCatIdFromUrl = new URLSearchParams(window.location.search).get('cat');
                 const prevSelectedCatId = categories[activeCatIdx]?.id;
 
-                const dataFile = lang === 'en' ? 'links.en.json' : 'links.json';
-                let res = await fetch(dataFile);
-
-                if (!res.ok && dataFile !== 'links.json') {
-                    res = await fetch('links.json');
-                }
+                let res = await fetch('http://localhost:8000/api/links/')
 
                 let nextCategories = await res.json();
-
-                if (dataFile !== 'links.json' && Array.isArray(nextCategories) && nextCategories.length === 0) {
-                    const fallbackRes = await fetch('links.json');
-                    nextCategories = await fallbackRes.json();
-                }
 
                 setCategories(nextCategories);
 
@@ -164,7 +152,7 @@ export default function LinkProvider({ children })
                 setActiveCatIdx(0);
             }
         })()
-    }, [lang])
+    }, [])
 
     const isDuplicateDrag = activeItem !== null && pinnedLinks.some(l => l.url === activeItem.url);
     const duplicateUrl = isDuplicateDrag ? activeItem.url : null;
