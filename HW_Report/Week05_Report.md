@@ -2,9 +2,20 @@
 
 ## 目標
 
+* 架設 Django 後端，建立前後端分離的開發架構
+* 將公告、行事曆等資料改由後端抓取並儲存，前端透過 API 動態取得
+* 實作我的最愛釘選功能，將使用者偏好儲存至後端
+
 ## 使用上課技術
 
+* Django 專案建置與應用程式 (app) 結構
+* Django Model 定義
+* Django Migration（makemigrations / migrate）
+
 ## 使用額外技術
+
+* Django REST Framework（APIView、Serializer、Response）
+* Python 爬蟲（requests / BeautifulSoup）抓取公告與行事曆資料
 
 ## 組員分工
 搜尋（紀錄存進sql）
