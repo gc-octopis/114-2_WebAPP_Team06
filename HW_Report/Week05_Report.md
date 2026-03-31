@@ -11,6 +11,7 @@
 * Django 專案建置與應用程式 (app) 結構
 * Django Model 定義
 * Django Migration（makemigrations / migrate）
+* URL Routing
 
 ## 使用額外技術
 
