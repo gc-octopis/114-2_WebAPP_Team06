@@ -17,10 +17,9 @@
 
 * Django REST Framework（APIView、Serializer、Response）
 * Python 爬蟲（requests / BeautifulSoup）抓取公告與行事曆資料
+* Python 解析 ICS 檔案
 
 ## 組員分工
-搜尋（紀錄存進sql）
-我的最愛
 
 * 陳冠瑜： 釘選我的最愛 25%
     * 實作我的最愛釘選功能，可將主頁連結拖曳至右上角九宮格區域加入清單
