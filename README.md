@@ -53,9 +53,14 @@ cd Backend/
 ```
 
 2. 執行初始化 script  
-Linux / MacOS:
+Linux:
 ```bash
 bash ./setup.sh
+```
+
+macOS:
+```bash
+bash ./setup_macos.sh
 ```
 
 Windows:
