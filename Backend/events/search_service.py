@@ -1,5 +1,9 @@
 import numpy as np
-from sentence_transformers import SentenceTransformer
+
+try:
+    from sentence_transformers import SentenceTransformer
+except ImportError:
+    SentenceTransformer = None
 
 class SemanticSearchService:
     _model = None
@@ -7,6 +11,8 @@ class SemanticSearchService:
     @classmethod
     def get_model(cls):
         # Lazy loading: only initialize the model the first time it's needed
+        if SentenceTransformer is None:
+            raise RuntimeError('sentence_transformers is not installed')
         if cls._model is None:
             cls._model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
         return cls._model
