@@ -2,6 +2,331 @@
 
 # 陳冠辰
 
+USER:
+how to improve the accuracy of text search, if i want to add multiple term of keywords for one item, should i create multiple vectors for concat and create one? if there are multiple, how to compare and give a socre? also, does the multiple language model means that if I embed a label "課程", it could also be found by course, kursus etc
+
+AGENT:
+Improving search accuracy is a classic balancing act between **precision** (getting exactly what you want) and **recall** (not missing anything relevant). Since you're using semantic vectors, here is how to handle multi-term items and multilingual queries.
+
+---
+
+## 1. Concatenation vs. Multiple Vectors
+
+### The "Meaning Dilution" Problem
+If you concatenate too many unrelated keywords into a single string (e.g., `"Grades Course Map Credits Enrollment"`) and then vectorize it, you suffer from **dilution**. The vector represents the *average* meaning of all those words. It might end up being "close" to everything but "perfect" for nothing.
+
+* **When to Concatenate:** If the keywords are synonyms or very closely related (e.g., `"Grades Score Marks"`). This reinforces the core concept.
+* **When to use Multiple Vectors:** If an item has distinct sub-concepts (e.g., a link for "Student Portal" that covers "Grades," "Tuition," and "Housing"). 
+
+### Recommendation: Multi-Vector Approach
+Instead of one vector per item, store an array of vectors in your database. 
+* **Vector 1:** The primary label.
+* **Vector 2:** A list of synonyms.
+* **Vector 3:** A short description of the link's purpose.
+
+---
+
+## 2. Scoring Multiple Vectors (MaxSim)
+If an item has multiple vectors ($V_1, V_2, \dots, V_n$), you don't want to average their scores. Instead, you use the **MaxSim (Maximum Similarity)** strategy.
+
+The logic is: "If the user's query is highly relevant to *any* of the keywords, the item is a match."
+
+$$Score = \max(\cos(\vec{Q}, \vec{V_1}), \cos(\vec{Q}, \vec{V_2}), \dots, \cos(\vec{Q}, \vec{V_n}))$$
+
+In your Django backend, your search loop would look like this:
+1.  Iterate through each Link.
+2.  Calculate similarity for every vector associated with that Link.
+3.  Keep only the **highest** score for that specific Link.
+4.  Sort the Links based on these maximum scores.
+
+---
+
+## 3. Multilingual Capabilities
+Yes, that is exactly the power of a **Multilingual Embedding Model** (like the `paraphrase-multilingual-MiniLM-L12-v2` you are using).
+
+These models use **Cross-lingual Alignment**. During training, the model is taught that the English word "Course," the Chinese word "課程," and the Indonesian word "Kursus" all point to the same semantic concept. 
+
+
+
+In the vector space, these words will be mathematically very close to one another, even if they share zero characters in common. This means:
+* You can embed your links in **Chinese**.
+* A user can search in **English**.
+* The model will find the match because the "thought" or "concept" behind the words is the same.
+
+---
+
+## 4. Pro-Tip: Hybrid Search
+If you find that vector search occasionally misses "obvious" matches (like specific ID numbers or very rare proper nouns), consider **Hybrid Search**.
+
+* **Semantic Search:** Finds "Grades" when searching "Scores."
+* **Lexical Search (Keyword Match):** Uses standard `icontains` or `trigram` matching in Django to find "NTU" when searching "NTU."
+
+Combining the two—usually by giving each a weight—is the industry standard for "it just works" search bars.
+
+How many keywords per item are you planning to add? If it's more than 10 per item, we might want to look into an "Expansion" strategy instead of storing raw vectors.
+
+USER:
+how to build  Hybrid Search
+
+AGENT:
+Hybrid Search is the "gold standard" for search because it combines the **precise keyword matching** of traditional search with the **conceptual understanding** of vector search.
+
+For your project, Hybrid Search ensures that if a user types a specific course code like "ENG101", they find it immediately (Lexical), but if they type "how to see my points", they still find "Grades Inquiries" (Semantic).
+
+### 1. The Architecture
+In a Hybrid system, the query goes through two parallel paths:
+1.  **Lexical Path:** Traditional database filtering (using `Q` objects or Full-Text Search).
+2.  **Semantic Path:** Your existing `sentence-transformers` vector comparison.
+
+
+
+---
+
+### 2. Implementation Strategy for Django
+Since your dataset is small, you don't need a complex engine like Elasticsearch. You can implement this directly in your `LinkSearchView`.
+
+#### Step A: Lexical Scoring (Keyword Match)
+We use basic string matching and assign a "Lexical Score" based on where the match occurs (e.g., a match in the title is worth more than a match in a tag).
+
+#### Step B: Semantic Scoring (Vector Match)
+This is what you've already built using cosine similarity.
+
+#### Step C: Reciprocal Rank Fusion (RRF)
+Instead of just adding the scores together (which is hard because vector scores and keyword scores use different scales), we use **RRF**. This ranks items based on their position in *both* result lists.
+
+---
+
+### 3. Practical Code Implementation
+Update your `Backend/events/views.py` to handle the fusion logic:
+
+```python
+from django.db.models import Q
+from .search_service import SemanticSearchService
+
+class HybridSearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('q', '').strip()
+        if not query:
+            return Response([])
+
+        # --- 1. LEXICAL SEARCH (Keyword) ---
+        # Look for exact or partial matches in labels
+        lexical_results = LinkItem.objects.filter(
+            Q(label__icontains=query) | Q(label_en__icontains=query)
+        )
+        
+        # --- 2. SEMANTIC SEARCH (Vector) ---
+        query_embedding = SemanticSearchService.encode_query(query)
+        all_links = LinkItem.objects.exclude(embedding__isnull=True)
+        
+        semantic_scores = {}
+        for link in all_links:
+            score = SemanticSearchService.cosine_similarity(query_embedding, link.embedding)
+            if score > 0.3: # Threshold
+                semantic_scores[link.id] = score
+
+        # --- 3. HYBRID FUSION (Simplified Weighted Scoring) ---
+        # For small datasets, a weighted sum is often more predictable than RRF
+        final_rankings = []
+        
+        # Combine all unique links found in either search
+        all_found_ids = set(list(lexical_results.values_list('id', flat=True)) + list(semantic_scores.keys()))
+        
+        for link_id in all_found_ids:
+            link = LinkItem.objects.get(id=link_id)
+            
+            # Boost score if it was a keyword match
+            lexical_boost = 0.5 if link in lexical_results else 0.0
+            # Get the vector score
+            vector_score = semantic_scores.get(link_id, 0.0)
+            
+            # Final formula: adjust weights to your liking
+            final_score = (vector_score * 0.7) + (lexical_boost * 0.3)
+            
+            final_rankings.append({
+                'link': link,
+                'score': final_score
+            })
+
+        # Sort by final score
+        final_rankings.sort(key=lambda x: x['score'], reverse=True)
+        top_results = [r['link'] for r in final_rankings[:10]]
+        
+        serializer = LinkItemSerializer(top_results, many=True)
+        return Response(serializer.data)
+```
+
+---
+
+### 4. Advanced: Reciprocal Rank Fusion (RRF)
+If your list grows significantly, simple weighting becomes unreliable. **RRF** is a mathematically robust way to merge different ranking systems without needing to "normalize" their scores.
+
+
+
+**The RRF Formula:**
+$$Score(d) = \sum_{r \in R} \frac{1}{k + rank(d, r)}$$
+* $k$ is a constant (usually 60) to prevent top-ranked items from overwhelming the score.
+* $rank(d, r)$ is the position of document $d$ in result list $r$.
+
+**Why RRF is great:**
+If an item is #1 in Keyword search but #50 in Vector search, it stays near the top. If it is #5 in *both*, it might actually jump to #1 because it has "consensus" from both systems.
+
+### Summary of Benefits
+* **Zero-Shot Accuracy:** Works immediately for new items via keywords.
+* **Conceptual Depth:** Handles typos and synonyms via vectors.
+* **User Trust:** Users expect "exact matches" to appear first; Hybrid search ensures that happens while still being "smart" enough to show related content.
+
+USER:
+beside editing view, what else should I edit to make it work?
+
+AGENT:
+To make the **Hybrid Search** (with multiple keywords and multilingual support) fully functional, you need to update the supporting infrastructure beyond just the view.
+
+Here are the specific files and changes required to handle the **Multiple Vector (MaxSim)** logic and **Keyword Search** integration.
+
+---
+
+### 1. Update the Model (`Backend/events/models.py`)
+You need to store multiple embeddings and a string of keywords for the Lexical (keyword) search to hit.
+
+```python
+class LinkItem(models.Model):
+    category = models.ForeignKey(LinkCategory, related_name='links', on_delete=models.CASCADE)
+    label = models.CharField(max_length=200)
+    label_en = models.CharField(max_length=200, blank=True, null=True)
+    url = models.URLField(max_length=500)
+    icon = models.URLField(max_length=500)
+    
+    # NEW: Store keywords as a plain string for Lexical search
+    keywords = models.TextField(blank=True, help_to_text="Comma-separated synonyms")
+    
+    # NEW: Store a LIST of vectors (JSONField)
+    embeddings = models.JSONField(default=list, blank=True) 
+
+    def __str__(self):
+        return self.label
+```
+
+---
+
+### 2. Update Search Service (`Backend/events/search_service.py`)
+This is where the **MaxSim** logic lives. It compares the query to every vector an item has and picks the best one.
+
+```python
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+class SemanticSearchService:
+    _model = None
+
+    @classmethod
+    def get_model(cls):
+        if cls._model is None:
+            # The multilingual model handles Chinese/English alignment automatically
+            cls._model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+        return cls._model
+
+    @staticmethod
+    def get_max_sim(query_vec, item_vectors):
+        """
+        Calculates MaxSim: returns the highest similarity score 
+        among all vectors assigned to an item.
+        """
+        if not item_vectors:
+            return 0.0
+        
+        q = np.array(query_vec)
+        # Calculate cosine similarity for every vector in the list
+        scores = []
+        for v in item_vectors:
+            v_arr = np.array(v)
+            sim = np.dot(q, v_arr) / (np.linalg.norm(q) * np.linalg.norm(v_arr))
+            scores.append(sim)
+            
+        return max(scores) if scores else 0.0
+```
+
+---
+
+### 3. Update Import Script (`Backend/events/management/commands/import_links.py`)
+You need to update your ingestion logic to look for a `keywords` field in your `links.json` and generate a vector for *each* keyword.
+
+**Update your JSON first:**
+```json
+{
+  "label": "成績與名次查詢",
+  "url": "...",
+  "keywords": "GPA, 分數, grades, scores"
+}
+```
+
+**Then update the script loop:**
+```python
+# Inside the loop for zh_link in zh_cat['links']:
+keywords_str = zh_link.get('keywords', '')
+label_en = en_link.get('label_en', '')
+
+# We will create multiple vectors for this one item
+texts_to_embed = [zh_link['label']] # 1. The main label
+if label_en:
+    texts_to_embed.append(label_en) # 2. The English label
+if keywords_str:
+    # 3. Every individual keyword gets its own vector
+    kw_list = [k.strip() for k in keywords_str.split(',')]
+    texts_to_embed.extend(kw_list)
+
+# Generate list of vectors
+item_embeddings = [model.encode(t).tolist() for t in texts_to_embed]
+
+LinkItem.objects.create(
+    category=category,
+    label=zh_link['label'],
+    label_en=label_en,
+    url=zh_link['url'],
+    icon=zh_link['icon'],
+    keywords=keywords_str,
+    embeddings=item_embeddings # Saving the list of vectors
+)
+```
+
+---
+
+### 4. Wire the URL (`Backend/events/urls.py`)
+Ensure your `urls.py` is actually pointing to the new **Hybrid** view we planned.
+
+```python
+from django.urls import path
+from .views import LinkListView, HybridSearchView # Use the Hybrid one!
+
+urlpatterns = [
+    path('api/links/', LinkListView.as_view(), name='links-list'),
+    path('api/search/', HybridSearchView.as_view(), name='links-search'),
+]
+```
+
+---
+
+### Summary of Workflow
+1.  **Modify `links.json`**: Add a `"keywords": "synonym1, synonym2"` field to items you want to boost.
+2.  **Run Migrations**: `python manage.py makemigrations` and `migrate` to update the DB schema.
+3.  **Re-run Import**: `python manage.py import_links` to generate the new multi-vector data.
+4.  **Test**: Search for a keyword you added.
+
+### A Note on Multilingual "Course" vs "課程"
+You don't need to do anything extra for this! Since you are using a **Multilingual Transformer**, the model has already mapped these concepts to the same area in vector space. 
+
+
+
+If you embed the word **"課程"**, the vector for **"Course"** will naturally have a high cosine similarity score because the model understands they represent the same concept. The "Hybrid" part just makes it even safer by catching the exact text match if the user types it perfectly.
+
+Does your current `links.json` have many items that share similar names, or are they mostly distinct?
+
+USER:
+for each item, add a field of keywords, which is a string of phrases separated by comma. Write the once that are related to the service.
+
+AGENT:
+這是一份為各項台大服務新增 keywords 欄位後的 JSON 資料。我根據每個連結的性質，加入了一系列相關的關鍵字（包含中文與英文），這將有助於搜尋引擎優化（SEO）或系統內的關鍵字檢索。
+
 # 王凱弘
 USER:
 **請幫我統整一下目前有中文 卻沒有相對應英文的服務有哪些吧**

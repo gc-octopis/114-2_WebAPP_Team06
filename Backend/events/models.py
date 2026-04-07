@@ -103,7 +103,7 @@ class LinkCategory(models.Model):
 
     def __str__(self):
         return f"{self.label} ({self.slug})"
-
+    
 class LinkItem(models.Model):
     category = models.ForeignKey(LinkCategory, related_name='links', on_delete=models.CASCADE)
     label = models.CharField(max_length=200)
@@ -111,8 +111,11 @@ class LinkItem(models.Model):
     url = models.URLField(max_length=500)
     icon = models.URLField(max_length=500)
     
-    # Store the vector embedding as a JSON list of floats
-    embedding = models.JSONField(blank=True, null=True)
+    # NEW: Store keywords as a plain string for Lexical search
+    keywords = models.TextField(blank=True)
+    
+    # NEW: Store a LIST of vectors (JSONField)
+    embeddings = models.JSONField(default=list, blank=True) 
 
     def __str__(self):
         return self.label

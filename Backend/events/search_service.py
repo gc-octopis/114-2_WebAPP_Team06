@@ -29,3 +29,22 @@ class SemanticSearchService:
         # Convert the user's text query into a vector array
         model = cls.get_model()
         return model.encode(query_text).tolist()
+    
+    @staticmethod
+    def get_max_sim(query_vec, item_vectors):
+        """
+        Calculates MaxSim: returns the highest similarity score 
+        among all vectors assigned to an item.
+        """
+        if not item_vectors:
+            return 0.0
+        
+        q = np.array(query_vec)
+        # Calculate cosine similarity for every vector in the list
+        scores = []
+        for v in item_vectors:
+            v_arr = np.array(v)
+            sim = np.dot(q, v_arr) / (np.linalg.norm(q) * np.linalg.norm(v_arr))
+            scores.append(sim)
+            
+        return max(scores) if scores else 0.0

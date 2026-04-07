@@ -5,6 +5,7 @@ from datetime import datetime
 import math
 import random
 from django.db import transaction
+from django.db.models import Q
 from .models import CalendarEvent, Announcement, UserPreference, LinkCategory, LinkItem, FeedbackPost
 from .serializers import CalendarEventSerializer, AnnouncementSerializer, LinkCategorySerializer, LinkItemSerializer, FeedbackPostSerializer
 from .search_service import SemanticSearchService
@@ -213,39 +214,55 @@ class LinkListView(APIView):
         serializer = LinkCategorySerializer(categories, many=True)
         return Response(serializer.data)
 
-class LinkSearchView(APIView):
-    """
-    Takes a ?q= parameter, vectorizes it, and returns the most relevant links.
-    """
+class HybridSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('q', '').strip()
-        
-        # If the search query is empty, return an empty list
         if not query:
             return Response([])
 
-        # 1. Vectorize the user's search query
+        # --- 1. LEXICAL SEARCH (Keyword) ---
+        # Look for exact or partial matches in labels
+        lexical_results = LinkItem.objects.filter(
+            Q(label__icontains=query) | Q(label_en__icontains=query)
+        )
+        
+        # --- 2. SEMANTIC SEARCH (Vector) ---
         query_embedding = SemanticSearchService.encode_query(query)
+        all_links = LinkItem.objects.exclude(embeddings__isnull=True)
         
-        # 2. Fetch all links that have an embedding (in-memory fetch is fast for ~50 links)
-        all_links = LinkItem.objects.exclude(embedding__isnull=True)
-        
-        # 3. Calculate cosine similarity for each link
-        results = []
+        semantic_scores = {}
         for link in all_links:
-            sim_score = SemanticSearchService.cosine_similarity(query_embedding, link.embedding)
-            results.append({
+            score = SemanticSearchService.cosine_similarity(query_embedding, link.embeddings[0])
+            if score > 0.3: # Threshold
+                semantic_scores[link.id] = score
+
+        # --- 3. HYBRID FUSION (Simplified Weighted Scoring) ---
+        # For small datasets, a weighted sum is often more predictable than RRF
+        final_rankings = []
+        
+        # Combine all unique links found in either search
+        all_found_ids = set(list(lexical_results.values_list('id', flat=True)) + list(semantic_scores.keys()))
+        
+        for link_id in all_found_ids:
+            link = LinkItem.objects.get(id=link_id)
+            
+            # Boost score if it was a keyword match
+            lexical_boost = 0.5 if link in lexical_results else 0.0
+            # Get the vector score
+            vector_score = semantic_scores.get(link_id, 0.0)
+            
+            # Final formula: adjust weights to your liking
+            final_score = (vector_score * 0.7) + (lexical_boost * 0.3)
+            
+            final_rankings.append({
                 'link': link,
-                'score': sim_score
+                'score': final_score
             })
+
+        # Sort by final score
+        final_rankings.sort(key=lambda x: x['score'], reverse=True)
+        top_results = [r['link'] for r in final_rankings[:10]]
         
-        # 4. Sort results by highest similarity score
-        results.sort(key=lambda x: x['score'], reverse=True)
-        
-        # 5. Filter out low-confidence matches (threshold 0.3) and take the top 10
-        top_results = [r['link'] for r in results if r['score'] > 0.5]
-        
-        # 6. Serialize and return the top matching links
         serializer = LinkItemSerializer(top_results, many=True)
         return Response(serializer.data)
 

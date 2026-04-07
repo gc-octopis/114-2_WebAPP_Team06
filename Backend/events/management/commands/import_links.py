@@ -69,37 +69,30 @@ class Command(BaseCommand):
 
             # 2. Process and Create Links
             for zh_link in zh_cat['links']:
+                keywords_str = zh_link.get('keywords', '')
                 en_link = en_links_lookup.get(zh_link['url'], {})
                 label_en = en_link.get('label_en', '')
 
-                # Combine Chinese and English labels for a richer search vector
-                text_to_embed = zh_link['label']
+                # We will create multiple vectors for this one item
+                texts_to_embed = [zh_link['label']] # 1. The main label
                 if label_en:
-                    text_to_embed += f" {label_en}"
+                    texts_to_embed.append(label_en) # 2. The English label
+                if keywords_str:
+                    # 3. Every individual keyword gets its own vector
+                    kw_list = [k.strip() for k in keywords_str.split(',')]
+                    texts_to_embed.extend(kw_list)
 
-                embedding_vector = None
-                if model is not None:
-                    # Generate embedding and convert to standard Python list for JSONField
-                    embedding_vector = model.encode(text_to_embed).tolist()
+                # Generate list of vectors
+                item_embeddings = [model.encode(t).tolist() for t in texts_to_embed]
 
-                if model is not None:
-                    LinkItem.objects.create(
-                        category=category,
-                        label=zh_link['label'],
-                        label_en=label_en,
-                        url=zh_link['url'],
-                        icon=zh_link['icon'],
-                        embedding=embedding_vector
-                    )
-                else:
-                    LinkItem.objects.update_or_create(
-                        category=category,
-                        url=zh_link['url'],
-                        defaults={
-                            'label': zh_link['label'],
-                            'label_en': label_en,
-                            'icon': zh_link['icon'],
-                        }
-                    )
-
+                LinkItem.objects.create(
+                    category=category,
+                    label=zh_link['label'],
+                    label_en=label_en,
+                    url=zh_link['url'],
+                    icon=zh_link['icon'],
+                    keywords=keywords_str,
+                    embeddings=item_embeddings # Saving the list of vectors
+                )
+                
         self.stdout.write(self.style.SUCCESS('Successfully imported, merged, and vectorized all links!'))
