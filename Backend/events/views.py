@@ -3,9 +3,17 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
 import math
-from .models import CalendarEvent, Announcement, UserPreference, LinkCategory, LinkItem
-from .serializers import CalendarEventSerializer, AnnouncementSerializer, LinkCategorySerializer, LinkItemSerializer
+import random
+from django.db import transaction
+from .models import CalendarEvent, Announcement, UserPreference, LinkCategory, LinkItem, FeedbackPost
+from .serializers import CalendarEventSerializer, AnnouncementSerializer, LinkCategorySerializer, LinkItemSerializer, FeedbackPostSerializer
 from .search_service import SemanticSearchService
+
+
+FEEDBACK_AVATAR_COLORS = [
+    "#ab3e3e", "#da894f", "#d6b659", "#457e5a", "#309c90",
+    "#35b9de", "#87915d", "#8a5eb4", "#d380a9", "#313841",
+]
 
 def _normalize_language(lang: str) -> str:
     value = (lang or 'zh').strip().lower()
@@ -240,3 +248,90 @@ class LinkSearchView(APIView):
         # 6. Serialize and return the top matching links
         serializer = LinkItemSerializer(top_results, many=True)
         return Response(serializer.data)
+
+
+class FeedbackPostListCreateView(APIView):
+    """
+    API endpoint for anonymous feedback board.
+
+    GET:
+    - page: page number, starts from 1 (optional, default 1)
+    - page_size: items per page (optional, default 10, max 50)
+
+    POST body:
+    - nickname: optional display name
+    - title: required
+    - content: required
+    """
+
+    def get(self, request):
+        try:
+            page_raw = request.query_params.get('page', '1')
+            page_size_raw = request.query_params.get('page_size', '10')
+
+            try:
+                page = int(page_raw)
+                page_size = int(page_size_raw)
+            except ValueError:
+                return Response(
+                    {'error': 'Invalid page or page_size. Use positive integers.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if page < 1 or page_size < 1:
+                return Response(
+                    {'error': 'Invalid page or page_size. Use positive integers.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            page_size = min(page_size, 50)
+            queryset = FeedbackPost.objects.all()
+            total_count = queryset.count()
+            total_pages = math.ceil(total_count / page_size) if total_count > 0 else 0
+
+            if total_pages > 0 and page > total_pages:
+                page = total_pages
+
+            start_index = (page - 1) * page_size
+            end_index = start_index + page_size
+            serializer = FeedbackPostSerializer(queryset[start_index:end_index], many=True)
+
+            return Response({
+                'count': total_count,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': total_pages,
+                'posts': serializer.data,
+            })
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def post(self, request):
+        nickname = (request.data.get('nickname') or '').strip()[:80]
+        content = (request.data.get('content') or '').strip()
+
+        if not content:
+            return Response({'error': 'content is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(content) > 3000:
+            return Response({'error': 'content is too long (max 3000 characters)'}, status=status.HTTP_400_BAD_REQUEST)
+
+        with transaction.atomic():
+            post = FeedbackPost.objects.create(
+                nickname=nickname or 'Anonymous',
+                avatar_color=random.choice(FEEDBACK_AVATAR_COLORS),
+                title='',
+                content=content,
+            )
+
+            while FeedbackPost.objects.count() > 40:
+                oldest_post = FeedbackPost.objects.order_by('created_at', 'id').first()
+                if oldest_post is None:
+                    break
+                oldest_post.delete()
+
+        serializer = FeedbackPostSerializer(post)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

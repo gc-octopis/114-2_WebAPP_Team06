@@ -119,3 +119,326 @@ search_service.py+7-1
 ---
 
 # 孫怡臻
+
+USER:
+**我想要當cat=feedback時，頁面的公告清單處改成留言板，並有區塊可以給用戶像發部落格文章一樣匿名發文，以及顯示過往的留言**
+
+AGENT:
+我會先快速檢查目前前後端是怎麼用 `cat` 切分類、公告資料怎麼取得，接著直接把 `cat=feedback` 改成留言板模式（可匿名發文＋顯示歷史留言），並把對應 API 一起補上。
+
+我已找到公告 API 與前端公告元件，接下來會新增後端 `FeedbackPost` 模型、API 與前端留言板 UI。
+
+已編輯
+- events/models.py
+- events/serializers.py
+- events/views.py
+- events/urls.py
+- Frontend/src/announcementAPI.js
+- Frontend/src/LanguageContext.jsx
+- Frontend/src/Announcement.jsx
+- Frontend/src/announcement.css
+
+已完成你要的行為：當網址是 `?cat=feedback` 時，公告清單會被替換成留言板，提供匿名發文區塊（含暱稱、標題、內容）與歷史留言列表，發文後會即時更新。
+
+如果你要，我也可以下一步幫你把後端資料庫的遷移 (migration) 跑完，確保資料表已建立。
+
+---
+
+USER:
+**按下發布後怎麼會出現Unexpected token '<', "<!DOCTYPE "... is not valid JSON呢**
+
+AGENT:
+這個錯誤代表前端預期拿到 JSON，但實際收到的是 HTML（通常是後端報錯頁面）。我會先把 API 解析改成「非 JSON 也能顯示清楚錯誤」，並檢查後端資料表是否尚未建立。
+
+我已經先幫你把前端錯誤處理修好，現在會顯示可讀的 API 錯誤，而不是原始碼片段。
+
+已編輯
+- Frontend/src/announcementAPI.js
+
+原因是「前端在等 JSON，但後端回了 HTML」，最可能的根因是 `FeedbackPost` 資料表還沒建立（尚未跑 migration）。請在 Backend 執行 `python manage.py migrate` 後再試一次。
+
+---
+
+USER:
+**歷史留言一頁顯示4則就好**
+
+AGENT:
+我會只調整留言板的分頁大小，不影響原本的公告清單。把 feedback 的每頁筆數改成 4，並同步更新發文後重抓第一頁的邏輯。
+
+已編輯
+- Frontend/src/Announcement.jsx
+
+已改好，歷史留言現在每頁固定顯示 4 則，公告清單仍維持原本每頁 10 筆，互不干擾。
+
+---
+
+USER:
+**發布留言的區塊移動到歷史留言區塊下方**
+
+AGENT:
+我會直接重排留言板 JSX 結構：把「發布留言」表單移到「歷史留言」列表後面，並微調樣式間距避免視覺太擁擠。
+
+已編輯
+- Frontend/src/Announcement.jsx
+- Frontend/src/announcement.css
+
+已完成，留言板渲染順序現在改為：說明文字 → 歷史留言列表 → 發布留言表單。
+
+---
+
+USER:
+**發布留言四字的樣子想要跟歷史留言四字一樣放出框格外**
+
+AGENT:
+我會把「發布留言」標題移到表單框外，並套用和「歷史留言」相同的標題樣式（class），讓兩者視覺達成一致。
+
+已編輯
+- Frontend/src/Announcement.jsx
+- Frontend/src/announcement.css
+
+已調整完成，「發布留言」現在移到表單框外，外觀與位置都與「歷史留言」對齊了。
+
+---
+
+USER:
+**發布時間是不是怪怪的**
+
+AGENT:
+我檢查後發現後端時區目前是 UTC，所以顯示時間會慢 8 小時。我會直接在序列化器 (Serializer) 把時間轉成台北時區再回傳。
+
+已編輯
+- Backend/events/serializers.py
+
+已修正為「回傳前先轉成 Asia/Taipei」，現在留言區顯示的時間會是正確的台灣時間。
+
+---
+
+USER:
+**發布時間不需要顯示秒數**
+
+AGENT:
+我會直接把後端回傳的時間格式從 `YYYY-MM-DD HH:MM:SS` 改成 `YYYY-MM-DD HH:MM`。
+
+已編輯
+- Backend/events/serializers.py
+
+已調整完成，重新整理頁面後，歷史留言的時間將不再顯示秒數。
+
+---
+
+USER:
+**可以顯示am或pm，用12小時制**
+
+AGENT:
+我會修改後端的時間字串格式，讓它回傳 12 小時制並帶有 am/pm 標記。
+
+已編輯
+- Backend/events/serializers.py
+
+已改好，現在時間會顯示如 `2026-04-04 09:35 pm` 這種格式。
+
+---
+
+USER:
+**發布留言區塊的位置再下去一些**
+
+AGENT:
+我會調整 CSS 樣式，增加「發布留言」標題與表單整體的上邊距 (margin-top)。
+
+已編輯
+- Frontend/src/announcement.css
+
+已幫你把區塊往下移了，增加了 24px 的間距，讓視覺感更開闊。
+
+---
+
+USER:
+**發布留言改成撰寫留言**
+
+AGENT:
+我會搜尋所有顯示為「發布留言」的文案，並統一修改為「撰寫留言」。
+
+已編輯
+- Frontend/src/LanguageContext.jsx
+
+已改好，多語系清單中的字串已全面更新。
+
+---
+
+USER:
+**不用填寫標題**
+
+AGENT:
+我會把「標題」改為選填，前端移除 `required` 屬性，後端 API 則修改為允許空標題並自動補上預設值。
+
+已編輯
+- Frontend/src/Announcement.jsx
+- Frontend/src/LanguageContext.jsx
+- Backend/events/views.py
+
+已改成「標題不用填」，若沒填寫，系統會自動顯示為「無標題文章」。
+
+---
+
+USER:
+**改成不能填標題，舊留言的標題也去除**
+
+AGENT:
+我會徹底移除標題功能：前端表單刪除標題欄位、歷史列表不顯示標題，後端 API 也不再回傳該欄位。
+
+已編輯
+- Frontend/src/Announcement.jsx
+- Frontend/src/announcement.css
+- Backend/events/serializers.py
+- Backend/events/views.py
+- Frontend/src/LanguageContext.jsx
+
+標題功能已整體移除，舊有的標題資料現在也會被忽略，不再顯示於網頁上。
+
+---
+
+USER:
+**留言區的部分，請幫我改成頭像旁邊是名稱，然後才是留言內容，頭像可以用不同顏色的圓，圓的顏色在發布留言時隨機給定**
+
+AGENT:
+我會新增 `avatar_color` 欄位，後端在發布時隨機配色並寫入資料庫，前端則調整卡片版型。
+
+已編輯
+- Backend/events/models.py
+- Backend/events/serializers.py
+- Backend/events/views.py
+- Frontend/src/Announcement.jsx
+- Frontend/src/announcement.css
+
+已完成，現在每則留言左側都有一個隨機顏色的圓形頭像，名稱緊鄰其右，留言內容則在下一行。
+
+---
+
+USER:
+**頭像樣式想要在底色上面覆蓋一個小一點的白圓，白圓下方再放一個直的橢圓**
+
+AGENT:
+我會利用 CSS 的偽元素 (`::before`, `::after`) 在彩色圓底上繪製白圓與白橢圓，達成你要的抽象人像效果。
+
+已編輯
+- Frontend/src/announcement.css
+
+已改好，現在頭像內部包含了白圓與直向橢圓的組合圖樣。
+
+---
+
+USER:
+**白圓要靠近頭像中心，所以要再下來一些，白色橢圓可以再更往下，超出底層圓形沒關係，裁掉不顯示就好**
+
+AGENT:
+我會微調 CSS 定位數值，讓白圓下移並讓白橢圓部分超出底圓邊界（利用 `overflow: hidden` 裁切）。
+
+已編輯
+- Frontend/src/announcement.css
+
+已調整定位，白圓更貼近中心，白橢圓下沉後的裁切效果也更自然。
+
+---
+
+USER:
+**頭像整體要再大一些**
+
+AGENT:
+我會等比例放大頭像容器與內部的所有元素。
+
+已編輯
+- Frontend/src/announcement.css
+
+頭像已從 `18px` 放大至 `22px`，內部的圖樣也同步調整了比例。
+
+---
+
+USER:
+**白色小圓再上去一點點**
+
+AGENT:
+我會將白色小圓的 `top` 數值往上微調 1px。
+
+已編輯
+- Frontend/src/announcement.css
+
+微調完成，白色小圓的位置現在更高了一點。
+
+---
+
+USER:
+**如果發布留言導致歷史留言超過40則，則刪除最舊的一筆**
+
+AGENT:
+我會在後端發文邏輯中加入檢查，一旦總數超過 40 筆，就自動刪除最舊的資料。
+
+已編輯
+- Backend/events/views.py
+
+已加上限制，歷史留言現在會自動維持在最新的 40 筆內。
+
+---
+
+USER:
+**撰寫留言的區塊想要用不同樣式來做區隔**
+
+AGENT:
+我會把「撰寫留言」區塊做成獨立面板，賦予不同的底色、邊框與陰影。
+
+已編輯
+- Frontend/src/Announcement.jsx
+- Frontend/src/announcement.css
+
+已完成，現在撰寫區塊有淡色漸層底色與陰影，視覺上與歷史列表有明顯區分。
+
+---
+
+USER:
+**撰寫留言四字要跟歷史留言一樣**
+
+AGENT:
+我會將「撰寫留言」的標題 class 修改為與「歷史留言」一致。
+
+已編輯
+- Frontend/src/Announcement.jsx
+
+已改好，兩個區塊的標題字型與大小現在完全對齊。
+
+---
+
+USER:
+**撰寫留言下面的框隔改成虛線框**
+
+AGENT:
+我會將「撰寫留言」表單的 `border-style` 從 `solid` 改為 `dashed`。
+
+已編輯
+- Frontend/src/announcement.css
+
+已改好，現在撰寫區域的框線變成了虛線。
+
+---
+
+USER:
+**想再更明顯，虛線要再長一些**
+
+AGENT:
+我會利用 CSS 自定義虛線參數，加長線段長度並加大間隔。
+
+已編輯
+- Frontend/src/announcement.css
+
+已改成粗體長虛線框，視覺感更強烈。
+
+---
+
+USER:
+**有點太長了，我想要保持原來的圓弧角**
+
+AGENT:
+我會將樣式換回標準的 `dashed` 屬性，以確保 `border-radius` (圓角) 能完美呈現。
+
+已編輯
+- Frontend/src/announcement.css
+
+已調整回保留圓弧角的 2px 虛線版本，維持了原有的美觀圓角。

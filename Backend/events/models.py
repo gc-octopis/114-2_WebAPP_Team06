@@ -116,3 +116,20 @@ class LinkItem(models.Model):
 
     def __str__(self):
         return self.label
+
+
+class FeedbackPost(models.Model):
+    """Anonymous feedback/message board post."""
+    nickname = models.CharField(max_length=80, blank=True, default='Anonymous')
+    avatar_color = models.CharField(max_length=7, default='#94a3b8')
+    title = models.CharField(max_length=200)
+    content = models.TextField(max_length=3000)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at', '-id']
+        verbose_name = 'Feedback Post'
+        verbose_name_plural = 'Feedback Posts'
+
+    def __str__(self):
+        return f"{self.title} by {self.nickname}"

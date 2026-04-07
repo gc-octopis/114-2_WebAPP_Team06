@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CalendarEventListView, AnnouncementListView, UserPreferenceView, LinkListView, LinkSearchView
+from .views import CalendarEventListView, AnnouncementListView, UserPreferenceView, LinkListView, LinkSearchView, FeedbackPostListCreateView
 
 app_name = 'events'
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path('preferences/', UserPreferenceView.as_view(), name='user-preferences'),
     path('links/', LinkListView.as_view(), name='api-link-list'),
     path('search/', LinkSearchView.as_view(), name='api-link-search'),
+    path('feedback/', FeedbackPostListCreateView.as_view(), name='feedback-list-create'),
 ]
