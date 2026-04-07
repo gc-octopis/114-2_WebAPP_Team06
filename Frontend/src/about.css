@@ -31,3 +31,100 @@
 .contact-link:hover {
     text-decoration: underline;
 }
+
+/* 2. 聯絡表單 */
+.contact-form-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 1.5rem 0 0.75rem;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--bg-surface);
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.contact-form-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.contact-form-input,
+.contact-form-textarea {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-main);
+    background: var(--bg-surface);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.contact-form-input:focus,
+.contact-form-textarea:focus {
+    border-color: var(--primary-color);
+}
+
+.contact-form-input::placeholder,
+.contact-form-textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.55;
+}
+
+.contact-form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.5;
+}
+
+.contact-status {
+    margin: 0;
+    font-size: 13px;
+}
+
+.contact-status--error {
+    color: #b42318;
+}
+
+.contact-status--success {
+    color: #067647;
+}
+
+.contact-submit-btn {
+    align-self: flex-end;
+    border: 1px solid var(--primary-color);
+    background: var(--primary-color);
+    color: var(--text-invert);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.contact-submit-btn:hover:not(:disabled) {
+    filter: brightness(0.95);
+}
+
+.contact-submit-btn:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+@media screen and (max-width: 768px) {
+    .contact-submit-btn {
+        width: 100%;
+        align-self: stretch;
+    }
+}

@@ -136,3 +136,20 @@ class FeedbackPost(models.Model):
 
     def __str__(self):
         return f"{self.title} by {self.nickname}"
+
+
+class ContactMessage(models.Model):
+    """Contact form message submitted by users, visible only to developers via Django Admin."""
+    name = models.CharField(max_length=100, blank=True, default='')
+    email = models.EmailField(blank=True, default='')
+    message = models.TextField(max_length=3000)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Contact Message'
+        verbose_name_plural = 'Contact Messages'
+
+    def __str__(self):
+        name = self.name or 'Anonymous'
+        return f"[{self.created_at:%Y-%m-%d}] {name}: {self.message[:50]}"

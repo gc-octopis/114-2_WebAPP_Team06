@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 from zoneinfo import ZoneInfo
-from .models import CalendarEvent, Announcement, LinkCategory, LinkItem, FeedbackPost
+from .models import CalendarEvent, Announcement, LinkCategory, LinkItem, FeedbackPost, ContactMessage
 
 
 class CalendarEventSerializer(serializers.ModelSerializer):
@@ -53,3 +53,9 @@ class FeedbackPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = FeedbackPost
         fields = ['id', 'nickname', 'avatar_color', 'content', 'created_at']
+
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = ['name', 'email', 'message']

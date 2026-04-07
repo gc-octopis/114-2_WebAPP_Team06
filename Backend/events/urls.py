@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CalendarEventListView, AnnouncementListView, UserPreferenceView, LinkListView, HybridSearchView, FeedbackPostListCreateView
+from .views import CalendarEventListView, AnnouncementListView, UserPreferenceView, LinkListView, HybridSearchView, FeedbackPostListCreateView, ContactMessageCreateView
 
 app_name = 'events'
 
@@ -10,4 +10,6 @@ urlpatterns = [
     path('links/', LinkListView.as_view(), name='api-link-list'),
     path('search/', HybridSearchView.as_view(), name='links-search'),
     path('feedback/', FeedbackPostListCreateView.as_view(), name='feedback-list-create'),
+    path('contact/', ContactMessageCreateView.as_view(), name='contact-create'),
 ]
+

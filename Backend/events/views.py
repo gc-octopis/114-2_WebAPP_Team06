@@ -6,8 +6,8 @@ import math
 import random
 from django.db import transaction
 from django.db.models import Q
-from .models import CalendarEvent, Announcement, UserPreference, LinkCategory, LinkItem, FeedbackPost
-from .serializers import CalendarEventSerializer, AnnouncementSerializer, LinkCategorySerializer, LinkItemSerializer, FeedbackPostSerializer
+from .models import CalendarEvent, Announcement, UserPreference, LinkCategory, LinkItem, FeedbackPost, ContactMessage
+from .serializers import CalendarEventSerializer, AnnouncementSerializer, LinkCategorySerializer, LinkItemSerializer, FeedbackPostSerializer, ContactMessageSerializer
 from .search_service import SemanticSearchService
 
 
@@ -352,3 +352,30 @@ class FeedbackPostListCreateView(APIView):
 
         serializer = FeedbackPostSerializer(post)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ContactMessageCreateView(APIView):
+    """
+    API endpoint for contact form submissions.
+    Only POST is supported — messages are viewed via Django Admin.
+
+    POST body:
+    - name: optional sender name (max 100)
+    - email: optional email address
+    - message: required message content (max 3000)
+    """
+
+    def post(self, request):
+        serializer = ContactMessageSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        message = serializer.validated_data.get('message', '').strip()
+        if not message:
+            return Response({'error': 'message is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(message) > 3000:
+            return Response({'error': 'message is too long (max 3000 characters)'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+        return Response({'success': True}, status=status.HTTP_201_CREATED)

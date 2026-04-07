@@ -3,13 +3,45 @@ import Hero from "./Hero";
 
 import './about.css';
 
-import { useEffect } from "react";
-import { useLanguage } from "./LanguageContext";
+import { useEffect, useState } from "react";
+import { useLanguage, useText } from "./LanguageContext";
 
 function About()
 {
     const { lang } = useLanguage();
+    const t = useText();
     const title = lang === "en" ? "About" : "關於我們";
+
+    const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error'
+
+    async function handleContactSubmit(e) {
+        e.preventDefault();
+        setSubmitStatus(null);
+        setIsSubmitting(true);
+        try {
+            const res = await fetch('/api/contact/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: contactForm.name.trim(),
+                    email: contactForm.email.trim(),
+                    message: contactForm.message.trim(),
+                }),
+            });
+            if (res.ok) {
+                setSubmitStatus('success');
+                setContactForm({ name: '', email: '', message: '' });
+            } else {
+                throw new Error();
+            }
+        } catch {
+            setSubmitStatus('error');
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
     const copy = lang === "en" ? {
         intro: "Project Overview",
         introP1: "MyNTU++ is an integrated student portal for National Taiwan University. It brings common campus services into one interface so students can finish academic tasks more quickly.",
@@ -173,11 +205,49 @@ function About()
                             <span className="contact-label">{copy.location}</span>
                             <span className="contact-text">{copy.locationText}</span>
                         </div>
-                        <div className="contact-item">
-                            <span className="contact-label">{copy.feedback}</span>
-                            <a href="#" className="contact-link">{copy.feedbackText}</a>
-                        </div>
                     </div>
+
+                    <h3 className="contact-form-title">{t.contactFormTitle}</h3>
+                    <form className="contact-form" onSubmit={handleContactSubmit}>
+                        <label className="contact-form-label" htmlFor="contact-name">{t.contactName}</label>
+                        <input
+                            id="contact-name"
+                            type="text"
+                            className="contact-form-input"
+                            maxLength={100}
+                            placeholder={t.contactNamePlaceholder}
+                            value={contactForm.name}
+                            onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
+                        />
+
+                        <label className="contact-form-label" htmlFor="contact-email">{t.contactEmail}</label>
+                        <input
+                            id="contact-email"
+                            type="email"
+                            className="contact-form-input"
+                            placeholder={t.contactEmailPlaceholder}
+                            value={contactForm.email}
+                            onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
+                        />
+
+                        <label className="contact-form-label" htmlFor="contact-message">{t.contactMessage}</label>
+                        <textarea
+                            id="contact-message"
+                            className="contact-form-textarea"
+                            maxLength={3000}
+                            required
+                            placeholder={t.contactMessagePlaceholder}
+                            value={contactForm.message}
+                            onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
+                        />
+
+                        {submitStatus === 'error' && <p className="contact-status contact-status--error">{t.contactError}</p>}
+                        {submitStatus === 'success' && <p className="contact-status contact-status--success">{t.contactSuccess}</p>}
+
+                        <button type="submit" className="contact-submit-btn" disabled={isSubmitting}>
+                            {isSubmitting ? t.contactSubmitting : t.contactSubmit}
+                        </button>
+                    </form>
                 </section>
             </div>
         </Layout>
