@@ -24,12 +24,12 @@ function DraggableSearchResult({ item, lang }) {
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="search-result-item">
+        <a target="_blank" rel="noopener noreferrer" ref={setNodeRef} style={style} {...listeners} {...attributes} href={item.url} className="search-result-item">
             <img src={item.icon} alt="" className="search-result-icon" />
             <div className="search-result-info">
                 <div className="search-result-label">{linkLabel}</div>
             </div>
-        </div>
+        </a>
     );
 }
 
