@@ -3,20 +3,6 @@ import { motion } from "motion/react"
 import { useLanguage, getLocalizedValue, getLocalizedCategoryLabel } from "./LanguageContext";
 import { useDraggable } from "@dnd-kit/core";
 
-function hasCjk(text = "") {
-    return /[\u3400-\u9fff]/.test(text);
-}
-
-function hasEnglishMapping(item) {
-    const enLabel = (item?.label_en || "").trim();
-    const zhLabel = (item?.label || "").trim();
-
-    if (!enLabel) return false;
-    if (enLabel === zhLabel && hasCjk(enLabel)) return false;
-
-    return true;
-}
-
 // 每個可拖曳的連結卡片import { useLanguage } from './LanguageContext';
 function DraggableCard({ item, lang }) {
     const linkLabel = getLocalizedValue(item, lang, "label", "");
@@ -53,10 +39,7 @@ function Favorites()
     const activeCat = categories[activeCatIdx];
 
     const activeCategoryLabel = activeCat ? getLocalizedCategoryLabel(activeCat, lang) : "";
-    const visibleLinks = (activeCat?.links || []).filter((item) => {
-        if (lang !== "en") return true;
-        return hasEnglishMapping(item);
-    });
+    const visibleLinks = activeCat?.links || [];
 
     return (
     <>

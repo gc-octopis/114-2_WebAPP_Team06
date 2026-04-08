@@ -102,7 +102,16 @@ chmod +x Backend/sync_data.sh
 
 # 可選：限制公告爬取頁數（測試時好用）
 SYNC_MAX_PAGES=3 ./Backend/sync_data.sh announcements
+
+# 可選：強制指定 Python（例如 conda/venv）
+PYTHON_BIN=/Users/yourname/miniforge3/envs/114Web/bin/python ./Backend/sync_data.sh all
 ```
+
+`sync_data.sh` 目前行為：
+
+- 會自動選擇可用的 Python（優先順序：`PYTHON_BIN` > `Backend/.venv` > 目前啟用的 conda > 常見 miniforge/anaconda env > `python/python3`）。
+- 會先執行 `manage.py migrate --noinput`，避免缺 table（例如 `events_announcement`）導致同步失敗。
+- 執行 `links` 流程時，會先檢查 `Frontend/public/links.en.json` 是否所有連結都有 `label_en`；若有缺漏會直接中止，避免不完整資料被匯入 DB。
 
 若要手動逐條執行，請在 `Backend` 目錄下使用：
 
