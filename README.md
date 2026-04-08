@@ -10,6 +10,7 @@
 * [Week4](./HW_Report/Week04_Report.md)
 * [Week5](./HW_Report/Week05_Report.md)
 * [Week6](./HW_Report/Week06_Report.md)
+* [Week7](./HW_Report/Week07_Report.md)
 
 ---
 
