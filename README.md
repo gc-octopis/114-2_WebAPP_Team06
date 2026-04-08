@@ -83,7 +83,28 @@ python manage.py runserver 8000
 
 #### 資料同步命令
 
-在 `Backend` 目錄下執行：
+建議改用統一腳本（在專案根目錄執行）：
+
+```bash
+chmod +x Backend/sync_data.sh
+
+# 全部同步（公告 + 行事曆 + links）
+./Backend/sync_data.sh all
+
+# 只同步公告（zh + en）
+./Backend/sync_data.sh announcements
+
+# 只同步行事曆（zh + en）
+./Backend/sync_data.sh calendar
+
+# 只處理 links（先產生 links.en.json，再匯入 DB）
+./Backend/sync_data.sh links
+
+# 可選：限制公告爬取頁數（測試時好用）
+SYNC_MAX_PAGES=3 ./Backend/sync_data.sh announcements
+```
+
+若要手動逐條執行，請在 `Backend` 目錄下使用：
 
 ```bash
 source .venv/bin/activate
