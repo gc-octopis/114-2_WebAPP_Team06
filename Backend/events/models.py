@@ -109,6 +109,7 @@ class LinkItem(models.Model):
     label = models.CharField(max_length=200)
     label_en = models.CharField(max_length=200, blank=True, null=True)
     url = models.URLField(max_length=500)
+    url_en = models.URLField(max_length=500, blank=True, default='')  # English-specific URL
     icon = models.URLField(max_length=500)
     
     # NEW: Store keywords as a plain string for Lexical search

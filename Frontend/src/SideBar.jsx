@@ -12,6 +12,7 @@ const monthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'S
 
 function DraggableSearchResult({ item, lang }) {
     const linkLabel = getLocalizedValue(item, lang, "label", "");
+    const linkUrl = getLocalizedValue(item, lang, "url", item.url) || item.url;
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         // Using 'fav-' prefix allows LinkContext to treat this as a pinnable item
         id: `fav-search-${item.url}`, 
@@ -24,7 +25,7 @@ function DraggableSearchResult({ item, lang }) {
     };
 
     return (
-        <a target="_blank" rel="noopener noreferrer" ref={setNodeRef} style={style} {...listeners} {...attributes} href={item.url} className="search-result-item">
+        <a target="_blank" rel="noopener noreferrer" ref={setNodeRef} style={style} {...listeners} {...attributes} href={linkUrl} className="search-result-item">
             <img src={item.icon} alt="" className="search-result-icon" />
             <div className="search-result-info">
                 <div className="search-result-label">{linkLabel}</div>
@@ -32,6 +33,7 @@ function DraggableSearchResult({ item, lang }) {
         </a>
     );
 }
+
 
 function SideBar({ toggled = false }) {
     const { lang } = useLanguage();

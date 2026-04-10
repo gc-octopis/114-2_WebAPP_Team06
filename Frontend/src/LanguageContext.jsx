@@ -134,13 +134,16 @@ const messages = {
 };
 
 const categoryLabelById = {
-    teaching: { "zh-TW": "教學", en: "Teaching" },
-    library: { "zh-TW": "圖書研究", en: "Library & Research" },
-    finance: { "zh-TW": "帳務財物", en: "Finance" },
-    venue: { "zh-TW": "場館交通", en: "Facilities & Transport" },
-    campus: { "zh-TW": "校園資源", en: "Campus Resources" },
-    news: { "zh-TW": "消息公告", en: "News" },
-    feedback: { "zh-TW": "意見交流", en: "Feedback" },
+    students: { "zh-TW": "學生專區", en: "Students" },
+    courses:  { "zh-TW": "課程學習", en: "Courses" },
+    faculty:  { "zh-TW": "教職申辦", en: "Faculty & Staff" },
+    teaching: { "zh-TW": "教學",     en: "Teaching" },
+    library:  { "zh-TW": "圖書研究", en: "Research" },
+    finance:  { "zh-TW": "帳務財物", en: "Accounts" },
+    venue:    { "zh-TW": "場館交通", en: "Facilities" },
+    campus:   { "zh-TW": "校園資源", en: "Resources" },
+    news:     { "zh-TW": "消息公告", en: "Bulletin" },
+    feedback: { "zh-TW": "意見交流", en: "Opinions" },
 };
 
 export function useLanguage() {

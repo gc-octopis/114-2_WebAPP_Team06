@@ -1,4 +1,183 @@
 # 陳冠瑜
+USER:
+關於抓取myntu連結、中英文名稱與網址、圖片的方式，我已經示範在scrape資料夾裡面，內有抓取的python檔，以及抓下來的json檔案，你在想辦法幫我整合到new one project裡面。整合的方式，最好把抓取的python檔案放到new one 裡面去作使用，用他來爬取並生成links.json，並把前端生成連結的邏輯與這個json檔案榜定，清除舊有過時的json, py檔案。關於有些連結沒有英文名稱，那是因為那些連結不顯示在英文版網頁上，因為那些連結專門給台灣人用的
+
+AGENT:
+先看一下 scrape 資料夾的內容和結構：
+
+Listed directory web
+Listed directory scrape
+Viewed fetch_myntu_data.py:1-92
+Viewed myntu_data.json:1-800
+
+完美！現在我完全理解了。這個 API (`mainHandler.ashx`) 才是正確的爬取方式，結構也非常清晰。讓我先研究現有的前端邏輯和現有的 generate_links.py，再做整合計畫：
+
+Viewed Favorites.jsx:1-69
+Viewed LanguageContext.jsx:1-200
+
+現在我有完整的資訊了。讓我看一下 Backend 的 views.py 和 import_links management command，了解資料如何進入 DB：
+
+Viewed views.py:1-381
+Listed directory management
+Listed directory commands
+Viewed import_links.py:1-98
+
+現在我對整個系統有完整的了解了。讓我先快速看一下 myntu_data.json 的結構（全部分類）：
+
+Ran command: `cd /Users/lazybug/Desktop/web/scrape && python3 -c "
+import json
+with open('myntu_data.json') as f:
+    data = json.load(f)
+cats = {}
+for item in data:
+    cat = item['category_zh']
+    cats[cat] = cats.get(cat, 0) + 1
+for cat, count in cats.items():
+    print(f'{cat}: {count} 筆')
+print(f'總計: {len(data)} 筆')
+"`
+
+完整分析清楚了。現在制定計畫並執行：
+
+**整合策略：**
+1. 將 `fetch_myntu_data.py` 搬進 Backend/scripts 並調整輸出路徑
+2. 新的 `links.json` 格式直接從 `myntu_data.json` 生成（原 10 個分類，每條有中英文名稱、中英文連結、icon）
+3. `import_links.py` management command 改讀新格式（不再需要 links.en.json）
+4. 刪除不再需要的舊檔案
+5. `LanguageContext` 的分類 hardcode 更新為新的 10 個分類
+
+先建立整合後的爬蟲腳本：
+
+Created fetch_myntu_links.py
+
+先跑看看能否順利抓取：
+
+Ran command: `cd /Users/lazybug/Desktop/web/new_one/Backend && source .venv/bin/activate && python scripts/fetch_myntu_links.py`
+
+完美，221 筆全部抓到了！現在更新 `import_links.py` 讀取新的格式（單一 `links.json`，有 `label_en`、`url_en`，沒有舊的 `keywords` 欄位）：
+
+Edited import_links.py
+
+現在更新 `sync_data.sh`，把 links 流程換成新腳本，並移除對 `links_en_builder.py` 的依賴：
+
+Edited sync_data.sh
+Viewed sync_data.sh:70-135
+Edited sync_data.sh
+
+現在更新前端的 `LinkContext.jsx` 和 `LanguageContext.jsx` 來支援新的 JSON 格式（新增 `url_en` 支援，更新分類清單）。先更新 `LanguageContext`：
+
+Edited LanguageContext.jsx
+
+現在更新 `getLocalizedValue` 讓它支援 `url_en`（英文版使用不同連結），並更新 `Favorites.jsx` 使連結在英文模式下導向 `url_en`：
+
+Viewed LanguageContext.jsx:155-175
+
+`getLocalizedValue` 本身已經支援 `_en` suffix 了（`label_en`、`url_en` 都適用）。現在更新 `Favorites.jsx` 讓 `DraggableCard` 在英文模式下使用 `url_en`（若有的話）：
+
+Edited Favorites.jsx
+
+現在也需要讓 `SideBar.jsx` 在英文模式下顯示 label_en（它從 API 的分類資料讀取，API 是從 DB 拿，DB 已有 label_en）。看看 SideBar 的邏輯：
+
+Viewed SideBar.jsx:1-220
+
+SideBar 已用 `getLocalizedCategoryLabel` 沒問題。現在也要更新 `DraggableSearchResult` 使搜尋結果的連結也支援 `url_en`：
+
+Edited SideBar.jsx
+Edited SideBar.jsx
+
+現在把舊 JSON 及舊 py 檔案刪除，並跑 import_links 讓資料庫同步：
+
+Ran command: `cd /Users/lazybug/Desktop/web/new_one && rm -f Frontend/public/links.en.json && rm -f Backend/scripts/links_en_builder.py && rm -f Backend/scripts/myntu_scraper.py && rm -f Backend/scripts/myntu_scraped_links.json && echo "✅ Old files removed"`
+Ran command: `cd /Users/lazybug/Desktop/web/new_one/Backend && source .venv/bin/activate && python manage.py import_links 2>&1`
+
+221 筆全部成功匯入。讓我確認 API 是否正常返回新格式：
+
+Ran command: `curl -s http://localhost:8000/api/links/ | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+print(f'分類數: {len(data)}')
+for cat in data:
+    total = len(cat['links'])
+    with_en = sum(1 for l in cat['links'] if l.get('label_en'))
+    print(f\"  {cat['icon']} {cat['label']} ({cat['id']}): {total} 筆, 有英文名: {with_en}\")
+# 顯示第一筆連結結構
+print()
+print('第一筆連結欄位:', list(data[0]['links'][0].keys()))
+"`
+
+API 正常運作。但我注意到 API 回傳的欄位沒有 `url_en`，這是 serializer 的問題。讓我確認 serializer：
+
+Viewed serializers.py:1-61
+
+`LinkItem` model 沒有 `url_en` 欄位，`url_en` 目前只存在 `links.json` 但沒有進 DB。有兩種做法：
+1. 在 model 加 `url_en` 欄位 → 需要 migration
+2. 前端直接從 `links.json` 讀 `url_en`（目前 DB 路線不包含）
+
+最乾淨的做法是加到 model，但這需要 migration。讓我先確認這是否真的需要（英文版是否大量有不同的 url_en）：
+
+Ran command: `python3 -c "
+import json
+with open('/Users/lazybug/Desktop/web/new_one/Frontend/public/links.json') as f:
+    data = json.load(f)
+diff_count = 0
+for cat in data:
+    for link in cat['links']:
+        url = link.get('url','').strip()
+        url_en = link.get('url_en','').strip()
+        if url_en and url_en != url:
+            diff_count += 1
+print(f'url_en 與 url 不同的筆數: {diff_count}')
+"`
+
+68 筆 url_en 是不同的，值得加進 DB。加 `url_en` 欄位到 model 並做 migration：
+
+Edited models.py
+
+USER:
+把剛剛沒完成的事接著完成
+
+AGENT:
+Edited serializers.py
+Ran command: `cd /Users/lazybug/Desktop/web/new_one/Backend && source .venv/bin/activate && python manage.py makemigrations events && python manage.py migrate events && rm -f scripts/generate_links.py`
+Ran command: `cd /Users/lazybug/Desktop/web/new_one/Backend && source .venv/bin/activate && python manage.py import_links 2>&1`
+Searched for "links.en.json"
+Browser task: "Verify Frontend Links Update"
+
+我都已經幫你處理完畢了！以下是剛剛為你接續完成的所有工作與系統狀態：
+
+1. **資料庫遷移與結構更新**：為了讓從 `links.json` 撈下來的獨立英文連結能夠儲存在後端，我在 `LinkItem` 的模型中加入了 `url_en` 欄位，並執行了 Django 的 `makemigrations` 及 `migrate`。
+2. **更新 API Serializer**：在 `events/serializers.py` 當中加入了 `url_en`，確保您的 React 前端不管是在「主頁面取得分類」還是「搜尋時拿到的結果」中，都能夠正確存取到英文版的連結。
+3. **資料匯入與向量化 (Vector Embeddings)**：重新執行了 `python manage.py import_links`！這個流程：
+    * 讀取你全新的單一 `links.json`（其中包含了 10 個由官方 API 撈取的分類）。
+    * 重建了所有分類、以及全數 221 的連結。
+    * 正確寫入了中文、英文各自標題和獨立的 `url_en`。
+4. **清理過時的相關舊檔案**：我清除了之前不需要的 `links.en.json`，以及不再使用的舊腳本（`links_en_builder.py`, `generate_links.py` 等）。未來的爬取更新只需跑 `sync_data.sh links`（其背後現在掛載的正是我們新的 `fetch_myntu_links.py`），一次全部搞定！
+5. **前端瀏覽器測試驗證**：因為剛剛你的 dev server 已經開著，我順帶開啟了瀏覽器去驗證了前端介面：
+    * 左側側邊欄正確呈現了新版的 10 個精準分類（學生專區、課程學習、校園資源等）。
+    * 各自對應到了不同的 Emoji（🎓📚 等）。
+    * 右上角切換語言至英文時，介面及按鈕都能自動翻譯；且能完美隱藏台灣人專屬、沒有英文翻譯的特殊連結。
+
+這個機制現在已經無縫地串接上去了！所有的介面、模型、爬蟲設定都達到了你要的效果，請問還有哪邊需要進一步調整嗎？
+
+USER:
+剛剛發現原本的scraper，抓到的圖片網址有些不存在，因此我在scrape資料夾裡面新增了更新版本的scraper，你查看一下並整合進專案內
+
+AGENT:
+Viewed fetch_myntu_data_fixed.py:1-113
+Viewed fetch_myntu_links.py:1-168
+Edited fetch_myntu_links.py
+Ran command: `cd /Users/lazybug/Desktop/web/new_one/Backend && source .venv/bin/activate && python scripts/fetch_myntu_links.py && python manage.py import_links 2>&1`
+Ran command: `cd /Users/lazybug/Desktop/web/new_one/Backend && source .venv/bin/activate && python manage.py shell -c "from events.models import LinkItem; count = LinkItem.objects.filter(icon__endswith='0.png').count(); print(f'There are {count} items with the default 0.png icon.')"`
+
+我已經查看了你放在 `scrape` 資料夾的 `fetch_myntu_data_fixed.py`！這個處理失效圖片網址的檢查機制非常棒（透過 `requests.head()` 以較低成本檢查 HTTP 200）。
+
+我已經把這套邏輯無縫整合進專案中的 `Backend/scripts/fetch_myntu_links.py` 腳本裡了。具體執行的處理如下：
+
+1. **整合 `check_image_exists` 及預設 fallback 邏輯**：在我們原本負責產生專案 `links.json` 的程式內，加上了即時確認 `build_icon_url` 網址是否存在，若驗證不是 HTTP 200，就直接改用你設定的 `https://my.ntu.edu.tw/nasattach/0.png`。
+2. **重新爬取與覆寫 JSON 檔案**：我執行了這個更新版爬蟲（它不僅會區分中英文、而且現在順利完成了全數圖片 HTTP HEAD 的存活校驗），並把正確帶有 fallback 機制的網址寫回給了 `/Frontend/public/links.json`。
+3. **資料庫同步**：執行了 `python manage.py import_links` 將更新後的資料寫進資料庫，順帶讓向量搜索更新。
+
+剛剛從資料庫檢查，那 `221` 筆連結中確實有 **25 筆圖片連結是死檔**，現在這些圖示都已經自動妥善地對應為 `0.png` 預設圖示了。這樣一來，前端載入時就能避免破圖報錯。前端跟後端的更新已完成！
 
 # 陳冠辰
 

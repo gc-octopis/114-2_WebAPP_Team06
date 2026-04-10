@@ -29,7 +29,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 class LinkItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinkItem
-        fields = ['label', 'label_en', 'url', 'icon']
+        fields = ['label', 'label_en', 'url', 'url_en', 'icon']
 
 class LinkCategorySerializer(serializers.ModelSerializer):
     # 'links' matches the related_name we defined in the models.py

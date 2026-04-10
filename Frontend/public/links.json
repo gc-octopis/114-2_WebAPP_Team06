@@ -1,80 +1,1104 @@
 [
   {
-    "id": "teaching",
-    "icon": "📚",
-    "label": "教學",
+    "id": "students",
+    "icon": "🎓",
+    "label": "學生專區",
+    "label_en": "Students",
     "links": [
       {
+        "label": "學生所得稅明細查詢",
+        "label_en": "Tax Details Inquiry",
+        "url": "https://mis.cc.ntu.edu.tw/tax/list.asp?from=portal&u=u",
+        "url_en": "https://mis.cc.ntu.edu.tw/tax/list.asp?lang=eng",
+        "icon": "https://my.ntu.edu.tw/nasattach/103.png"
+      },
+      {
+        "label": "薪資入帳變更申請",
+        "label_en": "Change Salary Account App.",
+        "url": "https://mis.cc.ntu.edu.tw/salsys/",
+        "url_en": "https://mis.cc.ntu.edu.tw/salsys/?lang=eng",
+        "icon": "https://my.ntu.edu.tw/nasattach/494.png"
+      },
+      {
+        "label": "學生獎懲證明書列印",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/APCert/login.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/498.png"
+      },
+      {
+        "label": "導生綜合資料",
+        "label_en": "Personal information of advisee",
+        "url": "https://my.ntu.edu.tw/stuinfo/default.aspx",
+        "url_en": "https://my.ntu.edu.tw/stuinfo/default.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/130.png"
+      },
+      {
+        "label": "學生聘僱查詢系統",
+        "label_en": "NTU Student Hired Information Query System(Chinese ver.)",
+        "url": "https://my.ntu.edu.tw/StuHireInfoQuery/index.html",
+        "url_en": "https://my.ntu.edu.tw/StuHireInfoQuery/index.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/591.png"
+      },
+      {
+        "label": "勞健保加保申請",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/labhlh_extra/login.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/509.png"
+      },
+      {
+        "label": "兼任助理臨時人員工作證明",
+        "label_en": "Assistant & Temp Job Certificates",
+        "url": "https://event.ntu.edu.tw/certificate/",
+        "url_en": "https://event.ntu.edu.tw/certificate/",
+        "icon": "https://my.ntu.edu.tw/nasattach/528.png"
+      },
+      {
+        "label": "緩徵(儘召)/役男出境申請 辦理狀況查詢",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/MilitaryService/Student/Default.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/543.png"
+      },
+      {
+        "label": "學雜(分)費專區",
+        "label_en": "Tuition and Fees Payment",
+        "url": "https://my.ntu.edu.tw/schooling/",
+        "url_en": "https://my.ntu.edu.tw/schooling/eng.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/433.png"
+      },
+      {
+        "label": "學雜分費繳費及證明",
+        "label_en": "Tuition Miscellaneous fees & Payment",
+        "url": "https://mis.cc.ntu.edu.tw/reg/",
+        "url_en": "https://mis.cc.ntu.edu.tw/reg/",
+        "icon": "https://my.ntu.edu.tw/nasattach/108.png"
+      },
+      {
+        "label": "NTU Mail 服務",
+        "label_en": "NTU Mail",
+        "url": "http://ntumail.cc.ntu.edu.tw/",
+        "url_en": "http://ntumail.cc.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/399.png"
+      },
+      {
+        "label": "教務資訊服務網(ePo 學習歷程檔)",
+        "label_en": "Academic Information Service Network(NTU ePortfolio)",
+        "url": "https://portal.aca.ntu.edu.tw/eportfolio/",
+        "url_en": "https://portal.aca.ntu.edu.tw/eportfolio/",
+        "icon": "https://my.ntu.edu.tw/nasattach/394.png"
+      },
+      {
+        "label": "學士班健檢資訊",
+        "label_en": "Health Survey for Undergraduate",
+        "url": "https://my.ntu.edu.tw/newhc/studefault.aspx?p=under",
+        "url_en": "https://my.ntu.edu.tw/newhc/studefault.aspx?p=under&lang=eng",
+        "icon": "https://my.ntu.edu.tw/nasattach/447.png"
+      },
+      {
+        "label": "碩博班健檢資訊",
+        "label_en": "Health Survey  for Graduate",
+        "url": "https://my.ntu.edu.tw/newhc/studefault.aspx?p=grad",
+        "url_en": "https://my.ntu.edu.tw/newhc/studefault.aspx?p=grad&lang=eng",
+        "icon": "https://my.ntu.edu.tw/nasattach/71.png"
+      },
+      {
+        "label": "學生、教職員工證掛失/退費",
+        "label_en": "Replacement Card",
+        "url": "https://cms.cc.ntu.edu.tw/ntucms/default.aspx",
+        "url_en": "https://cms.cc.ntu.edu.tw/ntucms/default_en.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/100.png"
+      },
+      {
+        "label": "緊急連絡電話(行動電話)設定",
+        "label_en": "Emergency contact phone (mobile phone) settings(Chinese ver.)",
+        "url": "https://ann.cc.ntu.edu.tw/EmergencyHotline/index.asp",
+        "url_en": "https://ann.cc.ntu.edu.tw/EmergencyHotline/index.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/562.png"
+      },
+      {
         "label": "通識課程地圖",
+        "label_en": "",
         "url": "https://cge.ntu.edu.tw/cl_n_195217.html",
-        "icon": "https://my.ntu.edu.tw/nasattach/428.png",
-        "keywords": "通識, 課程規劃, 選課參考, 領域分類, General Education, Curriculum Map"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/317.png"
       },
       {
-        "label": "成績與名次查詢",
-        "url": "https://ifsel3.aca.ntu.edu.tw/hissco/index.asp",
-        "icon": "https://my.ntu.edu.tw/nasattach/375.png",
-        "keywords": "成績單, 排名, GPA, 學分, 成績查詢, Grades, Ranking"
+        "label": "跨領域職涯培訓 – 臺灣引路人計畫",
+        "label_en": "Interdisciplinary Internship - Mentorship Program(Chinese ver.)",
+        "url": "https://ntucace.ntu.edu.tw/",
+        "url_en": "https://ntucace.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/600.png"
       },
       {
-        "label": "領域專長查詢",
+        "label": "網路登分",
+        "label_en": "The Online Grading System",
+        "url": "https://reg227.aca.ntu.edu.tw/TeaScore/index.aspx",
+        "url_en": "https://reg227.aca.ntu.edu.tw/TeaScoreEng/index.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/309.png"
+      },
+      {
+        "label": "外校生成績查詢",
+        "label_en": "",
+        "url": "https://reg227.aca.ntu.edu.tw/TeaScore/GradesInquiriesLogin.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/489.png"
+      },
+      {
+        "label": "成績與名次查詢及探索學分申請",
+        "label_en": "Grade and Ranking Inquiry and Exploration Credit Application",
+        "url": "https://if190.aca.ntu.edu.tw/graderanking/index",
+        "url_en": "https://if190.aca.ntu.edu.tw/graderanking/index",
+        "icon": "https://my.ntu.edu.tw/nasattach/597.png"
+      },
+      {
+        "label": "成績單及學位證明書線上申請",
+        "label_en": "Online Transcript Order System",
+        "url": "https://portal.aca.ntu.edu.tw/transcript/",
+        "url_en": "https://portal.aca.ntu.edu.tw/transcript/",
+        "icon": "https://my.ntu.edu.tw/nasattach/437.png"
+      },
+      {
+        "label": "本校生校際選課系統",
+        "label_en": "",
+        "url": "https://if177.aca.ntu.edu.tw/SelCou_Oschool/login.asp",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/564.png"
+      },
+      {
+        "label": "領域專長查詢系統",
+        "label_en": "Specialization Program Compass",
         "url": "https://specom.aca.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/394.png",
-        "keywords": "專業課程, 跨領域, 專長模組, 學程, Specialization, Modules"
+        "url_en": "https://specom.aca.ntu.edu.tw/Domain/intro?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/582.png"
       },
       {
-        "label": "NTU aCARE",
-        "url": "https://ntuacare.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/108.png",
-        "keywords": "學生關懷, 心理輔導, 導師系統, 學生支援, Student Care, Support"
+        "label": "選課及註冊須知",
+        "label_en": "Notice for Course Selection & Registration",
+        "url": "https://www.aca.ntu.edu.tw/WebUPD/aca/UAADForms/selcou.pdf",
+        "url_en": "https://www.aca.ntu.edu.tw/WebUPD/acaEN/UAADForms/selcou-eng.pdf",
+        "icon": "https://my.ntu.edu.tw/nasattach/444.png"
       },
       {
-        "label": "NTU COOL",
-        "url": "https://cool.ntu.edu.tw",
-        "icon": "https://my.ntu.edu.tw/nasattach/560.png",
-        "keywords": "線上教學, 數位學習, 作業繳交, LMS, e-Learning, Canvas"
+        "label": "延緩註冊申請",
+        "label_en": "Registration Extension System",
+        "url": "https://reg227.aca.ntu.edu.tw/regwork/login.asp",
+        "url_en": "https://reg227.aca.ntu.edu.tw/regwork/login.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/446.png"
+      },
+      {
+        "label": "臺灣大學博碩士論文提交系統",
+        "label_en": "NTU These and Dissertations Submission",
+        "url": "https://submit.tdr.lib.ntu.edu.tw/",
+        "url_en": "https://submit.tdr.lib.ntu.edu.tw/?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/0.png"
+      },
+      {
+        "label": "學位論文原創性檢查 Turnitin",
+        "label_en": "Similarity Reports For Thesis by Turnitin",
+        "url": "https://www.lib.ntu.edu.tw/node/4923",
+        "url_en": "https://www.lib.ntu.edu.tw/en/node/4957",
+        "icon": "https://my.ntu.edu.tw/nasattach/0.png"
+      },
+      {
+        "label": "網路選課1",
+        "label_en": "Online Course Selection System I",
+        "url": "https://if192.aca.ntu.edu.tw/",
+        "url_en": "https://if192.aca.ntu.edu.tw/default.asp?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/428.png"
+      },
+      {
+        "label": "網路選課2",
+        "label_en": "Online Course Selection System II",
+        "url": "https://if177.aca.ntu.edu.tw/",
+        "url_en": "https://if177.aca.ntu.edu.tw/default.asp?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/429.png"
+      },
+      {
+        "label": "學分學程線上申請",
+        "label_en": "",
+        "url": "http://ifsel3.aca.ntu.edu.tw/cou_stu/default.asp",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/423.png"
+      },
+      {
+        "label": "選課結果查詢",
+        "label_en": "Course Selection Results",
+        "url": "https://if177.aca.ntu.edu.tw/qcaureg/stulogin.asp",
+        "url_en": "https://if177.aca.ntu.edu.tw/eqcaureg/estulogin.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/445.png"
+      },
+      {
+        "label": "學士班修課檢視表",
+        "label_en": "",
+        "url": "https://reg.aca.ntu.edu.tw/GradeCheck/login",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/371.png"
+      },
+      {
+        "label": "轉系輔系雙主修",
+        "label_en": "",
+        "url": "http://reg227.aca.ntu.edu.tw/TMD/stuquery/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/467.png"
+      },
+      {
+        "label": "學分抵免審查",
+        "label_en": "Credit Transfer Applications",
+        "url": "http://curri.aca.ntu.edu.tw/aca_doc/waive.asp",
+        "url_en": "https://curri.aca.ntu.edu.tw/aca_doc/waive_English.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/369.png"
+      },
+      {
+        "label": "交換生國外修課成績登錄暨採計申請",
+        "label_en": "NTU Students' Credit Recognition for Courses Taken Abroad System (Chinese ver.)",
+        "url": "https://if190.aca.ntu.edu.tw/exstuapp/loginr.asp",
+        "url_en": "https://if190.aca.ntu.edu.tw/exstuapp/loginr.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/451.png"
+      },
+      {
+        "label": "海外教育資訊網",
+        "label_en": "NTU Study Abroad",
+        "url": "https://studyabroad.ntu.edu.tw",
+        "url_en": "https://studyabroad.ntu.edu.tw/en/",
+        "icon": "https://my.ntu.edu.tw/nasattach/584.png"
+      },
+      {
+        "label": "海外教育博覽會",
+        "label_en": "NTU Study Abroad Expo",
+        "url": "https://studyabroadexpo.ntu.edu.tw",
+        "url_en": "https://studyabroadexpo.ntu.edu.tw/en",
+        "icon": "https://my.ntu.edu.tw/nasattach/585.png"
+      },
+      {
+        "label": "臺大國際引路人計畫",
+        "label_en": "NTU International Mentorship Program",
+        "url": "https://oiainternship.ntu.edu.tw/",
+        "url_en": "https://oiainternship.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/586.png"
+      },
+      {
+        "label": "臺大國際引水人計畫",
+        "label_en": "NTU Overseas Internship Program",
+        "url": "https://internshipabroad.ntu.edu.tw/",
+        "url_en": "https://internshipabroad.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/594.png"
+      },
+      {
+        "label": "開放式課程網",
+        "label_en": "",
+        "url": "http://ocw.aca.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/461.png"
+      },
+      {
+        "label": "服務學習網",
+        "label_en": "",
+        "url": "https://osa_activity.ntu.edu.tw/ServiceLearning",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/431.png"
+      },
+      {
+        "label": "免修進階英語申請",
+        "label_en": "",
+        "url": "https://investea.aca.ntu.edu.tw/secen-waive/OpenTime.asp",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/456.png"
+      },
+      {
+        "label": "語文中心外語課程",
+        "label_en": "",
+        "url": "http://www.ntulc.ntu.edu.tw",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/331.png"
+      },
+      {
+        "label": "學習諮詢",
+        "label_en": "NTU Academic Counseling Service",
+        "url": "https://ntuacounseling.ntu.edu.tw/web/basic",
+        "url_en": "https://ntuacounseling.ntu.edu.tw/web/basic",
+        "icon": "https://my.ntu.edu.tw/nasattach/242.png"
+      },
+      {
+        "label": "教學意見調查",
+        "label_en": "Online Course Questionnaire System",
+        "url": "http://investea.aca.ntu.edu.tw/aca_doc/opinion/opinion.asp",
+        "url_en": "https://if163.aca.ntu.edu.tw/eportfolio/defaulteng.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/454.png"
+      },
+      {
+        "label": "優良教師問卷調查",
+        "label_en": "",
+        "url": "https://if177.aca.ntu.edu.tw/net106/acaquest.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/377.png"
+      },
+      {
+        "label": "碩博士學位考試申請",
+        "label_en": "Online Application System for the Oral Thesis/Dissertation Defenses",
+        "url": "https://gra103.aca.ntu.edu.tw/degree/index_main.asp",
+        "url_en": "https://gra103.aca.ntu.edu.tw/degree/index_main_en.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/432.png"
+      },
+      {
+        "label": "職涯中心一對一諮詢預約系統",
+        "label_en": "Career Center One-on-One Consultation Appointment System (Chinese ver.)",
+        "url": "https://appoint.cc.ntu.edu.tw/",
+        "url_en": "https://appoint.cc.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/92.png"
+      },
+      {
+        "label": "學生請假(學生)",
+        "label_en": "Student Leave (student)",
+        "url": "https://my.ntu.edu.tw/stuLeaveManagement/login.aspx",
+        "url_en": "https://my.ntu.edu.tw/stuLeaveManagement/login.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/185.png"
+      },
+      {
+        "label": "學生安全守護網",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/safeguard/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/554.png"
+      },
+      {
+        "label": "生輔組退費申請",
+        "label_en": "Refund System of Tuition and Miscellaneous Fees Exemption(Chinese ver.)",
+        "url": "https://my.ntu.edu.tw/complexrefund/login.aspx",
+        "url_en": "https://my.ntu.edu.tw/complexrefund/engmsg.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/476.png"
+      },
+      {
+        "label": "休學申請",
+        "label_en": "Request for Leave of Absence(Chinese ver.)",
+        "url": "https://my.ntu.edu.tw/restleave/login.aspx",
+        "url_en": "https://my.ntu.edu.tw/restleave/login.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/147.png"
+      },
+      {
+        "label": "心輔中心初談預約",
+        "label_en": "Intake Registration at Student Counseling Center",
+        "url": "https://my.ntu.edu.tw/counsel/index.html",
+        "url_en": "https://my.ntu.edu.tw/counsel/eng/index.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/89.png"
+      },
+      {
+        "label": "保健中心看診進度",
+        "label_en": "Clinics Progress",
+        "url": "https://ntuhccall.cloud.ntu.edu.tw/",
+        "url_en": "https://ntuhccall.cloud.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/0.png"
+      },
+      {
+        "label": "宿舍(床位)相關資訊",
+        "label_en": "Dormitory Infomation",
+        "url": "https://osa_dorm.ntu.edu.tw/",
+        "url_en": "https://osa_dorm.ntu.edu.tw/en/",
+        "icon": "https://my.ntu.edu.tw/nasattach/439.png"
+      },
+      {
+        "label": "宿舍報修",
+        "label_en": "Dormitory Maintenance Online Request",
+        "url": "https://housing.ntu.edu.tw",
+        "url_en": "https://housing.ntu.edu.tw/?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/440.png"
+      },
+      {
+        "label": "宿舍退宿退費申請",
+        "label_en": "Application for dorm withdrawal and refund",
+        "url": "https://housing.ntu.edu.tw",
+        "url_en": "https://housing.ntu.edu.tw/?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/192.png"
+      },
+      {
+        "label": "汽車證抽籤登記",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ntupass/login.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/397.png"
+      },
+      {
+        "label": "機車證申請",
+        "label_en": "",
+        "url": "https://iparking.ntu.edu.tw/Application/NTUParking",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/396.png"
+      },
+      {
+        "label": "自行車拖吊查詢",
+        "label_en": "Bicycle online management system",
+        "url": "https://mybike.ntu.edu.tw/bike.announcement/towing/",
+        "url_en": "https://mybike.ntu.edu.tw/bike.announcement/towing/lang/en",
+        "icon": "https://my.ntu.edu.tw/nasattach/0.png"
+      },
+      {
+        "label": "YouBike2.0補助",
+        "label_en": "YouBike2.0 Subsidy",
+        "url": "https://my.ntu.edu.tw/yb2sub/",
+        "url_en": "https://my.ntu.edu.tw/yb2sub/",
+        "icon": "https://my.ntu.edu.tw/nasattach/572.png"
+      },
+      {
+        "label": "網路問題回報",
+        "label_en": "",
+        "url": "https://net4help.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/590.png"
+      },
+      {
+        "label": "學生財務支援服務(獎助學金)",
+        "label_en": "Financial Aid System",
+        "url": "https://my.ntu.edu.tw/fao/login.aspx",
+        "url_en": "https://my.ntu.edu.tw/fao/login.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/481.png"
+      },
+      {
+        "label": "生活學習助學金申請",
+        "label_en": "Applying the Learning Through Living Student Assistantship",
+        "url": "https://my.ntu.edu.tw/internApp/",
+        "url_en": "https://my.ntu.edu.tw/internApp/",
+        "icon": "https://my.ntu.edu.tw/nasattach/231.png"
+      },
+      {
+        "label": "減免學雜費申請",
+        "label_en": "Tuition And Fees Reduced System(Chinese ver.)",
+        "url": "https://my.ntu.edu.tw/discount/",
+        "url_en": "https://my.ntu.edu.tw/discount/engmsg.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/131.png"
+      },
+      {
+        "label": "弱勢學生助學申請",
+        "label_en": "Underprivileged Student Aids (Chinese ver.)",
+        "url": "https://my.ntu.edu.tw/coloan/readme.aspx?logoutFunction=false",
+        "url_en": "https://my.ntu.edu.tw/coloan/engmsg.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/128.png"
+      },
+      {
+        "label": "就學貸款申請",
+        "label_en": "Student Loan Application System (Chinese ver.)",
+        "url": "https://my.ntu.edu.tw/loan/",
+        "url_en": "https://my.ntu.edu.tw/loan/engmsg.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/133.png"
+      },
+      {
+        "label": "社團活動資訊",
+        "label_en": "Club Activity Information System",
+        "url": "https://my.ntu.edu.tw/clubactivities/",
+        "url_en": "https://my.ntu.edu.tw/clubactivities/",
+        "icon": "https://my.ntu.edu.tw/nasattach/213.png"
+      },
+      {
+        "label": "海報布旗(社團登入)",
+        "label_en": "Poster Posting System(Chinese ver.)",
+        "url": "https://my.ntu.edu.tw/poster/loginc.aspx",
+        "url_en": "https://my.ntu.edu.tw/poster/loginc.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/236.png"
+      },
+      {
+        "label": "畢業生離校手續查詢",
+        "label_en": "Steps for Application to Leave School",
+        "url": "https://my.ntu.edu.tw/StudLeave/Login.aspx",
+        "url_en": "https://my.ntu.edu.tw/StudLeave/LoginEnglish.aspx?lang=eng",
+        "icon": "https://my.ntu.edu.tw/nasattach/7.png"
+      },
+      {
+        "label": "大專校院就業職能診斷平台",
+        "label_en": "Career & Competency Assessment Network(Chinese ver.)",
+        "url": "https://ucan.moe.edu.tw/",
+        "url_en": "https://ucan.moe.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/419.png"
+      },
+      {
+        "label": "畢業生流向問卷調查--校友端",
+        "label_en": "Graduate Destination Survey (Chinese ver.)",
+        "url": "https://career.ntu.edu.tw/Alumni/gsurvey/informationplatform",
+        "url_en": "https://career.ntu.edu.tw/Alumni/gsurvey/informationplatform",
+        "icon": "https://my.ntu.edu.tw/nasattach/506.png"
+      }
+    ]
+  },
+  {
+    "id": "courses",
+    "icon": "📚",
+    "label": "課程學習",
+    "label_en": "Courses",
+    "links": [
+      {
+        "label": "臺大課程地圖",
+        "label_en": "Curriculum Mapping",
+        "url": "http://coursemap.aca.ntu.edu.tw/course_map_all/",
+        "url_en": "http://coursemap.aca.ntu.edu.tw/course_map_all/map.php?lang=en_US",
+        "icon": "https://my.ntu.edu.tw/nasattach/316.png"
       },
       {
         "label": "臺大新課程網",
+        "label_en": "NTU Course Neo",
         "url": "https://course.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/599.png",
-        "keywords": "課表查詢, 課程大綱, 教授資訊, 課程代碼, Course Syllabus, Search"
+        "url_en": "https://course.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/599.png"
       },
       {
-        "label": "網路選課系統",
-        "url": "https://if192.aca.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/185.png",
-        "keywords": "選課, 抽籤, 加簽, 課程加退選, Course Registration, Enrollment"
+        "label": "NTU COOL 數位教學平臺",
+        "label_en": "NTU COOL",
+        "url": "https://cool.ntu.edu.tw",
+        "url_en": "https://cool.ntu.edu.tw",
+        "icon": "https://my.ntu.edu.tw/nasattach/560.png"
       },
       {
-        "label": "學生在學狀態查詢",
-        "url": "https://reg.aca.ntu.edu.tw/stustatus/Default.aspx",
-        "icon": "https://my.ntu.edu.tw/nasattach/166.png",
-        "keywords": "學籍, 在學證明, 註冊, 休學, Enrollment Status, Registry"
-      },
-      {
-        "label": "臺大慕課 Coursera",
+        "label": "臺大慕課 X Coursera",
+        "label_en": "NTU MOOC",
         "url": "https://www.dlc.ntu.edu.tw/ntu-mooc-x-coursera/",
-        "icon": "https://my.ntu.edu.tw/nasattach/560.png",
-        "keywords": "線上課程, 磨課師, 遠距證照, 自我充實, Online Courses, MOOCs"
+        "url_en": "https://www.coursera.org/taiwan",
+        "icon": "https://my.ntu.edu.tw/nasattach/531.png"
       },
       {
-        "label": "學生請假簽核",
-        "url": "https://my.ntu.edu.tw/stuLeaveManagement/login.aspx",
-        "icon": "https://my.ntu.edu.tw/nasattach/394.png",
-        "keywords": "病假, 事假, 假單申請, 缺席, Leave of Absence, Sick Leave"
+        "label": "臺大課程網",
+        "label_en": "Online Course Information",
+        "url": "https://nol.ntu.edu.tw/nol/guest/index.php",
+        "url_en": "https://nol.ntu.edu.tw/nol/guest/index_foreng.php",
+        "icon": "https://my.ntu.edu.tw/nasattach/318.png"
       },
       {
-        "label": "修課人數查詢",
-        "url": "https://if177.aca.ntu.edu.tw/teaqnum/",
-        "icon": "https://my.ntu.edu.tw/nasattach/166.png",
-        "keywords": "選課人數, 教室容量, 餘額查詢, Course Capacity, Enrollment Count"
+        "label": "臺大課程網2",
+        "label_en": "",
+        "url": "https://nol2.aca.ntu.edu.tw/nol/guest/index.php",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/319.png"
+      },
+      {
+        "label": "選課專區",
+        "label_en": "Course Selection Information",
+        "url": "https://www.aca.ntu.edu.tw/w/aca/UAADForms_21102811111810357",
+        "url_en": "https://www.aca.ntu.edu.tw/w/acaEN/UAADForms_21111108451299811",
+        "icon": "https://my.ntu.edu.tw/nasattach/323.png"
+      },
+      {
+        "label": "臺大實習計畫",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ntuip/about.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/496.png"
+      },
+      {
+        "label": "停修課程網路申請系統",
+        "label_en": "Withdrawal Application System",
+        "url": "https://eportfolio.ntu.edu.tw/withhold/Index",
+        "url_en": "https://eportfolio.ntu.edu.tw/withhold/Index",
+        "icon": "https://my.ntu.edu.tw/nasattach/482.png"
+      },
+      {
+        "label": "計中資訊應用課程網",
+        "label_en": "",
+        "url": "http://teach.cc.ntu.edu.tw/course/index.html",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/226.png"
+      },
+      {
+        "label": "臺大數位知識典藏",
+        "label_en": "",
+        "url": "https://kan.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/526.png"
+      },
+      {
+        "label": "課程Excel檔下載",
+        "label_en": "Download Courses in Excel",
+        "url": "http://ftp.ntu.edu.tw/NTU/course/course.htm",
+        "url_en": "ftp://ftp.ntu.edu.tw/NTU/course/courseev.htm",
+        "icon": "https://my.ntu.edu.tw/nasattach/320.png"
+      },
+      {
+        "label": "臺大必修課程查詢",
+        "label_en": "Academic Program Required Courses & Credits Inquiry",
+        "url": "https://curri.aca.ntu.edu.tw/NTUVoxCourse/index.php/uquery/index",
+        "url_en": "https://curri.aca.ntu.edu.tw/NTUVoxCourse/uquery/index?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/321.png"
+      },
+      {
+        "label": "暑期班",
+        "label_en": "Summer Session Information",
+        "url": "https://coursemap.aca.ntu.edu.tw/summer/index.html?lang_type=tw",
+        "url_en": "https://coursemap.aca.ntu.edu.tw/summer/index.html?lang_type=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/324.png"
+      },
+      {
+        "label": "圖書館數位學習網",
+        "label_en": "E-Learning Center",
+        "url": "http://elearning.lib.ntu.edu.tw/",
+        "url_en": "http://elearning.lib.ntu.edu.tw/index_en.htm",
+        "icon": "https://my.ntu.edu.tw/nasattach/441.png"
+      },
+      {
+        "label": "圖書館利用講習",
+        "label_en": "",
+        "url": "http://www.lib.ntu.edu.tw/node/59",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/442.png"
+      },
+      {
+        "label": "線上英文課程",
+        "label_en": "Online English Program",
+        "url": "https://eclass.fltc.ntu.edu.tw/",
+        "url_en": "https://eclass.fltc.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/479.png"
+      },
+      {
+        "label": "進階英語課程",
+        "label_en": "Online English Program",
+        "url": "https://fltc.fltc.ntu.edu.tw/web/course/course.jsp?lang=tw",
+        "url_en": "https://fltc.fltc.ntu.edu.tw/web/course/course.jsp?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/328.png"
+      },
+      {
+        "label": "線上外語自學教室",
+        "label_en": "List of self-study software",
+        "url": "https://fltc.fltc.ntu.edu.tw/web/resource/resource.jsp?lang=tw",
+        "url_en": "https://fltc.fltc.ntu.edu.tw/web/resource/resource.jsp?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/329.png"
+      },
+      {
+        "label": "寫作教學中心",
+        "label_en": "NTU Writing Center",
+        "url": "https://www.awec.ntu.edu.tw/",
+        "url_en": "https://www.awec.ntu.edu.tw/?lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/332.png"
+      },
+      {
+        "label": "推廣教育",
+        "label_en": "",
+        "url": "https://www.ntuspecs.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/334.png"
       },
       {
         "label": "遠距教學課程",
+        "label_en": "",
         "url": "https://teach.cc.ntu.edu.tw/distance/",
-        "icon": "https://my.ntu.edu.tw/nasattach/108.png",
-        "keywords": "視訊教學, 非同步教學, 數位通識, 遠端上課, Distance Learning, Remote"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/336.png"
+      },
+      {
+        "label": "進修推廣數位學習網",
+        "label_en": "",
+        "url": "https://elearn.ntuspecs.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/337.png"
+      },
+      {
+        "label": "推廣教育電腦班",
+        "label_en": "",
+        "url": "http://www.csie.ntu.edu.tw/train/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/443.png"
+      },
+      {
+        "label": "電機系程式設計訓練班",
+        "label_en": "",
+        "url": "http://programming.ee.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/525.png"
+      }
+    ]
+  },
+  {
+    "id": "faculty",
+    "icon": "👔",
+    "label": "教職申辦",
+    "label_en": "Faculty & Staff",
+    "links": [
+      {
+        "label": "教職員投票",
+        "label_en": "Vote",
+        "url": "https://my.ntu.edu.tw/vote/",
+        "url_en": "https://my.ntu.edu.tw/vote/",
+        "icon": "https://my.ntu.edu.tw/nasattach/60.png"
+      },
+      {
+        "label": "教師彈性薪資查詢",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ntuhrEService/hrQuery/MeritPay.aspx?func=military",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/601.png"
+      },
+      {
+        "label": "教研人員電子聘書",
+        "label_en": "Letter of Appointment",
+        "url": "https://my.ntu.edu.tw/ntuhrEService/login.aspx?func=ecert",
+        "url_en": "https://my.ntu.edu.tw/ntuhrEService/login.aspx?func=ecert",
+        "icon": "https://my.ntu.edu.tw/nasattach/602.png"
+      },
+      {
+        "label": "教職員離職程序(申請端)",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ntuhrleave/login.aspx?func=task",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/539.png"
+      },
+      {
+        "label": "出國旅費E化結報系統",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/acc/TripReport",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/589.png"
+      },
+      {
+        "label": "教職員離職程序(主管端)",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ntuhrleave/login.aspx?func=leader",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/593.png"
+      },
+      {
+        "label": "研究獎助生終止系統",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/resignationProcess/studentResign/portal.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/583.png"
+      },
+      {
+        "label": "計畫專任人員識別證申請",
+        "label_en": "Apply for NTU Employee Card (Research assistant within the establishment)",
+        "url": "https://my.ntu.edu.tw/ntuhrEService/hrApply/EmpCard.aspx?ct=4",
+        "url_en": "https://my.ntu.edu.tw/ntuhrEService/hrApply/EmpCard.aspx?ct=4",
+        "icon": "https://my.ntu.edu.tw/nasattach/588.png"
+      },
+      {
+        "label": "投票管理",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/votemanager/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/5.png"
+      },
+      {
+        "label": "識別證申請",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ntuhrEService/hrApply/EmpCard.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/580.png"
+      },
+      {
+        "label": "新進教師創始經費補助申請",
+        "label_en": "Start-up funding support for new NTU faculty",
+        "url": "https://eform.cc.ntu.edu.tw/?Designer=ORDST&Database=ERPS&Solution=SOLUTION1",
+        "url_en": "https://eform.cc.ntu.edu.tw/?Designer=ORDST&Database=ERPS&Solution=SOLUTION1",
+        "icon": "https://my.ntu.edu.tw/nasattach/576.png"
+      },
+      {
+        "label": "職務說明書填報",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/hrportal/login.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/534.png"
+      },
+      {
+        "label": "帳號簽到退",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/mattend/ssi.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/529.png"
+      },
+      {
+        "label": "單位自聘全職人員管理系統",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/dptHR",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/532.png"
+      },
+      {
+        "label": "專利/技轉系統",
+        "label_en": "",
+        "url": "https://mip.ord.ntu.edu.tw/expert_login.asp",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/510.png"
+      },
+      {
+        "label": "到勤差假申請/簽核",
+        "label_en": "Attendance and Leave-taking System",
+        "url": "https://my.ntu.edu.tw/attend2/",
+        "url_en": "https://my.ntu.edu.tw/mattend/index.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/166.png"
+      },
+      {
+        "label": "公文系統",
+        "label_en": "",
+        "url": "https://ndoc.ntu.edu.tw/ifdportal_ntu/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/571.png"
+      },
+      {
+        "label": "各項補助費申請",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/subsidy/LoginEntry.htm",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/63.png"
+      },
+      {
+        "label": "教師免辦評鑑申請",
+        "label_en": "Faculty Evaluation Exemption Application System",
+        "url": "https://eportfolio.ntu.edu.tw/exemptapp/apply.asp",
+        "url_en": "https://eportfolio.ntu.edu.tw/exemptapp/apply.asp?lang=eng",
+        "icon": "https://my.ntu.edu.tw/nasattach/420.png"
+      },
+      {
+        "label": "宿舍分配管理系統",
+        "label_en": "",
+        "url": "https://dorm.cloud.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/301.png"
+      },
+      {
+        "label": "汽車證申請",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ntupass/login.aspx?area=campus_head",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/398.png"
+      },
+      {
+        "label": "公務通訊錄",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/staffContacts",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/197.png"
+      },
+      {
+        "label": "中文在職服務證明申請",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/eform/0132/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/101.png"
+      },
+      {
+        "label": "英文在職證明申請",
+        "label_en": "Certificate of Employment",
+        "url": "https://my.ntu.edu.tw/COEinEng/",
+        "url_en": "https://my.ntu.edu.tw/COEinEng/",
+        "icon": "https://my.ntu.edu.tw/nasattach/161.png"
+      },
+      {
+        "label": "計畫人員聘僱/投標",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/project/ra/default.asp",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/122.png"
+      },
+      {
+        "label": "計畫人員離職程序申請",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/certificate/v2/portal.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/190.png"
+      },
+      {
+        "label": "計畫人員各式證明申請",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/certificate/v2/portal.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/194.png"
+      },
+      {
+        "label": "計畫人員各式證明簽核",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/certificate/v2/portal.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/195.png"
+      },
+      {
+        "label": "教室會議室借用系統",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/meetingroom/index.html",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/238.png"
+      },
+      {
+        "label": "學生獎懲資訊申報(非NTU)",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ap/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/176.png"
+      },
+      {
+        "label": "研究生獎勵金申報",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/award/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/175.png"
+      },
+      {
+        "label": "人事室常用表單",
+        "label_en": "Procedures and Forms",
+        "url": "http://www.personnel.ntu.edu.tw/cl_n_8.html",
+        "url_en": "http://www.personnel.ntu.edu.tw/english/cl_n_1640.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/475.png"
+      },
+      {
+        "label": "兼職兼課查詢系統",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ntuhrEService/login.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/558.png"
+      },
+      {
+        "label": "眷屬卡申請",
+        "label_en": "Apply for NTU Dependent Card",
+        "url": "https://my.ntu.edu.tw/ntuhrEService/hrApply/DependentCard.aspx?func=dependentcard",
+        "url_en": "https://my.ntu.edu.tw/ntuhrEService/hrApply/DependentCard.aspx?func=dependentcard",
+        "icon": "https://my.ntu.edu.tw/nasattach/563.png"
+      },
+      {
+        "label": "教師手冊",
+        "label_en": "Faculty Handbook",
+        "url": "https://facultyhandbook.ntu.edu.tw",
+        "url_en": "https://facultyhandbook.ntu.edu.tw/en/",
+        "icon": "https://my.ntu.edu.tw/nasattach/577.png"
+      },
+      {
+        "label": "學生兵役管理系統",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/MilitaryService/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/544.png"
+      },
+      {
+        "label": "財物編號標籤申請及進度查詢",
+        "label_en": "",
+        "url": "https://property.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/595.png"
+      }
+    ]
+  },
+  {
+    "id": "teaching",
+    "icon": "🏫",
+    "label": "教學",
+    "label_en": "Teaching",
+    "links": [
+      {
+        "label": "成績與名次查詢",
+        "label_en": "Grades Inquiries",
+        "url": "https://ifsel3.aca.ntu.edu.tw/hissco/index.asp",
+        "url_en": "https://ifsel3.aca.ntu.edu.tw/hissco/index.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/375.png"
+      },
+      {
+        "label": "NTU aCARE學習預警暨輔導追蹤系統",
+        "label_en": "",
+        "url": "https://ntuacare.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/565.png"
+      },
+      {
+        "label": "暑期課程網路登分",
+        "label_en": "",
+        "url": "https://reg227.aca.ntu.edu.tw/SummerScore/Index.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/487.png"
+      },
+      {
+        "label": "學生在學狀態查詢",
+        "label_en": "",
+        "url": "https://reg.aca.ntu.edu.tw/stustatus/Default.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/490.png"
+      },
+      {
+        "label": "FACULTY+數位教學服務",
+        "label_en": "",
+        "url": "https://www.dlc.ntu.edu.tw/faculty/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/507.png"
+      },
+      {
+        "label": "館員協助課堂教學",
+        "label_en": "Teaching Support for EMI Courses",
+        "url": "https://www.lib.ntu.edu.tw/node/3570",
+        "url_en": "https://www.lib.ntu.edu.tw/events/2023_EMI_class/eng.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/0.png"
+      },
+      {
+        "label": "課程閱讀清單服務",
+        "label_en": "Course Reading Lists Service",
+        "url": "https://www.lib.ntu.edu.tw/node/861",
+        "url_en": "https://www.lib.ntu.edu.tw/en/node/1634",
+        "icon": "https://my.ntu.edu.tw/nasattach/0.png"
+      },
+      {
+        "label": "學生請假簽核(教師,主任,職員)",
+        "label_en": "Student Leave (teacher,staff)",
+        "url": "https://my.ntu.edu.tw/stuLeaveManagement/login.aspx?firstpage=teacher",
+        "url_en": "https://my.ntu.edu.tw/stuLeaveManagement/login.aspx?firstpage=teacher",
+        "icon": "https://my.ntu.edu.tw/nasattach/187.png"
+      },
+      {
+        "label": "修課人數查詢",
+        "label_en": "Inquiry of the Number of Students Enrolling for a Course",
+        "url": "https://if177.aca.ntu.edu.tw/teaqnum/",
+        "url_en": "https://if177.aca.ntu.edu.tw/teaqnum/entrance_eng.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/135.png"
+      },
+      {
+        "label": "教師授課時數查詢",
+        "label_en": "",
+        "url": "https://curri.aca.ntu.edu.tw/teacher/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/306.png"
+      },
+      {
+        "label": "教學歷程檔",
+        "label_en": "Teaching Portfolio",
+        "url": "https://eportfolio.ntu.edu.tw/tportfolio/Teacher_new/Login.aspx",
+        "url_en": "https://eportfolio.ntu.edu.tw/tportfolio/Teacher_new/WebEng/Login.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/402.png"
+      },
+      {
+        "label": "課程助理分組分派",
+        "label_en": "",
+        "url": "https://if177.aca.ntu.edu.tw/couta/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/305.png"
+      },
+      {
+        "label": "課程大綱線上維護",
+        "label_en": "Online Course Outline Maintenance",
+        "url": "http://nol2.aca.ntu.edu.tw/syllabus/login.php",
+        "url_en": "http://nol2.aca.ntu.edu.tw/syllabus/login.php",
+        "icon": "https://my.ntu.edu.tw/nasattach/304.png"
+      },
+      {
+        "label": "期中教學意見調查結果",
+        "label_en": "",
+        "url": "https://investea.aca.ntu.edu.tw/aca_doc/midopin/midresult.asp",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/308.png"
+      },
+      {
+        "label": "期末教學意見院長審閱及主管查詢",
+        "label_en": "",
+        "url": "https://investea.aca.ntu.edu.tw/opinion/login.asp",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/527.png"
+      },
+      {
+        "label": "學期成績分布查詢",
+        "label_en": "",
+        "url": "https://ifsel3.aca.ntu.edu.tw/score/index.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/311.png"
+      },
+      {
+        "label": "申請講義印製",
+        "label_en": "",
+        "url": "https://curri.aca.ntu.edu.tw/tealecture/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/312.png"
+      },
+      {
+        "label": "研究歷程指引@NTULIB",
+        "label_en": "",
+        "url": "https://www.lib.ntu.edu.tw/node/4921",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/0.png"
       }
     ]
   },
@@ -82,66 +1106,98 @@
     "id": "library",
     "icon": "🔬",
     "label": "圖書研究",
+    "label_en": "Research",
     "links": [
       {
-        "label": "JADE 期刊文獻傳遞",
+        "label": "JADE期刊文獻傳遞服務",
+        "label_en": "Journal Article Delivery Express JADE",
         "url": "http://jade.lib.ntu.edu.tw/rapid_frontend/",
-        "icon": "https://my.ntu.edu.tw/nasattach/156.png",
-        "keywords": "論文申請, 文獻代查, 期刊影印, 資料傳遞, Document Delivery, Journal"
-      },
-      {
-        "label": "Turnitin 原創性檢查",
-        "url": "https://www.lib.ntu.edu.tw/node/4923",
-        "icon": "https://my.ntu.edu.tw/nasattach/501.png",
-        "keywords": "論文比對, 抄襲檢測, 學術誠信, 畢業論文, Plagiarism Check"
+        "url_en": "http://jade.lib.ntu.edu.tw/rapid_frontend/",
+        "icon": "https://my.ntu.edu.tw/nasattach/156.png"
       },
       {
         "label": "iThenticate 2.0",
+        "label_en": "iThenticate 2.0",
         "url": "https://download.cc.ntu.edu.tw/iThenticate/Default.aspx",
-        "icon": "https://my.ntu.edu.tw/nasattach/501.png",
-        "keywords": "研究論文比對, 期刊投稿, 抄襲預防, Academic Originality, Similarity"
+        "url_en": "https://download.cc.ntu.edu.tw/iThenticate/Default.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/501.png"
       },
       {
-        "label": "臺大學術典藏 NTUR",
+        "label": "研究計畫兼任助理學生專區",
+        "label_en": "Section for Project RAs (Students Only)",
+        "url": "https://my.ntu.edu.tw/pm/confirmWhoami.aspx",
+        "url_en": "https://my.ntu.edu.tw/pm/confirmWhoami.aspx",
+        "icon": "https://my.ntu.edu.tw/nasattach/508.png"
+      },
+      {
+        "label": "臺大學術典藏",
+        "label_en": "NTU Scholars",
         "url": "https://scholars.lib.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/555.png",
-        "keywords": "論文出版, 學術成果, 機構典藏, 著作查詢, Institutional Repository, NTUR"
+        "url_en": "https://scholars.lib.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/555.png"
       },
       {
         "label": "學術成果資訊維護",
+        "label_en": "",
         "url": "https://my.ntu.edu.tw/achv/index.htm",
-        "icon": "https://my.ntu.edu.tw/nasattach/121.png",
-        "keywords": "研究績效, 著作目錄, 教師履歷, 升等資料, Research Achievements"
-      },
-      {
-        "label": "雲端圖書館 SLIM",
-        "url": "https://ntu.primo.exlibrisgroup.com/",
-        "icon": "https://my.ntu.edu.tw/nasattach/555.png",
-        "keywords": "書目查詢, 預約書籍, 資料庫, 館藏搜尋, Library Search, SLIM"
-      },
-      {
-        "label": "個人圖書借閱查詢",
-        "url": "http://www.lib.ntu.edu.tw/node/3339",
-        "icon": "https://my.ntu.edu.tw/nasattach/156.png",
-        "keywords": "借書紀錄, 續借, 罰款, 借閱狀態, My Library Account, Loan Status"
-      },
-      {
-        "label": "館際合作借閱",
-        "url": "http://www.lib.ntu.edu.tw/node/110",
-        "icon": "https://my.ntu.edu.tw/nasattach/156.png",
-        "keywords": "跨校借書, 聯合目錄, 代借代還, Inter-library Loan, ILL"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/121.png"
       },
       {
         "label": "計畫摘要上傳",
+        "label_en": "",
         "url": "https://my.ntu.edu.tw/project/au/default.asp",
-        "icon": "https://my.ntu.edu.tw/nasattach/121.png",
-        "keywords": "國科會計畫, 研究摘要, 成果報告, 計畫管理, Project Abstract"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/198.png"
       },
       {
         "label": "臺大計畫查詢",
+        "label_en": "",
         "url": "https://my.ntu.edu.tw/project/query/default.asp",
-        "icon": "https://my.ntu.edu.tw/nasattach/121.png",
-        "keywords": "研究計畫, 經費來源, 計畫主持人, 核定案, Project Search, Funding"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/415.png"
+      },
+      {
+        "label": "圖書館館際合作",
+        "label_en": "",
+        "url": "http://www.lib.ntu.edu.tw/node/110",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/160.png"
+      },
+      {
+        "label": "雲端圖書館自動化系統",
+        "label_en": "System for Library Information Management, SLIM",
+        "url": "https://ntu.primo.exlibrisgroup.com/",
+        "url_en": "https://ntu.primo.exlibrisgroup.com/discovery/search?vid=886NTU_INST:886NTU_INST&lang=en",
+        "icon": "https://my.ntu.edu.tw/nasattach/556.png"
+      },
+      {
+        "label": "查詢個人圖書借閱",
+        "label_en": "View Your Circulation Record",
+        "url": "http://www.lib.ntu.edu.tw/node/3339",
+        "url_en": "http://www.lib.ntu.edu.tw/en/node/3341",
+        "icon": "https://my.ntu.edu.tw/nasattach/154.png"
+      },
+      {
+        "label": "校內圖書代借服務",
+        "label_en": "Intercampus Loan Services",
+        "url": "http://www.lib.ntu.edu.tw/node/104",
+        "url_en": "http://www.lib.ntu.edu.tw/en/node/816",
+        "icon": "https://my.ntu.edu.tw/nasattach/155.png"
+      },
+      {
+        "label": "實驗場所運作管理",
+        "label_en": "",
+        "url": "https://eposh.ntu.edu.tw",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/480.png"
+      },
+      {
+        "label": "國科會計畫 - 校內流用變更",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/pmvirment/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/573.png"
       }
     ]
   },
@@ -149,66 +1205,84 @@
     "id": "finance",
     "icon": "💰",
     "label": "帳務財物",
+    "label_en": "Accounts",
     "links": [
       {
         "label": "保費證明",
+        "label_en": "",
         "url": "https://mis.cc.ntu.edu.tw/tax/insure/list.asp",
-        "icon": "https://my.ntu.edu.tw/nasattach/483.png",
-        "keywords": "健保, 勞保, 扣繳憑單, 報稅證明, Insurance Certificate"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/483.png"
       },
       {
-        "label": "出國旅費E化結報",
-        "url": "https://my.ntu.edu.tw/acc/TripReport",
-        "icon": "https://my.ntu.edu.tw/nasattach/589.png",
-        "keywords": "差旅費, 機票報帳, 公差, 結報, Travel Reimbursement"
+        "label": "部分工時人員管理系統(原「短期人員經費管理系統」)(申請端)",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/shortTermNTuer/login.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/491.png"
       },
       {
-        "label": "薪資入帳變更申請",
-        "url": "https://mis.cc.ntu.edu.tw/salsys/",
-        "icon": "https://my.ntu.edu.tw/nasattach/494.png",
-        "keywords": "銀行帳號, 薪轉, 帳戶修改, 郵局帳號, Bank Account Change, Salary"
+        "label": "計畫帳務 1.0 (臺灣大學帳務系統)",
+        "label_en": "",
+        "url": "https://ntuacc.cc.ntu.edu.tw/acc/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/111.png"
       },
       {
-        "label": "支付查詢暨付款通知",
-        "url": "https://mis.cc.ntu.edu.tw/tax/payquery/",
-        "icon": "https://my.ntu.edu.tw/nasattach/222.png",
-        "keywords": "撥款進度, 酬勞查詢, 廠商付款, 匯款通知, Payment Status"
+        "label": "部門帳務--部門主管",
+        "label_en": "",
+        "url": "https://ntuacc.cc.ntu.edu.tw/acc/sso.asp?act=d&c=m&f=portal",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/112.png"
+      },
+      {
+        "label": "付款查詢暨付款通知",
+        "label_en": "Payment Information System",
+        "url": "https://my.ntu.edu.tw/pay/Default.aspx",
+        "url_en": "https://my.ntu.edu.tw/pay/Default.aspx?lang=eng",
+        "icon": "https://my.ntu.edu.tw/nasattach/144.png"
       },
       {
         "label": "報帳/請購/臨時薪資",
-        "url": "https://mis.cc.ntu.edu.tw/acc/pms/",
-        "icon": "https://my.ntu.edu.tw/nasattach/589.png",
-        "keywords": "採購, 經費核銷, 工讀金, 經費申請, Accounting, Procurement"
+        "label_en": "",
+        "url": "https://ntuacc.cc.ntu.edu.tw/acc/index.asp",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/222.png"
       },
       {
         "label": "教職員薪資查詢",
-        "url": "https://mis.cc.ntu.edu.tw/tax/salary/",
-        "icon": "https://my.ntu.edu.tw/nasattach/494.png",
-        "keywords": "薪資單, 獎金, 扣款明細, 入帳紀錄, Payslip, Salary Record"
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/pay/login.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/104.png"
       },
       {
-        "label": "財物編號標籤申請",
-        "url": "https://my.ntu.edu.tw/acc/PropertyTags/",
-        "icon": "https://my.ntu.edu.tw/nasattach/595.png",
-        "keywords": "財產貼紙, 設備盤點, 資產管理, Property Tags, Asset Labels"
+        "label": "教職員所得稅明細查詢",
+        "label_en": "Tax Details Inquiry",
+        "url": "https://mis.cc.ntu.edu.tw/tax/list.asp?from=portal&s=s",
+        "url_en": "https://mis.cc.ntu.edu.tw/tax/list.asp?lang=eng",
+        "icon": "https://my.ntu.edu.tw/nasattach/109.png"
       },
       {
         "label": "職務宿舍繳費證明",
-        "url": "https://my.ntu.edu.tw/dorm/mis/Default.aspx",
-        "icon": "https://my.ntu.edu.tw/nasattach/483.png",
-        "keywords": "宿舍租金, 公宿, 繳款憑證, Dormitory Payment, Housing Fee"
+        "label_en": "",
+        "url": "https://mis.cc.ntu.edu.tw/tax/rental/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/581.png"
+      },
+      {
+        "label": "資通盤點系統",
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/cybersecurity",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/592.png"
       },
       {
         "label": "財產物品管理",
-        "url": "http://140.112.160.101/Asset/UserLogin.aspx",
-        "icon": "https://my.ntu.edu.tw/nasattach/595.png",
-        "keywords": "設備報廢, 移轉, 財產清冊, 物品增減, Inventory, Asset Management"
-      },
-      {
-        "label": "教職員所得稅查詢",
-        "url": "https://mis.cc.ntu.edu.tw/tax/query/",
-        "icon": "https://my.ntu.edu.tw/nasattach/222.png",
-        "keywords": "報稅, 扣繳憑單, 稅額計算, 所得明細, Income Tax, Withholding"
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/assetManagement/assetQuery.aspx",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/138.png"
       }
     ]
   },
@@ -216,54 +1290,70 @@
     "id": "venue",
     "icon": "🏟️",
     "label": "場館交通",
+    "label_en": "Facilities",
     "links": [
       {
         "label": "修繕申請",
+        "label_en": "",
         "url": "https://my.ntu.edu.tw/repairservice2/",
-        "icon": "https://my.ntu.edu.tw/nasattach/233.png",
-        "keywords": "水電維修, 建築修繕, 報修系統, 設施損壞, Repair Request, Maintenance"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/233.png"
       },
       {
-        "label": "總務處會議室",
+        "label": "總務處會議室系統",
+        "label_en": "",
         "url": "https://my.ntu.edu.tw/confr/",
-        "icon": "https://my.ntu.edu.tw/nasattach/587.png",
-        "keywords": "行政空間, 會議室預約, 行政會議, Meeting Rooms, Admin"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/587.png"
       },
       {
         "label": "門禁管理",
+        "label_en": "",
         "url": "http://acs.cc.ntu.edu.tw/NTUAcs/_defaut.aspx",
-        "icon": "https://my.ntu.edu.tw/nasattach/388.png",
-        "keywords": "刷卡, 校園安全, 證件權限, 出入管理, Access Control, Key Card"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/388.png"
       },
       {
         "label": "停車證申請",
-        "url": "https://my.ntu.edu.tw/parking/",
-        "icon": "https://my.ntu.edu.tw/nasattach/393.png",
-        "keywords": "汽車, 機車, 停車位, 通行證, Parking Permit, Vehicle"
+        "label_en": "",
+        "url": "https://my.ntu.edu.tw/ntupass/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/393.png"
       },
       {
-        "label": "停車場多元支付",
-        "url": "https://parkingpay.ntu.edu.tw",
-        "icon": "https://my.ntu.edu.tw/nasattach/393.png",
-        "keywords": "行動支付, 停車費, 悠遊卡, 自動扣款, Parking Payment, Mobile Pay"
+        "label": "停車場多元支付平台",
+        "label_en": "Parking Lot Multi-Payment Platform",
+        "url": "https://ntuparking.ntu.edu.tw/iparking-ui/",
+        "url_en": "https://ntuparking.ntu.edu.tw/iparking-ui/",
+        "icon": "https://my.ntu.edu.tw/nasattach/574.png"
       },
       {
         "label": "地圖與交通資訊",
+        "label_en": "NTU Maps & Directions",
         "url": "https://www.ntu.edu.tw/about/map.html",
-        "icon": "https://my.ntu.edu.tw/nasattach/340.png",
-        "keywords": "校園地圖, 接駁車, 校區位置, 指南, Campus Map, Transportation"
+        "url_en": "https://www.ntu.edu.tw/english/about/map.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/61.png"
       },
       {
-        "label": "教室會議室借用",
-        "url": "https://curri.aca.ntu.edu.tw/css/",
-        "icon": "https://my.ntu.edu.tw/nasattach/587.png",
-        "keywords": "課堂空間, 活動場地, 空間預約, Classroom Booking, Venue"
+        "label": "場館空間資訊網",
+        "label_en": "NTU Space Infomation",
+        "url": "https://my.ntu.edu.tw/spaceinfo/",
+        "url_en": "https://my.ntu.edu.tw/spaceinfo/",
+        "icon": "https://my.ntu.edu.tw/nasattach/340.png"
+      },
+      {
+        "label": "教務處教室查詢借用",
+        "label_en": "",
+        "url": "https://gra206.aca.ntu.edu.tw/classrm/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/463.png"
       },
       {
         "label": "體育場地預約",
-        "url": "https://pe.ntu.edu.tw/Home/Index",
-        "icon": "https://my.ntu.edu.tw/nasattach/340.png",
-        "keywords": "操場, 游泳池, 球場借用, 健身房, Sports Facility, Gym"
+        "label_en": "Sports Center venue rental",
+        "url": "https://rent.pe.ntu.edu.tw/",
+        "url_en": "https://rent.pe.ntu.edu.tw/?L=EN",
+        "icon": "https://my.ntu.edu.tw/nasattach/129.png"
       }
     ]
   },
@@ -271,60 +1361,140 @@
     "id": "campus",
     "icon": "🏫",
     "label": "校園資源",
+    "label_en": "Resources",
     "links": [
       {
-        "label": "NTU Mail 服務",
-        "url": "http://ntumail.cc.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/144.png",
-        "keywords": "電子郵件, 信箱申請, 帳號管理, Webmail, Email"
+        "label": "中英文網站製作平台",
+        "label_en": "NTU Website Production Platform",
+        "url": "https://webpageprod.ntu.edu.tw/",
+        "url_en": "https://webpageprod.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/557.png"
       },
       {
-        "label": "網路問題回報",
-        "url": "https://net4help.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/399.png",
-        "keywords": "網路斷線, IP申請, 報修, 計中, Network Help, Connection"
+        "label": "視訊會議工具",
+        "label_en": "NTU Toolbox for Video Conferencing",
+        "url": "http://teach.cc.ntu.edu.tw/course/video%20conferencing/index.html",
+        "url_en": "https://teach.cc.ntu.edu.tw/course/video%20conferencing/indexen.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/511.png"
+      },
+      {
+        "label": "eduroam",
+        "label_en": "eduroam",
+        "url": "https://ccnet.ntu.edu.tw/wireless/ccnet/wireless.php?page=eduroam",
+        "url_en": "http://ccnet.ntu.edu.tw/wireless/eduroam_en.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/520.png"
       },
       {
         "label": "NTU Space",
-        "url": "https://space.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/340.png",
-        "keywords": "雲端硬碟, 檔案分享, 空間儲存, 個人雲端, Cloud Storage, File Share"
+        "label_en": "NTU Space",
+        "url": "https://www.space.ntu.edu.tw",
+        "url_en": "https://www.space.ntu.edu.tw",
+        "icon": "https://my.ntu.edu.tw/nasattach/408.png"
       },
       {
         "label": "NTU VDI",
-        "url": "https://vdi.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/399.png",
-        "keywords": "虛擬桌面, 遠距辦公, 軟體連線, 遠端電腦, Virtual Desktop, VDI"
+        "label_en": "NTU VDI",
+        "url": "https://vdi.cloud.ntu.edu.tw/",
+        "url_en": "https://vdi.cloud.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/561.png"
       },
       {
-        "label": "保健中心預約",
-        "url": "https://ntu-health.ntu.edu.tw/Health_New/Service/Login.aspx",
-        "icon": "https://my.ntu.edu.tw/nasattach/567.png",
-        "keywords": "門診, 體檢, 醫療服務, 牙醫, 內科, Health Clinic, Medical"
+        "label": "iNTU",
+        "label_en": "iNTU",
+        "url": "https://m.ntu.edu.tw/",
+        "url_en": "https://m.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/411.png"
       },
       {
-        "label": "校園軟體下載",
-        "url": "https://download.cc.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/399.png",
-        "keywords": "Windows, Office, 防毒軟體, 授權軟體, Software Download, License"
+        "label": "計中校園軟體下載",
+        "label_en": "Licensed Software Downloads",
+        "url": "https://download.cc.ntu.edu.tw",
+        "url_en": "https://download.cc.ntu.edu.tw",
+        "icon": "https://my.ntu.edu.tw/nasattach/347.png"
       },
       {
-        "label": "VPN 虛擬私有網路",
-        "url": "https://vpn.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/144.png",
-        "keywords": "校外連線, 圖書館資源, 安全連線, SSL VPN, Remote Access"
+        "label": "有關計中eMail帳號...",
+        "label_en": "About C&INC Email Account",
+        "url": "http://apply.cc.ntu.edu.tw/",
+        "url_en": "http://apply.cc.ntu.edu.tw/index_en.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/344.png"
       },
       {
-        "label": "Wi-Fi 無線網路",
-        "url": "https://wireless.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/144.png",
-        "keywords": "eduroam, 校園網路, 無線接取, 帳號設定, Wireless, WiFi"
+        "label": "計中eMail帳號密碼修改",
+        "label_en": "Change of password",
+        "url": "http://changepassword.cc.ntu.edu.tw/",
+        "url_en": "http://changepassword.cc.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/345.png"
       },
       {
-        "label": "NTU WebMaker",
-        "url": "https://webmaker.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/399.png",
-        "keywords": "網頁製作, 個人網站, 單位網站, 架站, Website Builder, Hosting"
+        "label": "個人網頁空間",
+        "label_en": "Personal Web-pages",
+        "url": "https://www.cc.ntu.edu.tw/chinese/services/serv_i01.asp",
+        "url_en": "https://www.cc.ntu.edu.tw/chinese/english/services/serv_i01.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/516.png"
+      },
+      {
+        "label": "Wi-Fi無線網路",
+        "label_en": "Wireless Network",
+        "url": "http://ccnet.ntu.edu.tw/wireless/",
+        "url_en": "http://ccnet.ntu.edu.tw/english/wireless/",
+        "icon": "https://my.ntu.edu.tw/nasattach/519.png"
+      },
+      {
+        "label": "VPN虛擬私有網路",
+        "label_en": "VPN Services",
+        "url": "https://ccnet.ntu.edu.tw/vpn/",
+        "url_en": "https://ccnet.ntu.edu.tw/vpn/PulseSecure-eng.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/523.png"
+      },
+      {
+        "label": "ADSL校園網路到府服務",
+        "label_en": "ADSL Application",
+        "url": "https://ccnet.ntu.edu.tw/ADSL/",
+        "url_en": "https://www.cc.ntu.edu.tw/english/services/serv_n07.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/521.png"
+      },
+      {
+        "label": "校園網路資料查詢",
+        "label_en": "",
+        "url": "http://netadm.cc.ntu.edu.tw/ip/query.php",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/349.png"
+      },
+      {
+        "label": "保健中心預約掛號",
+        "label_en": "Health Center/ Online Appointment",
+        "url": "https://hcregister.ntu.edu.tw/",
+        "url_en": "https://hcregister.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/434.png"
+      },
+      {
+        "label": "資通安全服務中心",
+        "label_en": "",
+        "url": "http://cert.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/517.png"
+      },
+      {
+        "label": "高效能運算服務",
+        "label_en": "High Performance Computing",
+        "url": "http://grid.ntu.edu.tw/",
+        "url_en": "http://grid.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/524.png"
+      },
+      {
+        "label": "NTP網路校時",
+        "label_en": "Network time protocol server",
+        "url": "http://ccnet.ntu.edu.tw/ntp/index.html",
+        "url_en": "http://ccnet.ntu.edu.tw/english/ntp.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/522.png"
+      },
+      {
+        "label": "校友資訊",
+        "label_en": "",
+        "url": "https://www.alumni.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/216.png"
       }
     ]
   },
@@ -332,36 +1502,91 @@
     "id": "news",
     "icon": "📢",
     "label": "消息公告",
+    "label_en": "Bulletin",
     "links": [
       {
-        "label": "校園公佈欄",
-        "url": "https://ann.cc.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/221.png",
-        "keywords": "最新消息, 公文, 通告, 重要資訊, Bulletin Board, News"
+        "label": "校園傳染病管制網",
+        "label_en": "NTU Website for Disease Control",
+        "url": "https://my.ntu.edu.tw/ntuwdc/",
+        "url_en": "https://my.ntu.edu.tw/ntuwdc/",
+        "icon": "https://my.ntu.edu.tw/nasattach/567.png"
       },
       {
         "label": "活動報名",
+        "label_en": "",
         "url": "https://my.ntu.edu.tw/actregister/Default.aspx",
-        "icon": "https://my.ntu.edu.tw/nasattach/152.png",
-        "keywords": "講座, 研討會, 校內活動, 工作坊, Event Registration, Workshop"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/152.png"
+      },
+      {
+        "label": "校園公佈欄",
+        "label_en": "Announcements / News",
+        "url": "https://ann.cc.ntu.edu.tw/",
+        "url_en": "http://ann.cc.ntu.edu.tw/eng/index.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/221.png"
+      },
+      {
+        "label": "活動月曆",
+        "label_en": "",
+        "url": "https://ann.cc.ntu.edu.tw/activities/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/241.png"
+      },
+      {
+        "label": "臺大校訊",
+        "label_en": "NTU Newsletter",
+        "url": "https://sec.ntu.edu.tw/epaper/",
+        "url_en": "http://ntuhighlights.ntu.edu.tw/",
+        "icon": "https://my.ntu.edu.tw/nasattach/350.png"
       },
       {
         "label": "臺大行事曆",
+        "label_en": "NTU Calendar",
         "url": "https://www.aca.ntu.edu.tw/w/aca/calendar",
-        "icon": "https://my.ntu.edu.tw/nasattach/352.png",
-        "keywords": "學期時間, 放假, 重要日期, 開學日, Academic Calendar, Schedule"
+        "url_en": "https://www.aca.ntu.edu.tw/w/acaEN/Calendar",
+        "icon": "https://my.ntu.edu.tw/nasattach/352.png"
       },
       {
-        "label": "臺大電子報",
-        "url": "http://epaper.ntu.edu.tw/",
-        "icon": "https://my.ntu.edu.tw/nasattach/241.png",
-        "keywords": "校園新聞, 專訪, 活動報導, ePaper, Newsletter"
+        "label": "臺大演講網",
+        "label_en": "",
+        "url": "https://speech.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/356.png"
+      },
+      {
+        "label": "法規與紀錄",
+        "label_en": "Laws, Regulations and Records",
+        "url": "https://sec.ntu.edu.tw/News_n_846_sms_9757.html",
+        "url_en": "https://sec.ntu.edu.tw/en/News_n_1879_sms_10796.html",
+        "icon": "https://my.ntu.edu.tw/nasattach/359.png"
       },
       {
         "label": "校內徵才公告",
-        "url": "https://my.ntu.edu.tw/job/",
-        "icon": "https://my.ntu.edu.tw/nasattach/152.png",
-        "keywords": "職缺, 助理招募, 徵人, 專案人員, Job Recruitment, Vacancies"
+        "label_en": "",
+        "url": "https://ann.cc.ntu.edu.tw/index.asp?catalog=%BCx%A4~",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/357.png"
+      },
+      {
+        "label": "臺大電子報",
+        "label_en": "",
+        "url": "https://epaper.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/119.png"
+      },
+      {
+        "label": "教職員工文康活動公告",
+        "label_en": "",
+        "url": "https://ntufastea.ntu.edu.tw/",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/354.png"
+      },
+      {
+        "label": "捐款與致謝辦法",
+        "label_en": "",
+        "url": "https://giving.ntu.edu.tw/Upload/Files/Acknowledgements.pdf",
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/351.png"
       }
     ]
   },
@@ -369,36 +1594,35 @@
     "id": "feedback",
     "icon": "💬",
     "label": "意見交流",
+    "label_en": "Opinions",
     "links": [
       {
         "label": "滿意度問卷調查",
+        "label_en": "",
         "url": "https://my.ntu.edu.tw/questionnaire/Login.aspx",
-        "icon": "https://my.ntu.edu.tw/nasattach/59.png",
-        "keywords": "意見回饋, 服務評分, 問卷分析, Satisfaction Survey, Feedback"
-      },
-      {
-        "label": "教職員投票",
-        "url": "https://my.ntu.edu.tw/vote/",
-        "icon": "https://my.ntu.edu.tw/nasattach/60.png",
-        "keywords": "選舉, 意見調查, 校務參與, 投票系統, Voting, Elections"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/59.png"
       },
       {
         "label": "校務建言",
+        "label_en": "NTU Suggestion System",
         "url": "https://my.ntu.edu.tw/suggest/index.asp",
-        "icon": "https://my.ntu.edu.tw/nasattach/218.png",
-        "keywords": "建議, 投訴, 改革想法, 校務改善, Suggestions, Proposal"
+        "url_en": "https://my.ntu.edu.tw/suggest/english/index.asp",
+        "icon": "https://my.ntu.edu.tw/nasattach/218.png"
       },
       {
         "label": "行政興革意見信箱",
+        "label_en": "Email Your Comments on Administrative Improvements",
         "url": "mailto:secretariat@ntu.edu.tw",
-        "icon": "https://my.ntu.edu.tw/nasattach/365.png",
-        "keywords": "秘書室, 行政改善, 電子郵件, 反映管道, Administrative Mailbox"
+        "url_en": "mailto:secretariat@ntu.edu.tw",
+        "icon": "https://my.ntu.edu.tw/nasattach/365.png"
       },
       {
         "label": "校務會議提案討論區",
+        "label_en": "",
         "url": "https://mis.cc.ntu.edu.tw/aca3_meeting/asp/login_sso.asp",
-        "icon": "https://my.ntu.edu.tw/nasattach/364.png",
-        "keywords": "會議議題, 提案流程, 民主參與, 校務決策, Meeting Agenda"
+        "url_en": "",
+        "icon": "https://my.ntu.edu.tw/nasattach/364.png"
       }
     ]
   }

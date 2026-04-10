@@ -6,15 +6,17 @@ import { useDraggable } from "@dnd-kit/core";
 // 每個可拖曳的連結卡片import { useLanguage } from './LanguageContext';
 function DraggableCard({ item, lang }) {
     const linkLabel = getLocalizedValue(item, lang, "label", "");
+    // 英文模式優先使用 url_en（若有），否則回退 url
+    const linkUrl = getLocalizedValue(item, lang, "url", item.url) || item.url;
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-        id: `fav-${item.url}`,
+        id: `fav-${item.url}`,  // id 固定用中文 url，保持 pinned 記憶穩定
         data: { item },
     });
 
     return (
         <a
             ref={setNodeRef}
-            href={isDragging ? undefined : item.url}  // 拖曳中停用連結
+            href={isDragging ? undefined : linkUrl}
             className="card-anchor-item"
             target="_blank"
             rel="noopener noreferrer"

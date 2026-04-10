@@ -71,35 +71,7 @@ ensure_migrated() {
   (cd "$SCRIPT_DIR" && "$PYTHON_BIN" manage.py migrate --noinput)
 }
 
-verify_links_en_json() {
-  "$PYTHON_BIN" - <<'PY' "$SCRIPT_DIR/../Frontend/public/links.en.json"
-import json
-import sys
 
-path = sys.argv[1]
-with open(path, 'r', encoding='utf-8') as f:
-  data = json.load(f)
-
-missing = []
-for cat in data:
-  cat_id = str(cat.get('id', ''))
-  for item in cat.get('links', []):
-    label = str(item.get('label', '')).strip()
-    label_en = str(item.get('label_en', '')).strip()
-    if not label_en:
-      missing.append(f"{cat_id}:{label}")
-
-if missing:
-  print('Error: links.en.json has missing label_en entries:')
-  for row in missing[:20]:
-    print(f"  - {row}")
-  if len(missing) > 20:
-    print(f"  ... and {len(missing) - 20} more")
-  raise SystemExit(1)
-
-print('OK: links.en.json has label_en for all links')
-PY
-}
 
 run_announcements() {
   echo "==> Sync announcements (zh, en)"
@@ -119,11 +91,8 @@ run_calendar() {
 }
 
 run_links() {
-  echo "==> Build English links JSON"
-  (cd "$SCRIPT_DIR" && "$PYTHON_BIN" scripts/links_en_builder.py)
-
-  echo "==> Validate English link labels"
-  verify_links_en_json
+  echo "==> Fetch links from myNTU (zh + en)"
+  (cd "$SCRIPT_DIR" && "$PYTHON_BIN" scripts/fetch_myntu_links.py)
 
   echo "==> Import links into DB"
   (cd "$SCRIPT_DIR" && "$PYTHON_BIN" manage.py import_links)
