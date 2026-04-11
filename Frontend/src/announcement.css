@@ -132,13 +132,19 @@
     border-radius: 12px;
     background: var(--bg-surface);
     padding: 12px 14px;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.feedback-item.feedback-item--active {
+    background: var(--bg-hover);
+    border-color: var(--primary-color);
 }
 
 .feedback-item-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
 .feedback-item-user {
@@ -146,6 +152,40 @@
     align-items: center;
     gap: 8px;
     min-width: 0;
+    flex: 1;
+}
+
+.feedback-item-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.feedback-toggle-btn {
+    background: none;
+    border: none;
+    padding: 4px 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--text-muted);
+    transition: transform 0.2s, color 0.2s;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transform: scaleY(0.7);
+}
+
+.feedback-toggle-btn:hover {
+    color: var(--primary-color);
+}
+
+.feedback-toggle-btn.active {
+    transform: rotate(180deg) scaleY(0.7);
+    color: var(--primary-color);
 }
 
 .feedback-avatar {
@@ -201,10 +241,65 @@
 }
 
 .feedback-item-content {
-    margin: 8px 0 0;
+    margin: 8px 0 0 30px;
     color: var(--text-main);
     white-space: pre-wrap;
     line-height: 1.6;
+}
+
+.feedback-item-content-wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.feedback-item-content-wrapper .feedback-item-content {
+    margin: 0 0 0 30px;
+    flex: 1;
+}
+
+.feedback-reply-section {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feedback-reply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--bg-surface);
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 14px;
+    margin-left: 12px;
+}
+
+.feedback-reply-textarea {
+    min-height: 80px;
+    margin-bottom: 10px;
+}
+
+.feedback-reply-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.feedback-replies {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-left: 2px solid var(--primary-light);
+    border-left: 2px solid color-mix(in srgb, var(--primary-color) 38%, transparent);
+    padding-left: 12px;
+}
+
+.feedback-item--reply {
+    background: var(--bg-surface);
+    border-style: dashed;
 }
 
 .announcement-item {

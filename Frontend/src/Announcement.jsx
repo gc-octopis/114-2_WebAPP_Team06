@@ -22,8 +22,12 @@ function Announcement()
     const [feedbackInputVal, setFeedbackInputVal] = useState('1');
     const [feedbackIsLoading, setFeedbackIsLoading] = useState(false);
     const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+    const [replySubmittingId, setReplySubmittingId] = useState(null);
     const [feedbackError, setFeedbackError] = useState('');
     const [feedbackSuccess, setFeedbackSuccess] = useState('');
+    const [replyError, setReplyError] = useState('');
+    const [activeReplyPostId, setActiveReplyPostId] = useState(null);
+    const [replyDrafts, setReplyDrafts] = useState({});
     const [feedbackForm, setFeedbackForm] = useState({
         nickname: '',
         content: '',
@@ -109,6 +113,7 @@ function Announcement()
     useEffect(() => {
         setFeedbackSuccess('');
         setFeedbackError('');
+        setReplyError('');
     }, [lang]);
 
     function formatDate(dateString) {
@@ -219,6 +224,7 @@ function Announcement()
         e.preventDefault();
         setFeedbackError('');
         setFeedbackSuccess('');
+        setReplyError('');
 
         const payload = {
             nickname: feedbackForm.nickname.trim(),
@@ -244,6 +250,49 @@ function Announcement()
             setFeedbackError(error.message || t.feedbackPostFailed);
         } finally {
             setIsSubmittingFeedback(false);
+        }
+    }
+
+    function openReplyEditor(postId) {
+        setFeedbackError('');
+        setFeedbackSuccess('');
+        setReplyError('');
+
+        setActiveReplyPostId((prev) => (prev === postId ? null : postId));
+    }
+
+    async function submitReply(e, parentId) {
+        e.preventDefault();
+        setFeedbackError('');
+        setFeedbackSuccess('');
+        setReplyError('');
+
+        const content = (replyDrafts[parentId] || '').trim();
+        if (!content) {
+            setReplyError(t.feedbackPostFailed);
+            return;
+        }
+
+        setReplySubmittingId(parentId);
+        try {
+            await AnnouncementAPI.createFeedbackPost({
+                content,
+                parent_id: parentId,
+            });
+
+            setReplyDrafts((prev) => ({ ...prev, [parentId]: '' }));
+
+            const result = await AnnouncementAPI.getFeedbackPosts({
+                page: feedbackPage,
+                page_size: FEEDBACK_ITEMS_PER_PAGE,
+            });
+            setFeedbackPosts(result.posts);
+            feedbackTotalPages.current = result.total_pages;
+            setFeedbackInputVal(String(result.total_pages === 0 ? 0 : result.page));
+        } catch (error) {
+            setReplyError(error.message || t.feedbackPostFailed);
+        } finally {
+            setReplySubmittingId(null);
         }
     }
 
@@ -348,7 +397,10 @@ function Announcement()
                         <p className="announcement-empty">{t.feedbackEmpty}</p>
                     ) : (
                         feedbackPosts.map((post) => (
-                            <article className="feedback-item" key={post.id}>
+                            <article
+                                className={`feedback-item ${activeReplyPostId === post.id ? 'feedback-item--active' : ''}`}
+                                key={post.id}
+                            >
                                 <div className="feedback-item-header">
                                     <div className="feedback-item-user">
                                         <span
@@ -358,13 +410,72 @@ function Announcement()
                                         />
                                         <p className="feedback-item-author">{post.nickname || t.anonymousUser}</p>
                                     </div>
-                                    <time className="feedback-item-time">{formatDateTime(post.created_at)}</time>
+                                    <div className="feedback-item-header-right">
+                                        <time className="feedback-item-time">{formatDateTime(post.created_at)}</time>
+                                    </div>
                                 </div>
-                                <p className="feedback-item-content">{post.content}</p>
+                                <div className="feedback-item-content-wrapper">
+                                    <p className="feedback-item-content">{post.content}</p>
+                                    <button
+                                        type="button"
+                                        className={`feedback-toggle-btn ${activeReplyPostId === post.id ? 'active' : ''}`}
+                                        onClick={() => openReplyEditor(post.id)}
+                                        aria-label="Toggle replies"
+                                    >
+                                        ∨
+                                    </button>
+                                </div>
+
+                                {activeReplyPostId === post.id && (
+                                    <div className="feedback-reply-section">
+                                        {Array.isArray(post.replies) && post.replies.length > 0 && (
+                                            <div className="feedback-replies">
+                                                {post.replies.map((reply) => (
+                                                    <article className="feedback-item feedback-item--reply" key={reply.id}>
+                                                        <div className="feedback-item-header">
+                                                            <div className="feedback-item-user">
+                                                                <span
+                                                                    className="feedback-avatar"
+                                                                    style={{ backgroundColor: reply.avatar_color || '#94a3b8' }}
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <p className="feedback-item-author">{reply.nickname || t.anonymousUser}</p>
+                                                            </div>
+                                                            <time className="feedback-item-time">{formatDateTime(reply.created_at)}</time>
+                                                        </div>
+                                                        <p className="feedback-item-content">{reply.content}</p>
+                                                    </article>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        <form className="feedback-reply-form" onSubmit={(e) => submitReply(e, post.id)}>
+                                            <textarea
+                                                className="feedback-textarea feedback-reply-textarea"
+                                                maxLength={3000}
+                                                required
+                                                placeholder={t.feedbackReplyPlaceholder}
+                                                value={replyDrafts[post.id] || ''}
+                                                onChange={(e) => setReplyDrafts((prev) => ({ ...prev, [post.id]: e.target.value }))}
+                                            />
+                                            <div className="feedback-reply-actions">
+                                                <button
+                                                    type="submit"
+                                                    className="feedback-submit-btn"
+                                                    disabled={replySubmittingId === post.id}
+                                                >
+                                                    {replySubmittingId === post.id ? t.feedbackSubmitting : t.feedbackReplySubmit}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                )}
                             </article>
                         ))
                     )}
                 </div>
+
+                {replyError && <p className="feedback-status feedback-status--error">{replyError}</p>}
 
                 <h3 className="feedback-list-title">{t.feedbackFormTitle}</h3>
                 <form className="feedback-form" onSubmit={submitFeedback}>

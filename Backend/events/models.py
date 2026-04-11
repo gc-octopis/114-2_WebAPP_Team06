@@ -124,6 +124,14 @@ class LinkItem(models.Model):
 
 class FeedbackPost(models.Model):
     """Anonymous feedback/message board post."""
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        related_name='replies',
+        on_delete=models.CASCADE,
+        db_index=True,
+    )
     nickname = models.CharField(max_length=80, blank=True, default='Anonymous')
     avatar_color = models.CharField(max_length=7, default='#94a3b8')
     title = models.CharField(max_length=200)

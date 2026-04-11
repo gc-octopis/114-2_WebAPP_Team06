@@ -45,14 +45,23 @@ class LinkCategorySerializer(serializers.ModelSerializer):
 
 class FeedbackPostSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
+    parent_id = serializers.SerializerMethodField()
+    replies = serializers.SerializerMethodField()
 
     def get_created_at(self, obj):
         local_dt = timezone.localtime(obj.created_at, ZoneInfo('Asia/Taipei'))
         return local_dt.strftime('%Y-%m-%d %I:%M %p').lower()
 
+    def get_parent_id(self, obj):
+        return obj.parent_id
+
+    def get_replies(self, obj):
+        children = obj.replies.all().order_by('created_at', 'id')
+        return FeedbackPostSerializer(children, many=True).data
+
     class Meta:
         model = FeedbackPost
-        fields = ['id', 'nickname', 'avatar_color', 'content', 'created_at']
+        fields = ['id', 'parent_id', 'nickname', 'avatar_color', 'content', 'created_at', 'replies']
 
 
 class ContactMessageSerializer(serializers.ModelSerializer):

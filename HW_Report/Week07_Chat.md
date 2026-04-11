@@ -466,3 +466,141 @@ links 流程會檢查 links.en.json 的 label_en 完整性，不完整就中止
 ---
 
 # 孫怡臻
+
+USER:
+**我想做一個可以在feedback底下回覆留言的功能。**
+
+AGENT:
+先檢查 `models.py`、`serializers.py`、`views.py`、`urls.py`，確認目前 feedback 只有單層留言。
+再檢查 `Frontend/src/announcementAPI.js`、`Frontend/src/Announcement.jsx`，確認前端目前只有發主留言、沒有子留言邏輯。
+開始實作資料庫關聯：在 `FeedbackPost` 加入 `parent = ForeignKey('self', related_name='replies', null=True, blank=True)`。
+更新 serializer：回傳 `parent_id` 與 `replies`。
+更新 feedback API：
+`POST /api/feedback/` 新增 `parent_id` 支援，能建立子留言。
+`GET /api/feedback/` 改為分頁主留言，並帶出每筆主留言的 `replies`。
+補 migration：`0010_feedbackpost_parent.py`。
+補測試：
+可建立回覆。
+可回傳主留言+子留言。
+錯誤 `parent_id` 會回 404。
+前端加上展開回覆區、子留言列表、回覆輸入框、送出回覆流程。
+執行 migrate 與 tests，確認流程可用。
+
+---
+
+USER:
+**我不想要回覆發布成功這樣的提示。**
+
+AGENT:
+移除回覆成功訊息 state 與顯示區塊。
+刪除語系中的 `feedbackReplySuccess` 文案。
+保留錯誤提示，但回覆成功時只更新列表、不跳提示。
+
+---
+
+USER:
+**我想要每則留言右下都有一個向下 toggle；如果沒有子留言就滑出輸入區，有子留言就輸入區放在子留言底下。**
+
+AGENT:
+把回覆區改為 toggle 展開/收合模式。
+展開時：先顯示子留言（若有），再顯示回覆輸入區。
+無子留言時：直接顯示回覆輸入區。
+
+---
+
+USER:
+**你這個 toggle 錯位了。**
+
+AGENT:
+調整按鈕與 pseudo-element 對位計算，修正置中與旋轉後位置。
+
+---
+
+USER:
+**toggle 換成邏輯「或」符號。**
+
+AGENT:
+把圖示改成 `∨`，並保留展開旋轉效果。
+
+---
+
+USER:
+**太大了，而且需要再圓潤一點。**
+
+AGENT:
+縮小字級，增加圓角與更柔和按鈕外觀。
+
+---
+
+USER:
+**我想要 toggle 跟留言內容最後一行對齊，翻轉後也是同個位置。**
+
+AGENT:
+重構為 `feedback-item-content-wrapper`：內容與 toggle 同一行、底部對齊。
+修正 JSX 括號錯誤（Vite parse error）並確認編譯恢復。
+
+---
+
+USER:
+**你怎麼把留言縮排去除了？**
+
+AGENT:
+修正 wrapper 覆蓋掉的 margin，恢復留言內容左縮排。
+
+---
+
+USER:
+**寫下回覆的 container 樣式要跟發布留言的一樣。**
+
+AGENT:
+把 `feedback-reply-form` 改成和 `feedback-form` 相同風格（背景、邊框、圓角、padding、gap）。
+
+---
+
+USER:
+**我希望送出回覆後不要自己疊起來。**
+
+AGENT:
+移除 `submitReply` 裡的 `setActiveReplyPostId(null)`，送出後維持展開。
+
+---
+
+USER:
+**我希望當留言展開時，父留言 container 底色會變選中的顏色。**
+
+AGENT:
+在父留言卡片加 `feedback-item--active` class。
+展開狀態套用選中色背景與邊框色。
+
+---
+
+**子留言底色要跟留言區塊一樣，無論主題。**
+
+AGENT:
+調整為 `var(--bg-surface)`，配合主題色切換。
+
+---
+
+USER:
+**子留言左邊的 bar 有點看不見，換成主色系邊線但透明度降低。**
+
+AGENT:
+改成主色低透明版本（含 fallback）。
+
+---
+
+USER:
+**輸入子留言的地方想要跟子留言 container 對齊。**
+
+AGENT:
+回覆輸入區加左位移，對齊子留言起始位置。
+
+---
+
+USER:
+**主留言高亮改成漸進式的。**
+
+AGENT:
+在 `.feedback-item` 新增 `background-color` / `border-color` transition，展開收合平滑過渡。
+
+---

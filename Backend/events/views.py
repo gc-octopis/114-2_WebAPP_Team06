@@ -277,6 +277,7 @@ class FeedbackPostListCreateView(APIView):
 
     POST body:
     - nickname: optional display name
+    - parent_id: optional parent post ID (when creating a reply)
     - title: required
     - content: required
     """
@@ -302,7 +303,7 @@ class FeedbackPostListCreateView(APIView):
                 )
 
             page_size = min(page_size, 50)
-            queryset = FeedbackPost.objects.all()
+            queryset = FeedbackPost.objects.filter(parent__isnull=True).prefetch_related('replies')
             total_count = queryset.count()
             total_pages = math.ceil(total_count / page_size) if total_count > 0 else 0
 
@@ -329,6 +330,7 @@ class FeedbackPostListCreateView(APIView):
     def post(self, request):
         nickname = (request.data.get('nickname') or '').strip()[:80]
         content = (request.data.get('content') or '').strip()
+        parent_id_raw = request.data.get('parent_id')
 
         if not content:
             return Response({'error': 'content is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -336,16 +338,28 @@ class FeedbackPostListCreateView(APIView):
         if len(content) > 3000:
             return Response({'error': 'content is too long (max 3000 characters)'}, status=status.HTTP_400_BAD_REQUEST)
 
+        parent = None
+        if parent_id_raw not in (None, ''):
+            try:
+                parent_id = int(parent_id_raw)
+            except (TypeError, ValueError):
+                return Response({'error': 'parent_id must be an integer'}, status=status.HTTP_400_BAD_REQUEST)
+
+            parent = FeedbackPost.objects.filter(id=parent_id).first()
+            if parent is None:
+                return Response({'error': 'parent post not found'}, status=status.HTTP_404_NOT_FOUND)
+
         with transaction.atomic():
             post = FeedbackPost.objects.create(
+                parent=parent,
                 nickname=nickname or 'Anonymous',
                 avatar_color=random.choice(FEEDBACK_AVATAR_COLORS),
                 title='',
                 content=content,
             )
 
-            while FeedbackPost.objects.count() > 40:
-                oldest_post = FeedbackPost.objects.order_by('created_at', 'id').first()
+            while FeedbackPost.objects.filter(parent__isnull=True).count() > 40:
+                oldest_post = FeedbackPost.objects.filter(parent__isnull=True).order_by('created_at', 'id').first()
                 if oldest_post is None:
                     break
                 oldest_post.delete()
