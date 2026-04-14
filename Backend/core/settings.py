@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.tasks',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +141,19 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
     "X-User-Id",
 ]
+
+# EMAIL
+EMAIL_USE_SSL = True
+
+EMAIL_HOST = "smtps.ntu.edu.tw"
+EMAIL_PORT = 465
+
+# IMPORTANT: please add the environment variable EMAIL_HOST_USER and EMAIL_HOST_PASSWORD to .env (see README.md for more details)
+
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER") or ""
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD") or ""
+
+
+# TASK
+
+TASKS = {"default": {"BACKEND": "django.tasks.backends.immediate.ImmediateBackend"}}

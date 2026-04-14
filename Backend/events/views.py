@@ -9,6 +9,12 @@ from django.db.models import Q
 from .models import CalendarEvent, Announcement, UserPreference, LinkCategory, LinkItem, FeedbackPost, ContactMessage
 from .serializers import CalendarEventSerializer, AnnouncementSerializer, LinkCategorySerializer, LinkItemSerializer, FeedbackPostSerializer, ContactMessageSerializer
 from .search_service import SemanticSearchService
+from .tasks import send_email_task
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 FEEDBACK_AVATAR_COLORS = [
@@ -385,11 +391,29 @@ class ContactMessageCreateView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         message = serializer.validated_data.get('message', '').strip()
+        name = serializer.validated_data.get('name', '').strip()
+        email = serializer.validated_data.get('email', '').strip()
         if not message:
             return Response({'error': 'message is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         if len(message) > 3000:
             return Response({'error': 'message is too long (max 3000 characters)'}, status=status.HTTP_400_BAD_REQUEST)
-
+        
+        if email:
+            content = f"""{name or ''}您好，
+您剛剛在 MyNTU++ 上填寫的建議已成功接收。內容將交於工作人員進行審核，若有進一步的消息將再回信給您！
+感謝您提供寶貴的意見！
+MyNTU++ 團隊 敬上"""
+            send_email_task.enqueue(email,"[MyNTU++] 已收到您的建議 | We've got your feedback!", content)
+            
+        admin_email = os.getenv("ADMIN_EMAIL")
+        
+        if admin_email:
+            content_for_admin = f"""收到新的表單：
+填寫人：{name or "匿名"}
+電子郵件：{email or "匿名"}
+建議內容：{message}"""
+            send_email_task.enqueue(admin_email, "[MyNTU++] 有人填寫表單，請儘快回覆！", content_for_admin)
+        
         serializer.save()
         return Response({'success': True}, status=status.HTTP_201_CREATED)

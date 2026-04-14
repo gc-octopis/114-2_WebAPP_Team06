@@ -67,6 +67,36 @@ resolve_python() {
   exit 1
 }
 
+ensure_dependencies() {
+  local req_file="$SCRIPT_DIR/requirements.txt"
+  
+  # 1. Determine which requirements file to use
+  if [[ "$(uname)" == "Darwin" ]] && [[ -f "$SCRIPT_DIR/requirements.macos.txt" ]]; then
+    req_file="$SCRIPT_DIR/requirements.macos.txt"
+  fi
+
+  if [[ ! -f "$req_file" ]]; then
+    return 0
+  fi
+
+  # 2. Check if requirements are newer than our last install sentinel
+  local sentinel="$SCRIPT_DIR/.venv/.last_install"
+  
+  if [[ ! -f "$sentinel" ]] || [[ "$req_file" -nt "$sentinel" ]]; then
+    echo "==> Requirements changed ($req_file). Updating packages..."
+    
+    # Ensure .venv directory exists for the sentinel file
+    mkdir -p "$(dirname "$sentinel")"
+    
+    # Run the install
+    "$PYTHON_BIN" -m pip install --upgrade pip
+    "$PYTHON_BIN" -m pip install -r "$req_file"
+    
+    # Update the sentinel timestamp
+    touch "$sentinel"
+  fi
+}
+
 ensure_migrated() {
   (cd "$SCRIPT_DIR" && "$PYTHON_BIN" manage.py migrate --noinput)
 }
@@ -116,6 +146,7 @@ main() {
   esac
 
   PYTHON_BIN="$(resolve_python)"
+  ensure_dependencies
   ensure_migrated
 
   case "$cmd" in
