@@ -8,6 +8,7 @@ import LanguageProvider from './LanguageContext';
 import App from "./App";
 import About from './About';
 import Calendar from './Calendar';
+import Login from './Login';
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <LanguageProvider>
@@ -17,6 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="/" element={<App />} />
           <Route path='/about' element={<About />} />
           <Route path='/calendar' element={<Calendar />} />
+          <Route path='/login' element={<Login />} />
         </Routes>
       </BrowserRouter>
     </LinkProvider>

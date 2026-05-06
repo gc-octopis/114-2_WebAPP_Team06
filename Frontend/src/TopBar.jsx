@@ -188,7 +188,7 @@ function TopBar({setSideBarToggled, title})
                 </button>
                 <div className="dropdown-menu">
                     <div className="dropdown-title">{t.systemSettings}</div>
-                    <a href="#" className="login-link">{t.login}</a>
+                    <Link to="/login" className="login-link">{t.login}</Link>
                     <a href="#" onClick={(e) => { e.preventDefault(); toggleLanguage(); }}>{t.switchLanguage}</a>
                     <a href="#" id="theme-btn" onClick={() => setIsDarkTheme(!isDarkTheme)}>{t.switchTheme}</a>
                     <div className="divider"></div>
