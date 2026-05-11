@@ -15,12 +15,20 @@ const createSchema = z.object({
 contact.post("/", zValidator("json", createSchema), async (c) => {
   const input = c.req.valid("json");
   const saved = saveContactMessage(input);
+  const adminEmail = process.env.ADMIN_EMAIL;
 
-  // Fire-and-forget email — don't block the response if SMTP fails
+  if (input.email)
   sendMail({
-    replyTo: input.email || undefined,
-    subject: `[NTU Contact] New message from ${input.name || "Anonymous"}`,
-    text: `Name: ${input.name || "Anonymous"}\nEmail: ${input.email || "—"}\n\n${input.message}`,
+    to: input.email,
+    subject: `[MyNTU++] 感謝您的意見回饋}`,
+    content: `${input.name || ""}您好，\n您剛剛在 MyNTU++ 上填寫的建議已成功接收。內容將交於工作人員進行審核，若有進一步的消息將再回信給您！\n感謝您提供寶貴的意見！\nMyNTU++ 團隊 敬上`,
+  }).catch((err) => console.error("Email send failed:", err));
+
+  if (adminEmail)
+  sendMail({
+    to: adminEmail,
+    subject: `[MyNTU++] New message from ${input.name || "Anonymous"}`,
+    content: `Name: ${input.name || "Anonymous"}\nEmail: ${input.email || "—"}\n\n${input.message}`,
   }).catch((err) => console.error("Email send failed:", err));
 
   return c.json({ ok: true, id: saved.id }, 201);

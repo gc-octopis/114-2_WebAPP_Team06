@@ -48,12 +48,14 @@ export interface AnnouncementDTO {
   link: string;
 }
 
+// Shape returned to the frontend — matches AnnouncementAPI expectations
 export interface PaginatedAnnouncements {
-  results: AnnouncementDTO[];
-  total: number;
+  announcements: AnnouncementDTO[];
+  categories: string[];
+  count: number;
   page: number;
-  pageSize: number;
-  totalPages: number;
+  page_size: number;
+  total_pages: number;
 }
 
 // ─── Links ───────────────────────────────────────────────────────────────────
@@ -75,6 +77,13 @@ export interface LinkItemDTO {
   label_en: string | null;
   url: string;
   url_en: string;
+  icon: string;
+}
+
+export interface LinkItemPreferences {
+  label: string;
+  label_en: string | null;
+  url: string;
   icon: string;
 }
 
@@ -100,13 +109,14 @@ export interface LinkCategoryDTO {
 export interface UserPreference {
   id: number;
   user_id: string;
-  pinned_links: string[]; // stored as JSON in SQLite
+  pinned_links: LinkItemPreferences[]; // stored as JSON in SQLite
   created_at: string;
   updated_at: string;
 }
 
+// Frontend expects the key `pinned_links`
 export interface UserPreferenceDTO {
-  pinnedLinks: string[];
+  pinned_links: LinkItemPreferences[];
 }
 
 // ─── Feedback ────────────────────────────────────────────────────────────────
@@ -127,6 +137,7 @@ export interface FeedbackPostDTO {
   parent_id: number | null;
   nickname: string;
   avatar_color: string;
+  title: string;
   content: string;
   created_at: string; // formatted "YYYY-MM-DD HH:MM am/pm"
   replies: FeedbackPostDTO[];
@@ -138,6 +149,15 @@ export interface CreateFeedbackInput {
   avatar_color?: string;
   title: string;
   content: string;
+}
+
+// Shape returned for paginated feedback list, matching frontend expectations
+export interface PaginatedFeedback {
+  posts: FeedbackPostDTO[];
+  count: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
 }
 
 // ─── Contact ─────────────────────────────────────────────────────────────────

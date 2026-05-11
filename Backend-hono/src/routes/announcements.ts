@@ -23,8 +23,3 @@ announcements.get("/", zValidator("query", querySchema), (c) => {
   });
   return c.json(result);
 });
-
-announcements.get("/categories", (c) => {
-  const lang = (c.req.query("lang") ?? "zh") as Language;
-  return c.json(getAnnouncementCategories(lang));
-});

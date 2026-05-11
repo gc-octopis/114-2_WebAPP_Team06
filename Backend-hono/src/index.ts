@@ -9,7 +9,7 @@ import { links         } from "./routes/links";
 import { preferences   } from "./routes/preferences";
 // import { search        } from "./routes/search";
 import { feedback      } from "./routes/feedback";
-// import { contact       } from "./routes/contact";
+import { contact       } from "./routes/contact";
 
 // ─── App ─────────────────────────────────────────────────────────────────────
 const app = new Hono();
@@ -45,13 +45,13 @@ app.notFound((c) => c.json({ error: "Not found" }, 404));
 // ─── Mount routes ─────────────────────────────────────────────────────────────
 //  Each string here matches your existing Django URL patterns exactly,
 //  so your frontend needs zero changes.
-app.route("/api/calendar",       calendar);
-app.route("/api/announcements",  announcements);
-app.route("/api/links",          links);
-app.route("/api/preferences",    preferences);
-// app.route("/api/search",         search);
-app.route("/api/feedback",       feedback);
-// app.route("/api/contact",        contact);
+app.route("/api/calendar*",       calendar); // [v]
+app.route("/api/announcements*",  announcements); // [v]
+app.route("/api/links*",          links); // [v]
+app.route("/api/preferences*",    preferences); // [v]
+// app.route("/api/search*",         search);
+app.route("/api/feedback*",       feedback); // [v]
+app.route("/api/contact*",        contact); // [v]
 
 // ─── Dev health check ────────────────────────────────────────────────────────
 app.get("/", (c) => c.json({ status: "ok", routes: [
@@ -59,7 +59,7 @@ app.get("/", (c) => c.json({ status: "ok", routes: [
   "GET  /api/announcements/",
   "GET  /api/links/",
   "GET  /api/preferences/",
-  "PATCH /api/preferences/",
+  "POST /api/preferences/",
   "GET  /api/search/",
   "GET  /api/feedback/",
   "POST /api/feedback/",

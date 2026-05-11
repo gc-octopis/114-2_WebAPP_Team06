@@ -1,5 +1,5 @@
 import { db } from "../db";
-import type { UserPreference, UserPreferenceDTO } from "../types";
+import type { UserPreference, UserPreferenceDTO, LinkItemPreferences } from "../types";
 
 interface RawPreference {
   id: number;
@@ -12,12 +12,12 @@ interface RawPreference {
 function parsePreference(row: RawPreference): UserPreference {
   return {
     ...row,
-    pinned_links: row.pinned_links ? (JSON.parse(row.pinned_links) as string[]) : [],
+    pinned_links: row.pinned_links ? (JSON.parse(row.pinned_links) as LinkItemPreferences[]) : [],
   };
 }
 
 function toDTO(pref: UserPreference): UserPreferenceDTO {
-  return { pinnedLinks: pref.pinned_links };
+  return { pinned_links: pref.pinned_links };
 }
 
 export function getPreferences(userId: string): UserPreferenceDTO {
@@ -25,11 +25,11 @@ export function getPreferences(userId: string): UserPreferenceDTO {
     .query("SELECT * FROM events_userpreference WHERE user_id = ?")
     .get(userId) as RawPreference | null;
 
-  if (!row) return { pinnedLinks: [] };
+  if (!row) return { pinned_links: [] };
   return toDTO(parsePreference(row));
 }
 
-export function upsertPreferences(userId: string, pinnedLinks: string[]): UserPreferenceDTO {
+export function upsertPreferences(userId: string, pinnedLinks: LinkItemPreferences[]): UserPreferenceDTO {
   const now = new Date().toISOString();
   const json = JSON.stringify(pinnedLinks);
 
@@ -41,7 +41,8 @@ export function upsertPreferences(userId: string, pinnedLinks: string[]): UserPr
        updated_at   = excluded.updated_at`
   ).run(userId, json, now, now);
 
-  return { pinnedLinks };
+  // Return shape matching frontend expectation
+  return { pinned_links: pinnedLinks };
 }
 
 export function deletePreferences(userId: string): void {

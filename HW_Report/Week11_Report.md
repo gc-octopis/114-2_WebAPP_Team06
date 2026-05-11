@@ -23,6 +23,17 @@
 
 * 陳冠辰： 25%
     * 後端改用 Hono
+        * GET  /api/calendar/
+        * GET  /api/announcements/
+        * GET  /api/links/
+        * GET  /api/preferences/
+        * POST /api/preferences/
+        * GET  /api/feedback/
+        * POST /api/feedback/
+        * POST /api/contact/
+    * 尚未完成部分
+        * Search API
+        * 各項原始資料匯入資料庫的 script
 
 * 王凱弘： 25%
     * 後端帳號資料庫

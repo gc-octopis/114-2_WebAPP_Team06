@@ -29,7 +29,8 @@ export function getAnnouncements({
   const offset = (Math.max(page, 1) - 1) * size;
 
   const conditions: string[] = ["language = ?"];
-  const params: unknown[] = [lang];
+  // Use any[] for SQLite bindings compatibility
+  const params: any[] = [lang];
 
   if (category) {
     conditions.push("category = ?");
@@ -55,11 +56,12 @@ export function getAnnouncements({
     .all(...params, size, offset) as Announcement[];
 
   return {
-    results: rows.map(toDTO),
-    total,
+    announcements: rows.map(toDTO),
+    categories: getAnnouncementCategories(lang),
+    count: total,
     page: Math.max(page, 1),
-    pageSize: size,
-    totalPages: Math.ceil(total / size),
+    page_size: size,
+    total_pages: Math.ceil(total / size),
   };
 }
 

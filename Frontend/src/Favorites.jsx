@@ -58,7 +58,7 @@ function Favorites()
             className="cards-grid" id="favoritesGrid">
                 {
                     activeCat && visibleLinks.map((item, iter) =>
-                        <DraggableCard key={item.url || iter} item={item} lang={lang} />
+                        <DraggableCard key={JSON.stringify(item)} item={item} lang={lang} />
                     )
                 }
             </motion.div>

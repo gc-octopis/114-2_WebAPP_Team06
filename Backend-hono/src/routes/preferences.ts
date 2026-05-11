@@ -21,12 +21,20 @@ preferences.get("/", (c) => {
   return c.json(getPreferences(userId));
 });
 
-const patchSchema = z.object({
-  pinnedLinks: z.array(z.string().url()).max(50),
+const postSchema = z.object({
+  pinned_links: z.array(
+    z.object({
+      label: z.string(),
+      label_en: z.string().nullable(),
+      url: z.string().url(),
+      icon: z.string().url()
+    })
+  ),
 });
 
-preferences.patch("/", zValidator("json", patchSchema), (c) => {
+// Frontend uses POST to update preferences
+preferences.post("/", zValidator("json", postSchema), (c) => {
   const userId = c.get("userId" as never) as string;
-  const { pinnedLinks } = c.req.valid("json");
-  return c.json(upsertPreferences(userId, pinnedLinks));
+  const { pinned_links } = c.req.valid("json");
+  return c.json(upsertPreferences(userId, pinned_links));
 });

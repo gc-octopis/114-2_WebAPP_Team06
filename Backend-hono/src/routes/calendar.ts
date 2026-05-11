@@ -15,11 +15,6 @@ const querySchema = z.object({
 calendar.get("/", zValidator("query", querySchema), (c) => {
   const { lang, start_date, end_date } = c.req.valid("query");
   const events = getEvents(lang as Language, start_date, end_date);
-  return c.json(events);
-});
-
-calendar.get("/upcoming", (c) => {
-  const lang = (c.req.query("lang") ?? "zh") as Language;
-  const events = getUpcomingEvents(lang);
-  return c.json(events);
+  // Frontend expects an object with an "events" key
+  return c.json({ events });
 });

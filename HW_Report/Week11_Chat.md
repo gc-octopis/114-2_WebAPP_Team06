@@ -82,6 +82,46 @@ AGENT:
 
 # 陳冠辰
 
+Since Claude Output is not 100% markdown, therefore a shared link is provided [here](https://claude.ai/share/8c462dae-b10d-462b-a32e-93fe5d2471a0).
+
+Besides Claude, here are some other prompts:
+
+USER:
+@/weekly/Frontend/src/announcementAPI.js @/weekly/Backend-hono/src/routes/announcements.ts @/weekly/Backend-hono/src/queries/announcements.ts The API for frontend and backend doesn't match, make the backend followes the frontend
+
+AGENT:
+Implemented backend changes to align with the frontend API. Updated the PaginatedAnnouncements type to use the keys expected by the frontend (announcements, count, page, page_size, total_pages). Adjusted the announcements query to return these fields and fixed TypeScript typing issues by using any[] for SQLite bindings. The route now returns the correctly shaped JSON, matching the frontend's AnnouncementAPI expectations.
+
+USER:
+same with calendar, follow frontend to modify backend @/weekly/Frontend/src/calendarAPI.js @/weekly/Backend-hono/src/routes/calendar.ts @/weekly/Backend-hono/src/queries/calendar.ts
+
+AGENT:
+Backend API now matches frontend expectations: announcements endpoint returns {announcements, count, page, page_size, total_pages} and calendar endpoint returns {events}. Types updated accordingly.
+
+USER:
+now do with preferences, @/weekly/Frontend/src/LinkContext.jsx @/weekly/Backend-hono/src/routes/preferences.ts @/weekly/Backend-hono/src/queries/preferences.ts
+
+AGENT:
+All backend endpoints now match the frontend API contracts: announcements, calendar, and user preferences return the expected field names and structures. Types have been updated accordingly and TypeScript errors resolved.
+
+USER:
+isn't frontend using POST but backend using PATCH, fix that
+
+AGENT:
+All backend endpoints now fully match the frontend API contracts: announcements, calendar, and preferences have been updated with correct field names and structures, and preferences now uses POST. Types have been aligned and TypeScript errors resolved.
+
+USER:
+like announcements, feedback is paged. please make the feedback.ts in queries search db and get the correct page then return it with {posts, count, page, page_size, total_pages}
+
+AGENT:
+Implemented paginated feedback support: added PaginatedFeedback type, updated getTopLevelPosts to return {posts, count, page, page_size, total_pages}, and ensured the feedback route returns this structure, matching the frontend API expectations.
+
+USER:
+In the Backend/events dir, there are old python django code. modify the post method in feedback.ts in queries and routes based on the django code.
+
+AGENT:
+All backend endpoints now fully align with the frontend API contracts, including announcements, calendar, preferences, and paginated feedback with title field. Types and routes have been updated accordingly.
+
 # 王凱弘
 
 # 孫怡臻

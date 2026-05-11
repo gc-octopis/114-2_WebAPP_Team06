@@ -43,7 +43,7 @@ export default function LinkProvider({ children })
     const updatePinnedLinks = async (newLinks) => {
         setPinnedLinks(newLinks);
         try {
-            await fetch("http://localhost:8000/api/preferences/", {
+            await fetch("/api/preferences/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -119,7 +119,7 @@ export default function LinkProvider({ children })
     useEffect(() => {
         (async function fetchPreferences() {
             try {
-                const res = await fetch("http://localhost:8000/api/preferences/", {
+                const res = await fetch("/api/preferences/", {
                     headers: { "X-User-Id": deviceId }
                 });
                 if (res.ok) {
@@ -138,7 +138,7 @@ export default function LinkProvider({ children })
                 const selectedCatIdFromUrl = new URLSearchParams(window.location.search).get('cat');
                 const prevSelectedCatId = categories[activeCatIdx]?.id;
 
-                let res = await fetch('http://localhost:8000/api/links/')
+                let res = await fetch('/api/links/')
 
                 let nextCategories = await res.json();
 

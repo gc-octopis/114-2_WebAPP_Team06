@@ -11,12 +11,14 @@
 * [Week5](./HW_Report/Week05_Report.md)
 * [Week6](./HW_Report/Week06_Report.md)
 * [Week7](./HW_Report/Week07_Report.md)
+* [Week11](./HW_Report/Week11_Report.md)
 
 ---
 
 ## 開發指南
 
 目前已經分出前後端，分別在 `Frontend` 和 `Backend` 目錄下。
+**重要：目前 Backend 正在遷移到 Backend-hono，因此以下有關 Backend 的內容即將過時，屆時將放上新版本。**
 
 ### 前端初始設定
 

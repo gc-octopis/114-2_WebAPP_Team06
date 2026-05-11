@@ -11,19 +11,17 @@ const transporter = nodemailer.createTransport({
 });
 
 export interface MailOptions {
-  from?: string;
-  replyTo?: string;
+  to: string;
   subject: string;
-  text: string;
+  content: string;
 }
 
 export async function sendMail(options: MailOptions): Promise<void> {
-  const adminEmail = process.env.ADMIN_EMAIL ?? process.env.EMAIL_HOST_USER;
   await transporter.sendMail({
-    from: options.from ?? process.env.EMAIL_HOST_USER,
-    to: adminEmail,
-    replyTo: options.replyTo,
+    from: `MyNTU++ <${process.env.EMAIL_HOST_USER}@ntu.edu.tw>`,
+    to: options.to,
     subject: options.subject,
-    text: options.text,
+    text: options.content,
   });
+  console.log(`Mail Sent to ${options.to}"`);
 }

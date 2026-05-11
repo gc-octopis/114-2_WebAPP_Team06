@@ -5,8 +5,14 @@ import { getTopLevelPosts, createPost } from "../queries/feedback";
 
 export const feedback = new Hono();
 
-feedback.get("/", (c) => {
-  return c.json(getTopLevelPosts());
+const querySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  page_size: z.coerce.number().int().min(1).max(100).default(10),
+});
+
+feedback.get("/", zValidator("query", querySchema), (c) => {
+  const { page, page_size } = c.req.valid("query");
+  return c.json(getTopLevelPosts(page, page_size));
 });
 
 const createSchema = z.object({
@@ -16,7 +22,7 @@ const createSchema = z.object({
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/)
     .optional(),
-  title: z.string().min(1).max(200),
+  title: z.string().min(1).max(200).default(""),
   content: z.string().min(1).max(3000),
 });
 

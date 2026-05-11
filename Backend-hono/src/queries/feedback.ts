@@ -1,5 +1,5 @@
 import { db } from "../db";
-import type { FeedbackPost, FeedbackPostDTO, CreateFeedbackInput } from "../types";
+import type { FeedbackPost, FeedbackPostDTO, CreateFeedbackInput, PaginatedFeedback } from "../types";
 
 /**
  * Formats a UTC datetime string to Asia/Taipei local time.
@@ -38,15 +38,16 @@ function fetchReplies(parentId: number): FeedbackPostDTO[] {
     )
     .all(parentId) as FeedbackPost[];
 
-  return rows.map((row) => ({
-    id: row.id,
-    parent_id: row.parent_id,
-    nickname: row.nickname,
-    avatar_color: row.avatar_color,
-    content: row.content,
-    created_at: formatTaipeiTime(row.created_at),
-    replies: fetchReplies(row.id), // recurse
-  }));
+    return rows.map((row) => ({
+      id: row.id,
+      parent_id: row.parent_id,
+      nickname: row.nickname,
+      avatar_color: row.avatar_color,
+      title: row.title,
+      content: row.content,
+      created_at: formatTaipeiTime(row.created_at),
+      replies: fetchReplies(row.id), // recurse
+    }));
 }
 
 function toDTO(row: FeedbackPost): FeedbackPostDTO {
@@ -55,6 +56,7 @@ function toDTO(row: FeedbackPost): FeedbackPostDTO {
     parent_id: row.parent_id,
     nickname: row.nickname,
     avatar_color: row.avatar_color,
+    title: row.title,
     content: row.content,
     created_at: formatTaipeiTime(row.created_at),
     replies: fetchReplies(row.id),
@@ -62,17 +64,34 @@ function toDTO(row: FeedbackPost): FeedbackPostDTO {
 }
 
 /** Returns all top-level posts (parent_id IS NULL) with nested replies. */
-export function getTopLevelPosts(): FeedbackPostDTO[] {
+/** Returns paginated top‑level feedback posts with nested replies. */
+export function getTopLevelPosts(page: number = 1, page_size: number = 10): PaginatedFeedback {
+  // Total count of top‑level posts
+  const total = db
+    .query(`SELECT COUNT(*) as count FROM events_feedbackpost WHERE parent_id IS NULL`)
+    .get() as { count: number };
+
+  const size = Math.max(1, Math.min(page_size, 100));
+  const offset = (Math.max(page, 1) - 1) * size;
+
   const rows = db
     .query(
       `SELECT id, parent_id, nickname, avatar_color, title, content, created_at
        FROM events_feedbackpost
        WHERE parent_id IS NULL
-       ORDER BY created_at DESC, id DESC`
+       ORDER BY created_at DESC, id DESC
+       LIMIT ? OFFSET ?`
     )
-    .all() as FeedbackPost[];
+    .all(size, offset) as FeedbackPost[];
 
-  return rows.map(toDTO);
+  const posts = rows.map(toDTO);
+  return {
+    posts,
+    count: total.count,
+    page: Math.max(page, 1),
+    page_size: size,
+    total_pages: Math.ceil(total.count / size),
+  };
 }
 
 export function getPostById(id: number): FeedbackPostDTO | null {
@@ -83,10 +102,15 @@ export function getPostById(id: number): FeedbackPostDTO | null {
   return row ? toDTO(row) : null;
 }
 
+const FEEDBACK_AVATAR_COLORS: string[] = [
+    "#ab3e3e", "#da894f", "#d6b659", "#457e5a", "#309c90",
+    "#35b9de", "#87915d", "#8a5eb4", "#d380a9", "#313841",
+];
+
 export function createPost(input: CreateFeedbackInput): FeedbackPostDTO {
   const now = new Date().toISOString();
   const nickname = input.nickname?.trim() || "Anonymous";
-  const avatarColor = input.avatar_color ?? "#94a3b8";
+  const avatarColor = input.avatar_color ?? FEEDBACK_AVATAR_COLORS[Math.floor(Math.random() * FEEDBACK_AVATAR_COLORS.length)] ?? "#ab3e3e";
 
   const result = db
     .query(
