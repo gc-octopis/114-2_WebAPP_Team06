@@ -58,6 +58,7 @@
         - 前端 `AuthContext` / `TopBar` 已改為直接呼叫 `http://localhost:8002/api/auth/me`（Hono endpoint）。
         - TopBar 登出改呼叫 Hono `POST /api/auth/logout`。
         - 整體登入/登出流程與使用者狀態顯示已驗證正常。
+    * 撰寫腳本將原先用於抓取資料並寫入Django DB的腳本改為寫入Hono的版本
 
 * 孫怡臻： 將常用連結、搜尋紀錄、留言板 ID 與帳號連結 25%
     * 將常用連結釘選（pinned links）改為「登入後才能使用」，並依帳號各自保存

@@ -242,6 +242,121 @@ curl -X GET http://localhost:8002/api/auth/me -b cookiejar.txt
 
 整體流程已驗證正常，前端 TopBar 現可正確顯示當前使用者名稱，登出後也正確清除登入狀態。
 
+USER:
+寫一個腳本讓我可以把資料寫進hono這邊的db 因為之前的一鍵腳本是寫在django那邊的
+
+AGENT:
+我先找 Hono 端目前有哪些匯入/同步腳本與資料庫檔位置，目標是做一個最小可用的「從 Django DB 匯到 Hono DB」腳本，不去動 Django 本體。
+
+我已經把方向收斂到「同步資料庫檔」而不是重做一套匯入器；下一步只確認兩份 db.sqlite3 的實際位置，然後直接落一個可重複執行的同步腳本。
+
+我現在要做的是補一個 Hono 端同步腳本，讓你不用碰 Django 的同步流程，也能把 db.sqlite3 複製到 Hono 會讀的那份資料庫。
+
+腳本先落地了，我要立刻跑一次驗證它能不能把 Django 的 SQLite 複製到 Hono 的位置，這是最直接的判斷。
+
+我把同步腳本補成可直接用的命令，順手把 Hono README 裡的啟動方式一起寫清楚，避免之後還要猜路徑。
+
+我再跑一次 package.json 暴露出來的指令，確認你之後可以直接用 bun run sync:db，不是只能手動跑 TS 檔。
+
+已經補好了，而且是直接把 Django 的 SQLite 同步到 Hono 會讀的那份資料庫。
+
+我新增了同步腳本 sync-db.ts，它會把 db.sqlite3 複製到 db.sqlite3，如果有 -wal / -shm 也會一起搬。再加上 package.json 的 sync:db 指令，之後你只要在 Backend-hono 目錄執行 bun run sync:db 就行。README 也一起改成直接跑 Hono 的 src/index.ts。README.md
+
+我已經實跑驗證過，bun run sync:db 會成功同步資料。你現在的流程可以是：
+
+先在 Django 端把資料更新好
+進 Backend-hono
+跑 bun run sync:db
+跑 bun run src/index.ts
+如果你要，我下一步可以再幫你把 Backend-hono 的啟動與同步流程整理成一段可以直接貼到 Week11_Report 的說明。
+
+USER:
+但我之後就會完全捨棄掉django了 所以你應該是要讓我原本抓資料的腳本 再寫一份變成hono版本的
+
+AGENT:
+我先把 Django 那邊原本的抓資料腳本和 Hono 的資料寫入方式對上，確認哪些腳本要重寫成 Hono 版本、哪些可以直接沿用抓外部來源的邏輯。
+
+我已經拿到 Hono 的資料型別，接下來直接看 Django 脚本本身的抓取流程，這樣就能把它們拆成「抓外部資料」和「寫入 Hono DB」兩層。
+
+我現在把範圍再縮小到「實際寫哪些 SQLite 表、用什麼唯一鍵做 upsert」，避免腳本雖然會抓到資料，但最後因為對不準表結構而寫失敗。
+
+我已經把需要的資料表與唯一鍵確認好了，現在先裝一個輕量 HTML parser，這樣 Hono 版的爬蟲可以直接重寫，不用硬寫脆弱的 regex。
+
+公告和連結只需要 HTML 解析，日曆英文版還需要讀 xls/xlsx，所以我再裝一個 Excel 讀取套件，讓 Hono 版腳本可以完整替代 Python。
+
+我先補一個關鍵點：links 那組除了分類名稱，還可能要寫 keywords / embeddings，所以我找一下 Django 原本怎麼做向量和關鍵字，避免 Hono 版只匯入一半。
+
+我看到原本 import_links 其實有兩種路徑：有模型就補 embeddings，沒模型就只匯入基本資料。現在我去看 Hono 端是否已經有等價的 embedding 服務，這會決定 links 匯入腳本要不要順手把向量也補上。
+
+我先確認一下前端還有沒有直接讀 links.json，這會影響 links 腳本要不要順手保留 JSON 輸出，避免你之後切換時斷掉。
+
+我再看一下 link 搜尋那邊目前到底靠什麼比對，因為如果 Hono 版匯入時不順手把 keywords 填起來，/api/search/ 會幾乎找不到東西。
+
+Searched for regex and reviewed TopBar.jsx
+我已經決定好拆法了：保留抓取流程，但完全改成 Hono + Bun + SQLite 寫入，下一步直接一次把共用工具和四支資料腳本補起來。
+
+我已經把 Hono 版抓資料腳本補上了，接下來先跑一支最代表性的 links 腳本做實測，確認它真的能抓來源並寫進 Hono DB。
+
+我已經定位到 links 腳本沒寫進 items 的原因，很可能是 sys_id 被我當成字串以外的型別吃掉了；先把這個轉型修掉，再重跑一次驗證。
+
+已編輯
+fetch_myntu_links.ts+2-1
+我現在重跑 links 腳本，確認這次 Hono DB 真的有寫進連結資料，而不是只印出分類數。
+
+這次輸出被轉到資源檔了，我讀一下最後結果，確認有沒有真的寫入連結資料。
+
+我看到它至少已經在跑資料匯入了，但輸出太長被截斷；我讀最後幾行確認最後是否成功完成，順便看一下是不是 Ollama 不可達。
+
+輸出還在延續，我再看最末尾幾行，確認這支腳本最後是成功收尾還是卡在 embeddings / 網路。
+
+目前 Hono 版的 links 匯入已經實測成功，還差把命令整理成你之後好用的入口，順手把 README 改成只講 Hono 這條線。
+
+我再跑一支不依賴 Ollama 的小腳本，確認日期匯入那條路也能直接寫進 Hono DB，避免只有 links 這一支通。
+
+我已經看到日曆腳本目前只撈到檔案但沒解析出事件，先看一下實際 ICS 內容長什麼樣，避免盲修 parser。
+
+這個來源站有 SSL 問題，Python 預設會擋，我改用 curl -k 看原始內容，比較接近我在 Bun 內實際抓到的資料。
+
+我把 ICS 解析改成逐行狀態機，這比現在的正則切塊更耐 Microsoft Exchange 的折行格式，也比較不容易漏事件。
+
+我修完解析器後立刻重跑一次，確認這次不再是 0 events。
+
+我再做一個輕量驗證，跑公告腳本的單頁模式，確認 Hono 版的 HTML 解析和 SQLite 寫入也都沒問題。
+
+我把 links 匯入時的 embeddings 失敗訊息收斂掉，讓它在沒有 Ollama 時只警告一次，不要整批刷滿終端機。
+
+我再補一個更接近原始 Django 行為的修正：日曆事件的 date_end 現在要跟原始腳本一樣處理，不然會少一天或多一天。
+
+我把兩支日曆腳本都收斂到同一個資料格式，這樣 Hono DB 裡的 date_end 會跟原本 Django 的同步結果一致。
+
+我再跑一次日曆同步，確認剛剛補上的 date_end 改動沒有把腳本弄壞。
+
+我最後再驗一次 links，同時關掉 embeddings，確認這條命令在沒有 Ollama 的情況下也能乾淨完成。
+
+我把 README 補一個實用註記，讓你之後知道 links 匯入可以直接跳過 embeddings，不用被 Ollama 卡住。
+
+我已經把主要流程跑通了，最後用一次編譯/型別檢查掃描，確認這批新增腳本沒有語法或型別錯誤。
+
+型別掃描沒有冒出 package / README 問題，但我再針對新增的腳本檔本身補查一次，避免只是 folder path 沒掃到。
+
+已經改成 Hono 版本了，不再需要靠 Django 的同步腳本。現在在 Backend-hono 底下有一套直接把外部資料寫進 Hono SQLite 的腳本：日曆、公告、快捷連結都各自有對應的 Hono 版，還有一支整合用的 sync_all；共用寫入邏輯整理在 common.ts。另外也把 package.json 和 README.md 一起改成 Hono-only 的流程了。
+
+你之後可以這樣用：
+
+全部同步：在 Backend-hono 執行 bun run sync:all
+只同步英文日曆：bun run sync:calendar-en
+只同步中文日曆：bun run sync:calendar-zh
+只同步公告：bun run sync:announcements
+只同步 links：bun run sync:links
+如果沒有開 Ollama，links 可以加 SKIP_EMBEDDINGS=1 bun run sync:links
+我也實測過了：
+
+中文日曆腳本可正常抓到並寫入 300 筆
+公告腳本單頁模式可正常寫入 10 筆
+links 腳本可正常寫入 221 筆
+如果你要，我下一步可以幫你把這套 Hono 啟動 + 同步順序整理成 Week11_Report 可直接貼上的「目前改成 Hono 後的開發流程」。
+
+
 # 孫怡臻
 
 USER:

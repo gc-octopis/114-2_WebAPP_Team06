@@ -3,6 +3,15 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "sync:calendar-en": "bun run scripts/calendar_en_builder.ts",
+    "sync:calendar-zh": "bun run scripts/calendar_zh_builder.ts",
+    "sync:announcements": "bun run scripts/announcement_scraper.ts",
+    "sync:links": "bun run scripts/fetch_myntu_links.ts",
+    "sync:all": "bun run scripts/sync_all.ts",
+    "sync:db": "bun run scripts/sync-db.ts"
+  },
   "devDependencies": {
     "@types/bun": "^1.3.13",
     "@types/nodemailer": "^8.0.0"
@@ -12,9 +21,11 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.6",
+    "cheerio": "^1.2.0",
     "hono": "^4.12.18",
-    "nodemailer": "^8.0.7",
     "ioredis": "^5.3.2",
+    "nodemailer": "^8.0.7",
+    "xlsx": "^0.18.5",
     "zod": "^4.4.3"
   }
 }
