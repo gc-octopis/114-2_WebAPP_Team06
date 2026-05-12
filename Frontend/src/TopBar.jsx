@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLanguage, useText, getLocalizedValue } from "./LanguageContext";
+import { useAuth } from './AuthContext';
 import { UseLinkContext } from "./LinkContext";
 import {
     SortableContext,
@@ -76,8 +77,12 @@ function TopBar({setSideBarToggled, title})
 {
     const { lang, toggleLanguage } = useLanguage();
     const t = useText();
+    const auth = useAuth();
+    const navigate = useNavigate();
+    const authApiBase = import.meta.env.VITE_AUTH_API_BASE || '';
     const [isDarkTheme, setIsDarkTheme] = useState(false);
-    const { pinnedLinks, updatePinnedLinks, activeItem, dragOverPinnedUrl, isDuplicateDrag, duplicateUrl } = UseLinkContext();
+    const { pinnedLinks, updatePinnedLinks, activeItem, dragOverPinnedUrl, isDuplicateDrag, duplicateUrl, isAuthed } = UseLinkContext();
+    const canPin = !!auth?.user && !!isAuthed;
 
     const isFromFavorites = activeItem !== null && !pinnedLinks.some(l => l.url === activeItem.url);
     const isDragging = activeItem !== null;
@@ -130,7 +135,11 @@ function TopBar({setSideBarToggled, title})
                 </button>
                 <div className="dropdown-menu">
                     <div className="dropdown-title">{t.quickServices}</div>
-                    {pinnedLinks.length === 0 ? (
+                    {!canPin ? (
+                        <div className="empty-pin-placeholder" style={{ opacity: 0.8 }}>
+                            {lang === "en" ? "Login to pin shortcuts" : "登入後才能釘選捷徑"}
+                        </div>
+                    ) : pinnedLinks.length === 0 ? (
                         <EmptyDropZone lang={lang} />
                     ) : (
                         (() => {
@@ -188,7 +197,22 @@ function TopBar({setSideBarToggled, title})
                 </button>
                 <div className="dropdown-menu">
                     <div className="dropdown-title">{t.systemSettings}</div>
-                    <Link to="/login" className="login-link">{t.login}</Link>
+                    {auth && auth.user ? (
+                        <>
+                          <div className="dropdown-user">{auth.user.name || auth.user.email}</div>
+                          <Link to="/settings">{lang === 'en' ? 'Account settings' : '個人帳號設定'}</Link>
+                          <a href="#" onClick={async (e) => {
+                              e.preventDefault();
+                              try {
+                                                                await fetch(`${authApiBase}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+                              } catch (err) {}
+                              if (auth && auth.setUser) auth.setUser(null);
+                              navigate('/login');
+                          }}>{lang === 'en' ? 'Logout' : '登出'}</a>
+                        </>
+                    ) : (
+                        <Link to="/login" className="login-link">{t.login}</Link>
+                    )}
                     <a href="#" onClick={(e) => { e.preventDefault(); toggleLanguage(); }}>{t.switchLanguage}</a>
                     <a href="#" id="theme-btn" onClick={() => setIsDarkTheme(!isDarkTheme)}>{t.switchTheme}</a>
                     <div className="divider"></div>

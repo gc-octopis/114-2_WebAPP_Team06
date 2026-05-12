@@ -1,5 +1,7 @@
 import Layout from "./Layout";
 import { useEffect, useState } from "react";
+import { useAuth } from './AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from "./LanguageContext";
 
 import "./login.css";
@@ -62,8 +64,59 @@ function Login()
         document.title = "MyNTU++ | " + copy.title;
     }, [copy.title]);
 
-    function handleSubmit(e) {
+    const navigate = useNavigate();
+    const auth = useAuth();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    async function handleSubmit(e) {
         e.preventDefault();
+        setError('');
+        if (isRegister && password !== confirmPassword) {
+            setError(lang === 'en' ? 'Passwords do not match' : '密碼不一致');
+            return;
+        }
+
+        setLoading(true);
+        const url = isRegister ? '/api/auth/register/' : '/api/auth/login/';
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email, password, name: copy.title === 'Create Account' ? '' : '' })
+            });
+
+            // Safely handle empty/non-JSON responses to avoid JSON parse errors
+            let data = null;
+            const text = await res.text();
+            if (text) {
+                try {
+                    data = JSON.parse(text);
+                } catch (err) {
+                    console.error('Failed to parse JSON response', err, text);
+                }
+            }
+
+            if (!res.ok) {
+                setError((data && data.error) || text || 'Unexpected error');
+                setLoading(false);
+                return;
+            }
+
+            // update global auth state if available
+            if (auth && auth.setUser) auth.setUser(data);
+
+            // on success, redirect to home
+            navigate('/');
+        } catch (err) {
+            setError(err.message || 'Network error');
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -125,6 +178,8 @@ function Login()
                             type="email"
                             autoComplete="email"
                             placeholder={copy.emailPlaceholder}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
 
                         <label className="auth-label" htmlFor="password">{copy.password}</label>
@@ -134,6 +189,8 @@ function Login()
                             type="password"
                             autoComplete={isRegister ? "new-password" : "current-password"}
                             placeholder={copy.passwordPlaceholder}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
 
                         {isRegister && (
@@ -145,6 +202,8 @@ function Login()
                                     type="password"
                                     autoComplete="new-password"
                                     placeholder={copy.confirmPasswordPlaceholder}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
                                 />
                             </>
                         )}
@@ -159,7 +218,8 @@ function Login()
                             </div>
                         )}
 
-                        <button className="auth-submit" type="submit">{copy.submit}</button>
+                        {error && <div className="auth-error">{error}</div>}
+                        <button className="auth-submit" type="submit" disabled={loading}>{loading ? (lang==='en'?'Loading...':'載入中...') : copy.submit}</button>
                     </form>
 
                     <p className="auth-switch">

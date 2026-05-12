@@ -206,6 +206,12 @@
     font-weight: 700;
 }
 
+.auth-error {
+    margin-top: 0.5rem;
+    color: var(--danger, #c53030);
+    font-weight: 700;
+}
+
 .auth-check input {
     width: 1rem;
     height: 1rem;

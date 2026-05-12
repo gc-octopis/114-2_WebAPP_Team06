@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.utils import timezone
 from zoneinfo import ZoneInfo
 from .models import CalendarEvent, Announcement, LinkCategory, LinkItem, FeedbackPost, ContactMessage
+from .models import User
 
 
 class CalendarEventSerializer(serializers.ModelSerializer):
@@ -68,3 +69,10 @@ class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactMessage
         fields = ['name', 'email', 'message']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'name', 'is_active', 'created_at']
+        read_only_fields = ['id', 'is_active', 'created_at']

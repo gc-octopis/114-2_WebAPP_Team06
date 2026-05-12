@@ -3,12 +3,14 @@ import { useLocation } from 'react-router-dom';
 import './announcement.css';
 import { useLanguage, useText, getLocalizedValue } from './LanguageContext';
 import { AnnouncementAPI } from './announcementAPI';
+import { useAuth } from './AuthContext';
 
 function Announcement()
 {
     const { lang } = useLanguage();
     const location = useLocation();
     const t = useText();
+    const auth = useAuth();
     const [data, setData] = useState([]);
     const [categoryOptions, setCategoryOptions] = useState([]);
     const ITEMS_PER_PAGE = 10;
@@ -28,10 +30,8 @@ function Announcement()
     const [replyError, setReplyError] = useState('');
     const [activeReplyPostId, setActiveReplyPostId] = useState(null);
     const [replyDrafts, setReplyDrafts] = useState({});
-    const [feedbackForm, setFeedbackForm] = useState({
-        nickname: '',
-        content: '',
-    });
+    const [feedbackForm, setFeedbackForm] = useState({ content: '' });
+    const [postAs, setPostAs] = useState('anonymous'); // 'anonymous' | 'nickname'
 
     const totalItems = useRef(0);
     const totalPages = useRef(0);
@@ -226,9 +226,14 @@ function Announcement()
         setFeedbackSuccess('');
         setReplyError('');
 
+        if (!auth?.user) {
+            setFeedbackError(lang === 'en' ? 'Please login to post.' : '請先登入才能發表。');
+            return;
+        }
+
         const payload = {
-            nickname: feedbackForm.nickname.trim(),
             content: feedbackForm.content.trim(),
+            post_as: postAs,
         };
 
         if (!payload.content) {
@@ -239,7 +244,7 @@ function Announcement()
         setIsSubmittingFeedback(true);
         try {
             await AnnouncementAPI.createFeedbackPost(payload);
-            setFeedbackForm({ nickname: '', content: '' });
+            setFeedbackForm({ content: '' });
             setFeedbackSuccess(t.feedbackPostSuccess);
             setFeedbackPage(1);
             const result = await AnnouncementAPI.getFeedbackPosts({ page: 1, page_size: FEEDBACK_ITEMS_PER_PAGE });
@@ -267,6 +272,11 @@ function Announcement()
         setFeedbackSuccess('');
         setReplyError('');
 
+        if (!auth?.user) {
+            setReplyError(lang === 'en' ? 'Please login to reply.' : '請先登入才能回覆。');
+            return;
+        }
+
         const content = (replyDrafts[parentId] || '').trim();
         if (!content) {
             setReplyError(t.feedbackPostFailed);
@@ -278,6 +288,7 @@ function Announcement()
             await AnnouncementAPI.createFeedbackPost({
                 content,
                 parent_id: parentId,
+                post_as: postAs,
             });
 
             setReplyDrafts((prev) => ({ ...prev, [parentId]: '' }));
@@ -479,16 +490,40 @@ function Announcement()
 
                 <h3 className="feedback-list-title">{t.feedbackFormTitle}</h3>
                 <form className="feedback-form" onSubmit={submitFeedback}>
-                    <label className="feedback-label" htmlFor="feedback-nickname">{t.feedbackNicknameLabel}</label>
-                    <input
-                        id="feedback-nickname"
-                        type="text"
-                        className="feedback-input"
-                        maxLength={80}
-                        placeholder={t.feedbackNicknamePlaceholder}
-                        value={feedbackForm.nickname}
-                        onChange={(e) => setFeedbackForm((prev) => ({ ...prev, nickname: e.target.value }))}
-                    />
+                    {!auth?.user && (
+                        <p className="feedback-status feedback-status--error">
+                            {lang === 'en' ? 'Please login to post.' : '請先登入才能發表。'}{' '}
+                            <a href="/login" style={{ textDecoration: 'underline' }}>
+                                {lang === 'en' ? 'Go to login' : '前往登入'}
+                            </a>
+                        </p>
+                    )}
+
+                    <div className="feedback-toolbar">
+                        <span className="feedback-label">{lang === 'en' ? 'Post as' : '發表身份'}</span>
+                        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <input
+                                type="radio"
+                                name="post-as"
+                                value="anonymous"
+                                checked={postAs === 'anonymous'}
+                                onChange={() => setPostAs('anonymous')}
+                            />
+                            {lang === 'en' ? 'Anonymous' : '匿名'}
+                        </label>
+                        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <input
+                                type="radio"
+                                name="post-as"
+                                value="nickname"
+                                checked={postAs === 'nickname'}
+                                onChange={() => setPostAs('nickname')}
+                                disabled={!auth?.user || !(auth?.user?.name || '').trim()}
+                            />
+                            {lang === 'en' ? 'Nickname' : '暱稱'}
+                            {auth?.user?.name ? `(${auth.user.name})` : ''}
+                        </label>
+                    </div>
 
                     <label className="feedback-label" htmlFor="feedback-content">{t.feedbackContentLabel}</label>
                     <textarea
@@ -504,7 +539,7 @@ function Announcement()
                     {feedbackError && <p className="feedback-status feedback-status--error">{feedbackError}</p>}
                     {feedbackSuccess && <p className="feedback-status feedback-status--success">{feedbackSuccess}</p>}
 
-                    <button type="submit" className="feedback-submit-btn" disabled={isSubmittingFeedback}>
+                    <button type="submit" className="feedback-submit-btn" disabled={isSubmittingFeedback || !auth?.user}>
                         {isSubmittingFeedback ? t.feedbackSubmitting : t.feedbackSubmit}
                     </button>
                 </form>

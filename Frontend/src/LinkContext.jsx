@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 import {
     DndContext,
     DragOverlay,
@@ -18,21 +19,13 @@ export function UseLinkContext()
 
 export default function LinkProvider({ children })
 {
+    const auth = useAuth();
+    const authApiBase = import.meta.env.VITE_AUTH_API_BASE || '';
     const [categories, setCategories] = useState([]);
     const [activeCatIdx, setActiveCatIdx] = useState(0);
     const [pinnedLinks, setPinnedLinks] = useState([]);
     const [activeItem, setActiveItem] = useState(null); // 拖曳中的項目 (for DragOverlay)
     const [dragOverPinnedUrl, setDragOverPinnedUrl] = useState(null); // 外來拖曳懸停在哪個 pinned item 上
-
-    // UUID Generation for anonymous device tracking
-    const [deviceId] = useState(() => {
-        let id = localStorage.getItem("device_id");
-        if (!id) {
-            id = crypto.randomUUID();
-            localStorage.setItem("device_id", id);
-        }
-        return id;
-    });
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -41,14 +34,15 @@ export default function LinkProvider({ children })
     );
 
     const updatePinnedLinks = async (newLinks) => {
+        if (!auth?.user) return;
         setPinnedLinks(newLinks);
         try {
-            await fetch("/api/preferences/", {
+            await fetch(`${authApiBase}/api/preferences/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-User-Id": deviceId,
                 },
+                credentials: "include",
                 body: JSON.stringify({ pinned_links: newLinks })
             });
         } catch (e) {
@@ -118,19 +112,24 @@ export default function LinkProvider({ children })
 
     useEffect(() => {
         (async function fetchPreferences() {
+            if (!auth?.user) {
+                setPinnedLinks([]);
+                return;
+            }
             try {
-                const res = await fetch("/api/preferences/", {
-                    headers: { "X-User-Id": deviceId }
-                });
+                const res = await fetch(`${authApiBase}/api/preferences/`, { credentials: "include" });
                 if (res.ok) {
                     const data = await res.json();
                     setPinnedLinks(data.pinned_links || []);
+                } else {
+                    setPinnedLinks([]);
                 }
             } catch (e) {
                 console.error("Failed to load pinned links", e);
+                setPinnedLinks([]);
             }
         })();
-    }, [deviceId]);
+    }, [auth?.user?.id]);
 
     useEffect(() => {
         (async function () {
@@ -158,7 +157,7 @@ export default function LinkProvider({ children })
     const duplicateUrl = isDuplicateDrag ? activeItem.url : null;
 
     return (
-        <LinkContext.Provider value={{categories, activeCatIdx, setActiveCatIdx, pinnedLinks, updatePinnedLinks, activeItem, dragOverPinnedUrl, isDuplicateDrag, duplicateUrl}}>
+        <LinkContext.Provider value={{categories, activeCatIdx, setActiveCatIdx, pinnedLinks, updatePinnedLinks, activeItem, dragOverPinnedUrl, isDuplicateDrag, duplicateUrl, isAuthed: !!auth?.user}}>
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}

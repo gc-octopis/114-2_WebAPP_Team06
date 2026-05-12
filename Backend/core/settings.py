@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+import importlib.util
 import os
 
 load_dotenv()
@@ -44,8 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.tasks',
 ]
+
+HAS_DJANGO_TASKS = importlib.util.find_spec('django.tasks') is not None
+
+if HAS_DJANGO_TASKS:
+    INSTALLED_APPS.append('django.tasks')
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -156,4 +161,5 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD") or ""
 
 # TASK
 
-TASKS = {"default": {"BACKEND": "django.tasks.backends.immediate.ImmediateBackend"}}
+if HAS_DJANGO_TASKS:
+    TASKS = {"default": {"BACKEND": "django.tasks.backends.immediate.ImmediateBackend"}}

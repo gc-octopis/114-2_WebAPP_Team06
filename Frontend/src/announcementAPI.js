@@ -4,6 +4,7 @@
  */
 
 export class AnnouncementAPI {
+    static authApiBase = import.meta.env.VITE_AUTH_API_BASE || '';
     static async parseResponseBody(response) {
         const contentType = response.headers.get('content-type') || '';
         if (contentType.includes('application/json')) {
@@ -111,11 +112,12 @@ export class AnnouncementAPI {
     }
 
     static async createFeedbackPost(payload) {
-        const response = await fetch('/api/feedback/', {
+        const response = await fetch(`${this.authApiBase}/api/feedback/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify(payload),
         });
 

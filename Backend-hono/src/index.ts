@@ -7,6 +7,8 @@ import { calendar      } from "./routes/calendar";
 import { announcements } from "./routes/announcements";
 import { links         } from "./routes/links";
 import { preferences   } from "./routes/preferences";
+import { auth } from "./routes/auth";
+import sessionMiddleware from './middleware/session'
 // import { search        } from "./routes/search";
 import { feedback      } from "./routes/feedback";
 import { contact       } from "./routes/contact";
@@ -19,6 +21,7 @@ app.use(
   "*",
   cors({
     origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    credentials: true,
     allowHeaders: [
       "Content-Type",
       "Authorization",
@@ -52,6 +55,9 @@ app.route("/api/preferences*",    preferences); // [v]
 // app.route("/api/search*",         search);
 app.route("/api/feedback*",       feedback); // [v]
 app.route("/api/contact*",        contact); // [v]
+// session middleware (resolve user from redis or fallback to Django)
+app.use('*', sessionMiddleware)
+app.route('/api/auth', auth);
 
 // ─── Dev health check ────────────────────────────────────────────────────────
 app.get("/", (c) => c.json({ status: "ok", routes: [

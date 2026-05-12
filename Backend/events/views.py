@@ -1,15 +1,20 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import status as drf_status
 from datetime import datetime
 import math
 import random
 from django.db import transaction
 from django.db.models import Q
+from django.contrib.auth.hashers import make_password, check_password
 from .models import CalendarEvent, Announcement, UserPreference, LinkCategory, LinkItem, FeedbackPost, ContactMessage
+from .models import User as UserModel
 from .serializers import CalendarEventSerializer, AnnouncementSerializer, LinkCategorySerializer, LinkItemSerializer, FeedbackPostSerializer, ContactMessageSerializer
+from .serializers import UserSerializer
 from .search_service import SemanticSearchService
 from .tasks import send_email_task
+from .redis_sessions import create_session, get_session_user, delete_session
 
 from dotenv import load_dotenv
 import os
@@ -29,6 +34,27 @@ def _normalize_language(lang: str) -> str:
     if value == 'en':
         return 'en'
     return ''
+
+
+def _get_session_user_or_none(request):
+    token = request.COOKIES.get('myntupp_session')
+    return get_session_user(token)
+
+
+def _get_authenticated_user_or_response(request):
+    session_user = _get_session_user_or_none(request)
+    if not session_user:
+        return None, Response({'error': 'authentication required'}, status=drf_status.HTTP_401_UNAUTHORIZED)
+
+    user_id = session_user.get('id')
+    if not user_id:
+        return None, Response({'error': 'invalid session'}, status=drf_status.HTTP_401_UNAUTHORIZED)
+
+    user = UserModel.objects.filter(id=user_id, is_active=True).first()
+    if not user:
+        return None, Response({'error': 'invalid user'}, status=drf_status.HTTP_401_UNAUTHORIZED)
+
+    return user, None
 
 
 class CalendarEventListView(APIView):
@@ -190,23 +216,25 @@ class UserPreferenceView(APIView):
     """
 
     def get(self, request):
-        user_id = request.headers.get('X-User-Id')
-        if not user_id:
-            return Response({'error': 'X-User-Id header is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        pref, _ = UserPreference.objects.get_or_create(user_id=user_id)
+        user, error_response = _get_authenticated_user_or_response(request)
+        if error_response:
+            return error_response
+
+        pref_key = f"user:{user.id}"
+        pref, _ = UserPreference.objects.get_or_create(user_id=pref_key)
         return Response({'pinned_links': pref.pinned_links})
 
     def post(self, request):
-        user_id = request.headers.get('X-User-Id')
-        if not user_id:
-            return Response({'error': 'X-User-Id header is required'}, status=status.HTTP_400_BAD_REQUEST)
+        user, error_response = _get_authenticated_user_or_response(request)
+        if error_response:
+            return error_response
         
         pinned_links = request.data.get('pinned_links')
         if not isinstance(pinned_links, list):
             return Response({'error': 'pinned_links must be a list'}, status=status.HTTP_400_BAD_REQUEST)
 
-        pref, _ = UserPreference.objects.get_or_create(user_id=user_id)
+        pref_key = f"user:{user.id}"
+        pref, _ = UserPreference.objects.get_or_create(user_id=pref_key)
         pref.pinned_links = pinned_links
         pref.save()
         return Response({'pinned_links': pref.pinned_links})
@@ -334,9 +362,17 @@ class FeedbackPostListCreateView(APIView):
             )
 
     def post(self, request):
-        nickname = (request.data.get('nickname') or '').strip()[:80]
         content = (request.data.get('content') or '').strip()
         parent_id_raw = request.data.get('parent_id')
+        post_as = (request.data.get('post_as') or '').strip().lower()  # 'anonymous' or 'nickname'
+
+        user, error_response = _get_authenticated_user_or_response(request)
+        if error_response:
+            return error_response
+
+        nickname = 'Anonymous'
+        if post_as in ('nickname', 'name'):
+            nickname = (user.name or '').strip()[:80] or 'Anonymous'
 
         if not content:
             return Response({'error': 'content is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -358,7 +394,7 @@ class FeedbackPostListCreateView(APIView):
         with transaction.atomic():
             post = FeedbackPost.objects.create(
                 parent=parent,
-                nickname=nickname or 'Anonymous',
+                nickname=nickname,
                 avatar_color=random.choice(FEEDBACK_AVATAR_COLORS),
                 title='',
                 content=content,
@@ -372,6 +408,108 @@ class FeedbackPostListCreateView(APIView):
 
         serializer = FeedbackPostSerializer(post)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+# -----------------
+# Auth (session)
+# -----------------
+
+# -----------------
+# Auth (session)
+# -----------------
+class RegisterView(APIView):
+    def post(self, request):
+        email = (request.data.get('email') or '').strip().lower()
+        password = request.data.get('password') or ''
+        name = (request.data.get('name') or '').strip()
+
+        if not email or not password:
+            return Response({'error': 'email and password required'}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        if UserModel.objects.filter(email=email).exists():
+            return Response({'error': 'email already registered'}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        hashed = make_password(password)
+        user = UserModel.objects.create(email=email, password=hashed, name=name)
+        token = create_session(UserSerializer(user).data)
+        resp = Response(UserSerializer(user).data)
+        resp.set_cookie('myntupp_session', token, httponly=True, samesite='Lax', path='/', max_age=60*60*24*7)
+        return resp
+
+
+class LoginView(APIView):
+    def post(self, request):
+        email = (request.data.get('email') or '').strip().lower()
+        password = request.data.get('password') or ''
+
+        if not email or not password:
+            return Response({'error': 'email and password required'}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = UserModel.objects.get(email=email)
+        except UserModel.DoesNotExist:
+            return Response({'error': 'invalid credentials'}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        if not check_password(password, user.password):
+            return Response({'error': 'invalid credentials'}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        token = create_session(UserSerializer(user).data)
+        resp = Response(UserSerializer(user).data)
+        resp.set_cookie('myntupp_session', token, httponly=True, samesite='Lax', path='/', max_age=60*60*24*7)
+        return resp
+
+
+class LogoutView(APIView):
+    def post(self, request):
+        token = request.COOKIES.get('myntupp_session')
+        if token:
+            delete_session(token)
+        resp = Response({'ok': True})
+        resp.delete_cookie('myntupp_session', path='/')
+        return resp
+
+
+class CurrentUserView(APIView):
+    def get(self, request):
+        user = _get_session_user_or_none(request)
+        if not user:
+            return Response(None)
+        return Response(user)
+
+
+class ProfileView(APIView):
+    """
+    GET: return current user info (same as /auth/me, but requires auth).
+    PATCH: update nickname (User.name).
+    """
+
+    def get(self, request):
+        user, error_response = _get_authenticated_user_or_response(request)
+        if error_response:
+            return error_response
+        return Response(UserSerializer(user).data)
+
+    def patch(self, request):
+        user, error_response = _get_authenticated_user_or_response(request)
+        if error_response:
+            return error_response
+
+        name = (request.data.get('name') or '').strip()
+        if len(name) > 150:
+            return Response({'error': 'name is too long (max 150 characters)'}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        user.name = name
+        user.save(update_fields=['name', 'updated_at'])
+
+        # Refresh session payload so /auth/me reflects the new nickname immediately.
+        token = request.COOKIES.get('myntupp_session')
+        if token:
+            delete_session(token)
+        new_token = create_session(UserSerializer(user).data)
+
+        resp = Response(UserSerializer(user).data)
+        resp.set_cookie('myntupp_session', new_token, httponly=True, samesite='Lax', path='/', max_age=60*60*24*7)
+        return resp
 
 
 class ContactMessageCreateView(APIView):

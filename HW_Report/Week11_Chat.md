@@ -124,4 +124,122 @@ All backend endpoints now fully align with the frontend API contracts, including
 
 # 王凱弘
 
+USER:
+幫我實作後端帳號資料庫與登入功能。透過 Session 變數的設定與提取，讓使用者能登入，並在 `models.py` 中建立 `User` 類別。
+
+AGENT:
+已完成後端帳號系統的基礎實作。主要變更包括：
+
+- 在 `Backend/events/models.py` 新增 `User` model，欄位含 `email`、`password`、`name`、`is_active`、`created_at`、`updated_at`。
+- 在 `Backend/events/serializers.py` 新增 `UserSerializer`。
+- 在 `Backend/events/views.py` 新增基於 session 的 `RegisterView`、`LoginView`、`LogoutView`、`CurrentUserView`，使用 `make_password` / `check_password` 處理密碼。
+- 在 `Backend/events/urls.py` 新增路由：`POST /api/auth/register/`、`POST /api/auth/login/`、`POST /api/auth/logout/`、`GET /api/auth/me/`
+- 執行 `makemigrations` 與 `migrate`，`events_user` 表已建立於本機 SQLite。
+- 開發階段暫時使用 `@csrf_exempt`（生產環境務必移除並採用 CSRF token 或同源策略）。
+
+測試範例（curl）：
+
+```bash
+# 註冊
+curl -X POST http://127.0.0.1:8000/api/auth/register/ \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"pwd123","name":"Test"}' \
+  -c cookiejar.txt
+
+# 登入
+curl -X POST http://127.0.0.1:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"pwd123"}' \
+  -c cookiejar.txt
+
+# 取得當前使用者（帶 cookie）
+curl -X GET http://127.0.0.1:8000/api/auth/me/ -b cookiejar.txt
+
+# 登出（帶 cookie）
+curl -X POST http://127.0.0.1:8000/api/auth/logout/ -b cookiejar.txt
+```
+
+建議下一步：把 session 存到 Redis（讓 Hono 也能共用），或把 CSRF 改為安全流程。
+
+---
+
+USER:
+由於我們已將大部分後端架構改用 Hono 伺服器，請導入 Redis session 讓 Django 與 Hono 能共用登入狀態。
+
+AGENT:
+已完成 Redis session 導入與整合。主要改動：
+
+- 新增 `Backend/events/redis_sessions.py`，提供 `create_session()` / `get_session_user()` / `delete_session()` 等 helper。
+- 後端登入/註冊改為產生 Redis session token，透過 HttpOnly cookie `myntupp_session` 傳遞。
+- 在 `Backend-hono/src/routes/auth.ts` 新增示範路由，可讀取同一個 Redis session 並回傳使用者資訊。
+- 安裝 Python Redis 客戶端 `redis` 與 Node.js `ioredis`。
+- 使用 Docker 啟動 Redis 容器：`docker run -d --name myntupp-redis -p 6379:6379 redis:7`
+
+test 過程：
+
+```bash
+# 1. 啟動 Redis（Docker）
+docker run -d --name myntupp-redis -p 6379:6379 redis:7
+
+# 2. 啟動 Django
+python Backend/manage.py runserver 8000
+
+# 3. 啟動 Hono（Backend-hono）
+cd Backend-hono
+bun run dev
+
+# 4. 用 cookie 驗證 Django 與 Hono 都能讀同一份 session
+curl -i -X POST http://127.0.0.1:8000/api/auth/register/ \
+  -H "Content-Type: application/json" \
+  -d '{"email":"redis_test@example.com","password":"pwd"}' \
+  -c cookiejar.txt
+
+# Django 端讀 session
+curl -i -X GET http://127.0.0.1:8000/api/auth/me/ -b cookiejar.txt
+
+# Hono 端讀同一個 Redis session
+curl -i -X GET http://localhost:8002/api/auth/me -b cookiejar.txt
+```
+
+Note：若 Redis 無法連線，後端會回 503；建議確保 Docker Redis 正常執行。
+
+---
+
+USER:
+幫我把前端 TopBar 改成直接讀 Redis session 的登入狀態，並移除 Django 的 request.session 回退，完全切到 Redis session。
+
+AGENT:
+已完成從 Django session 到 Redis-only 的切換。主要改動：
+
+- `Backend/events/redis_sessions.py`：改為把完整使用者 payload（name、email 等）存進 Redis，不只存 user_id。
+- `Backend/events/views.py`：移除 Django `request.session` fallback，只使用 Redis session。
+- `Backend-hono/src/middleware/session.ts`：改為只讀 Redis session payload，JSON 解析後掛入 request context。
+- `Backend-hono/src/routes/auth.ts`：`GET /api/auth/me` 回傳完整 user JSON；新增 `POST /api/auth/logout` 進行 session revoke（刪除 Redis key + 清除 cookie）。
+- `Backend-hono/src/index.ts`：啟用 CORS `credentials: true`，讓 cookie 正常在跨端點傳遞。
+- `Frontend/src/AuthContext.jsx`：改成呼叫 `http://localhost:8002/api/auth/me`（Hono endpoint）。
+- `Frontend/src/TopBar.jsx`：登出改呼叫 Hono `POST /api/auth/logout`。
+
+驗證結果：
+
+```bash
+# 1. 註冊帳號
+curl -X POST http://127.0.0.1:8000/api/auth/register/ \
+  -H "Content-Type: application/json" \
+  -d '{"email":"final_test@example.com","password":"pwd","name":"Final Test"}' \
+  -c cookiejar.txt
+
+# 2. 用 Hono endpoint 驗證登入狀態（直接讀 Redis）
+curl -X GET http://localhost:8002/api/auth/me -b cookiejar.txt
+# 應回傳：{"email":"final_test@example.com","name":"Final Test", ...}
+
+# 3. 登出
+curl -X POST http://localhost:8002/api/auth/logout -b cookiejar.txt
+
+# 4. 驗證登出後 session 已刪除
+curl -X GET http://localhost:8002/api/auth/me -b cookiejar.txt
+# 應回傳：null
+```
+
+整體流程已驗證正常，前端 TopBar 現可正確顯示當前使用者名稱，登出後也正確清除登入狀態。
+
 # 孫怡臻

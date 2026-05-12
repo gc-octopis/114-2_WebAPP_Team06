@@ -162,3 +162,20 @@ class ContactMessage(models.Model):
     def __str__(self):
         name = self.name or 'Anonymous'
         return f"[{self.created_at:%Y-%m-%d}] {name}: {self.message[:50]}"
+
+
+class User(models.Model):
+    """Simple user table for session-based authentication."""
+    email = models.EmailField(unique=True, db_index=True)
+    password = models.CharField(max_length=128)
+    name = models.CharField(max_length=150, blank=True, default='')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+
+    def __str__(self):
+        return f"{self.email}"
