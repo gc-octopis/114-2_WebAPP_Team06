@@ -98,6 +98,10 @@ function TopBar({setSideBarToggled, title})
 
     const pinnedIds = pinnedLinks.map(l => l.url);
 
+    const emailPrefix = auth && auth.user && auth.user.email
+        ? (auth.user.email.split('@')[0] || '')
+        : (auth && auth.user && auth.user.name ? auth.user.name.split('@')[0] : '');
+
     return (
     <>
     {/*上方佈局：工具列 (Topbar)*/}
@@ -126,6 +130,12 @@ function TopBar({setSideBarToggled, title})
 
         {/*3. 右側按鈕區*/}
         <div className="topbar-actions">
+            {/* 顯示註冊信箱前綴作為問候 */}
+            {auth && auth.user ? (
+                <div className="topbar-greeting" style={{ marginRight: "8px", alignSelf: "center" }}>
+                    {lang === 'en' ? `Hello, ${emailPrefix}!` : `${emailPrefix}，您好！`}
+                </div>
+            ) : null}
             {/*網格按鈕 (快捷連結)*/}
             <div className={`dropdown-wrapper ${isDragging ? "force-open" : ""}`}>
                 <button className="icon-btn" aria-label={t.quickLinks}>
@@ -199,7 +209,7 @@ function TopBar({setSideBarToggled, title})
                     <div className="dropdown-title">{t.systemSettings}</div>
                     {auth && auth.user ? (
                         <>
-                          <div className="dropdown-user">{auth.user.name || auth.user.email}</div>
+                          
                           <Link to="/settings">{lang === 'en' ? 'Account settings' : '個人帳號設定'}</Link>
                           <a href="#" onClick={async (e) => {
                               e.preventDefault();

@@ -60,4 +60,17 @@
         - 整體登入/登出流程與使用者狀態顯示已驗證正常。
 
 * 孫怡臻： 將常用連結、搜尋紀錄、留言板 ID 與帳號連結 25%
-    * 
+    * 將常用連結釘選（pinned links）改為「登入後才能使用」，並依帳號各自保存
+        - 後端 `GET/POST /api/preferences/` 改為以 `myntupp_session` 判斷登入，未登入回傳 401。
+        - `pinned_links` 以 `user.id` 作為 key 儲存，確保不同帳號互不干擾、下次登入可載入原本釘選。
+        - 前端 `LinkContext` 改為帶 `credentials: include` 呼叫 preferences，未登入時不讀取/不儲存釘選。
+        - TopBar 快捷服務下拉在未登入時顯示提示「登入後才能釘選捷徑」。
+    * 新增個人帳號設定頁（暱稱）並與帳號綁定
+        - 新增後端 `PATCH /api/auth/profile/` 更新 `User.name`（暱稱）。
+        - 更新暱稱後會刷新 session，使 `GET /api/auth/me/` 立即反映新的暱稱。
+        - 前端新增 `/settings` 頁面與 TopBar 入口，提供暱稱編輯與儲存。
+    * 留言板 ID 與帳號連結：限制登入後才能發文，且可選匿名/暱稱身份
+        - 後端 `POST /api/feedback/` 改為登入必須；新增 `post_as` 參數（`anonymous` / `nickname`）決定顯示身分。
+        - 前端留言板表單新增身份選擇；未登入顯示提示並禁用送出；留言/回覆皆帶 `credentials: include`。
+    * 兼顧本機開發環境
+        - `redis_sessions.py` 加入 Redis 不可用時的 in-memory fallback，避免本機未開 Redis 導致登入功能無法使用。

@@ -124,6 +124,14 @@ class LinkItem(models.Model):
 
 class FeedbackPost(models.Model):
     """Anonymous feedback/message board post."""
+    author = models.ForeignKey(
+        'User',
+        null=True,
+        blank=True,
+        related_name='feedback_posts',
+        on_delete=models.SET_NULL,
+        db_index=True,
+    )
     parent = models.ForeignKey(
         'self',
         null=True,

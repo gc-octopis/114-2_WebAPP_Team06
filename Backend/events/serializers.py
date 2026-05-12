@@ -48,6 +48,8 @@ class FeedbackPostSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
     parent_id = serializers.SerializerMethodField()
     replies = serializers.SerializerMethodField()
+    is_me = serializers.SerializerMethodField()
+    nickname = serializers.SerializerMethodField()
 
     def get_created_at(self, obj):
         local_dt = timezone.localtime(obj.created_at, ZoneInfo('Asia/Taipei'))
@@ -58,11 +60,22 @@ class FeedbackPostSerializer(serializers.ModelSerializer):
 
     def get_replies(self, obj):
         children = obj.replies.all().order_by('created_at', 'id')
-        return FeedbackPostSerializer(children, many=True).data
+        return FeedbackPostSerializer(children, many=True, context=self.context).data
+
+    def get_is_me(self, obj):
+        current_user_id = self.context.get('current_user_id')
+        if not current_user_id:
+            return False
+        return bool(obj.author_id) and str(obj.author_id) == str(current_user_id)
+
+    def get_nickname(self, obj):
+        if obj.author_id and getattr(obj, 'author', None) is not None:
+            return (obj.author.name or '').strip()[:80] or 'Anonymous'
+        return (obj.nickname or '').strip()[:80] or 'Anonymous'
 
     class Meta:
         model = FeedbackPost
-        fields = ['id', 'parent_id', 'nickname', 'avatar_color', 'content', 'created_at', 'replies']
+        fields = ['id', 'parent_id', 'nickname', 'is_me', 'avatar_color', 'content', 'created_at', 'replies']
 
 
 class ContactMessageSerializer(serializers.ModelSerializer):

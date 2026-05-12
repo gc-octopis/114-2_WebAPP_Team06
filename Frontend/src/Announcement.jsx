@@ -31,7 +31,9 @@ function Announcement()
     const [activeReplyPostId, setActiveReplyPostId] = useState(null);
     const [replyDrafts, setReplyDrafts] = useState({});
     const [feedbackForm, setFeedbackForm] = useState({ content: '' });
-    const [postAs, setPostAs] = useState('anonymous'); // 'anonymous' | 'nickname'
+    const [postAs, setPostAs] = useState('nickname'); // 'anonymous' | 'nickname'
+    const [replyPostAs, setReplyPostAs] = useState({}); // map postId -> 'anonymous'|'nickname'
+    const currentNickname = (auth?.user?.name || '').trim() || (auth?.user?.email || '').split('@')[0] || '';
 
     const totalItems = useRef(0);
     const totalPages = useRef(0);
@@ -220,6 +222,15 @@ function Announcement()
         return dateTimeString;
     }
 
+    function getPostDisplayName(post) {
+        const name = (post?.nickname || '').trim() || t.anonymousUser;
+        const isAnonymous = name.toLowerCase() === 'anonymous' || name === t.anonymousUser;
+        if (auth?.user && post?.is_me && !isAnonymous) {
+            return `${name}${lang === 'en' ? ' (You)' : ' (您)'}`;
+        }
+        return name;
+    }
+
     async function submitFeedback(e) {
         e.preventDefault();
         setFeedbackError('');
@@ -288,7 +299,7 @@ function Announcement()
             await AnnouncementAPI.createFeedbackPost({
                 content,
                 parent_id: parentId,
-                post_as: postAs,
+                post_as: (replyPostAs[parentId] || 'nickname'),
             });
 
             setReplyDrafts((prev) => ({ ...prev, [parentId]: '' }));
@@ -419,7 +430,7 @@ function Announcement()
                                             style={{ backgroundColor: post.avatar_color || '#94a3b8' }}
                                             aria-hidden="true"
                                         />
-                                        <p className="feedback-item-author">{post.nickname || t.anonymousUser}</p>
+                                        <p className="feedback-item-author">{getPostDisplayName(post)}</p>
                                     </div>
                                     <div className="feedback-item-header-right">
                                         <time className="feedback-item-time">{formatDateTime(post.created_at)}</time>
@@ -450,7 +461,7 @@ function Announcement()
                                                                     style={{ backgroundColor: reply.avatar_color || '#94a3b8' }}
                                                                     aria-hidden="true"
                                                                 />
-                                                                <p className="feedback-item-author">{reply.nickname || t.anonymousUser}</p>
+                                                                <p className="feedback-item-author">{getPostDisplayName(reply)}</p>
                                                             </div>
                                                             <time className="feedback-item-time">{formatDateTime(reply.created_at)}</time>
                                                         </div>
@@ -461,6 +472,21 @@ function Announcement()
                                         )}
 
                                         <form className="feedback-reply-form" onSubmit={(e) => submitReply(e, post.id)}>
+                                            <div className="feedback-toolbar">
+                                                <label className="feedback-label" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                                    {lang === 'en' ? 'Post as' : '發表身份'}
+                                                    <select
+                                                        className="feedback-input"
+                                                        value={replyPostAs[post.id] || 'nickname'}
+                                                        onChange={(e) => setReplyPostAs((prev) => ({ ...prev, [post.id]: e.target.value }))}
+                                                        disabled={!auth?.user}
+                                                        style={{ maxWidth: '240px' }}
+                                                    >
+                                                        <option value="nickname">{currentNickname || (lang === 'en' ? 'Nickname' : '暱稱')}</option>
+                                                        <option value="anonymous">{lang === 'en' ? 'Anonymous' : '匿名'}</option>
+                                                    </select>
+                                                </label>
+                                            </div>
                                             <textarea
                                                 className="feedback-textarea feedback-reply-textarea"
                                                 maxLength={3000}
@@ -500,28 +526,18 @@ function Announcement()
                     )}
 
                     <div className="feedback-toolbar">
-                        <span className="feedback-label">{lang === 'en' ? 'Post as' : '發表身份'}</span>
-                        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <input
-                                type="radio"
-                                name="post-as"
-                                value="anonymous"
-                                checked={postAs === 'anonymous'}
-                                onChange={() => setPostAs('anonymous')}
-                            />
-                            {lang === 'en' ? 'Anonymous' : '匿名'}
-                        </label>
-                        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <input
-                                type="radio"
-                                name="post-as"
-                                value="nickname"
-                                checked={postAs === 'nickname'}
-                                onChange={() => setPostAs('nickname')}
-                                disabled={!auth?.user || !(auth?.user?.name || '').trim()}
-                            />
-                            {lang === 'en' ? 'Nickname' : '暱稱'}
-                            {auth?.user?.name ? `(${auth.user.name})` : ''}
+                        <label className="feedback-label" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            {lang === 'en' ? 'Post as' : '發表身份'}
+                            <select
+                                className="feedback-input"
+                                value={postAs}
+                                onChange={(e) => setPostAs(e.target.value)}
+                                disabled={!auth?.user}
+                                style={{ maxWidth: '240px' }}
+                            >
+                                <option value="nickname">{currentNickname || (lang === 'en' ? 'Nickname' : '暱稱')}</option>
+                                <option value="anonymous">{lang === 'en' ? 'Anonymous' : '匿名'}</option>
+                            </select>
                         </label>
                     </div>
 

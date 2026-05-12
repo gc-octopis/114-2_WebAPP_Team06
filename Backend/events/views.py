@@ -337,7 +337,14 @@ class FeedbackPostListCreateView(APIView):
                 )
 
             page_size = min(page_size, 50)
-            queryset = FeedbackPost.objects.filter(parent__isnull=True).prefetch_related('replies')
+            session_user = _get_session_user_or_none(request)
+            current_user_id = session_user.get('id') if session_user else None
+
+            queryset = (
+                FeedbackPost.objects.filter(parent__isnull=True)
+                .select_related('author')
+                .prefetch_related('replies__author', 'replies')
+            )
             total_count = queryset.count()
             total_pages = math.ceil(total_count / page_size) if total_count > 0 else 0
 
@@ -346,7 +353,11 @@ class FeedbackPostListCreateView(APIView):
 
             start_index = (page - 1) * page_size
             end_index = start_index + page_size
-            serializer = FeedbackPostSerializer(queryset[start_index:end_index], many=True)
+            serializer = FeedbackPostSerializer(
+                queryset[start_index:end_index],
+                many=True,
+                context={'current_user_id': current_user_id},
+            )
 
             return Response({
                 'count': total_count,
@@ -393,6 +404,7 @@ class FeedbackPostListCreateView(APIView):
 
         with transaction.atomic():
             post = FeedbackPost.objects.create(
+                author=user if post_as in ('nickname', 'name') else None,
                 parent=parent,
                 nickname=nickname,
                 avatar_color=random.choice(FEEDBACK_AVATAR_COLORS),
@@ -406,7 +418,7 @@ class FeedbackPostListCreateView(APIView):
                     break
                 oldest_post.delete()
 
-        serializer = FeedbackPostSerializer(post)
+        serializer = FeedbackPostSerializer(post, context={'current_user_id': user.id})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -419,9 +431,17 @@ class FeedbackPostListCreateView(APIView):
 # -----------------
 class RegisterView(APIView):
     def post(self, request):
-        email = (request.data.get('email') or '').strip().lower()
+        raw_email = (request.data.get('email') or '').strip()
+        email = raw_email.lower()
         password = request.data.get('password') or ''
         name = (request.data.get('name') or '').strip()
+
+        # If no name provided, default to the local-part (prefix) of the registered email
+        if not name:
+            if raw_email and '@' in raw_email:
+                name = raw_email.split('@')[0]
+            else:
+                name = raw_email
 
         if not email or not password:
             return Response({'error': 'email and password required'}, status=drf_status.HTTP_400_BAD_REQUEST)

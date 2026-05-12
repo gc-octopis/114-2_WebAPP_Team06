@@ -112,7 +112,11 @@
     justify-content: space-between;
     gap: 10px;
     margin-bottom: 12px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+}
+
+.feedback-toolbar .feedback-label {
+    white-space: nowrap;
 }
 
 .feedback-list-title {

@@ -243,3 +243,65 @@ curl -X GET http://localhost:8002/api/auth/me -b cookiejar.txt
 整體流程已驗證正常，前端 TopBar 現可正確顯示當前使用者名稱，登出後也正確清除登入狀態。
 
 # 孫怡臻
+
+USER:
+目前應該要做的事有:
+1. 登入帳號後才可以新增常用連結，也就是快捷服務->放開以釘選捷徑那邊，並且系統會記住每個不同帳號釘選了哪些捷徑，下一次登入時可以看到。
+2. 新增一個"個人帳號設定頁面"，可以自訂自己的暱稱
+3. 留言板需要登入後才能發表，發表時可以選擇身份(選擇要匿名還是用自己的暱稱)
+
+AGENT:
+我先快速掃描前後端目前登入流程、釘選捷徑與留言板的 API 與資料模型，再分三段完成：
+1) 釘選捷徑改成登入後才可新增/儲存，並以帳號區分各自 pinned_links。
+2) 新增個人帳號設定頁，提供暱稱編輯與儲存。
+3) 留言板 POST 改為登入後才可發表/回覆，並在發表時可選匿名或使用暱稱。
+
+USER:
+釘選捷徑希望不要再用 device id，而是登入帳號後才可釘選，並且每個帳號各自保存。
+
+AGENT:
+已更新後端 `GET/POST /api/preferences/`：由 session cookie `myntupp_session` 判斷登入，並以 `user.id` 作為偏好設定 key 儲存 `pinned_links`；前端 `LinkContext` 也改為用 `credentials: include` 呼叫 preferences，未登入時不載入/不儲存 pinned links，TopBar 釘選區會顯示「登入後才能釘選捷徑」提示。
+
+USER:
+我要新增一個個人帳號設定頁，可以改暱稱。
+
+AGENT:
+新增後端 `PATCH /api/auth/profile/` 可更新使用者暱稱（`User.name`），並刷新 session（重新寫入 `myntupp_session`）讓 `GET /api/auth/me/` 立即反映新暱稱；前端新增 `/settings` 設定頁與 TopBar 入口，提供暱稱修改與儲存。
+
+USER:
+留言板要登入後才能發表，而且發文時可以選擇匿名或用自己的暱稱。
+
+AGENT:
+後端 `POST /api/feedback/` 改為登入必須，並加入 `post_as` 參數（`anonymous` / `nickname`）決定留言顯示身分；前端留言板表單加入身份選擇，未登入會提示並禁用送出，留言與回覆送出時皆攜帶 `credentials: include`。
+
+USER:
+如果本機沒開 Redis，登入 session 會不會壞掉？
+
+AGENT:
+已在 `Backend/events/redis_sessions.py` 加入 Redis 不可用時的 in-memory fallback，方便本機與測試環境運作（Redis 可用時仍使用 Redis）。
+
+USER:
+1.回覆留言時，選擇發表身份的字體樣式都要跟撰寫留言時一樣
+2.登入帳號後，對於所有用此帳號的暱稱而不是匿名的留言，帳號名稱後面都要加一個"(您)"或是"(You)"
+3.登入帳號後，對於所有用此帳號的暱稱而不是匿名的留言，帳號名稱都要是現在的暱稱，而不是發布留言時的暱稱，因為暱稱是可以在個人帳號設定改的。
+
+AGENT:
+已完成你要的 3 點調整（留言板）：
+
+- 回覆留言的「發表身份」字體樣式改成跟發文一致：把 reply 的身份選擇外層改用同一個 `feedback-toolbar` 結構。`Frontend/src/Announcement.jsx:474`
+- 登入後，自己的「非匿名」留言作者名稱自動加上 ` (您)` / ` (You)`：改用後端回傳的 `is_me` 判斷。`Frontend/src/Announcement.jsx:225`
+- 登入後，自己的「非匿名」留言作者名稱永遠顯示「目前暱稱」（而非發文當下暱稱）：後端 `FeedbackPostSerializer` 若有 `author` 就用 `author.name` 動態計算 `nickname`，並回傳 `is_me`（包含回覆）。`Backend/events/serializers.py:47`、`Backend/events/views.py:291`
+
+另外：`GET /api/feedback/` 也會在有登入 cookie 時回傳 `is_me` 正確標記（未登入則全是 `false`）。
+
+USER:
+你確定登出的功能有做好嗎?因為我登出後還是能在留言板看到(您)
+
+AGENT:
+不一定：你看到登出後還有 `(您)`，很可能是「登出後沒有重新抓留言列表」，畫面還在用登出前載入的 `post.is_me=true` 資料，所以仍顯示 `(您)`。
+
+我先把前端顯示邏輯修掉：只有在 **目前仍為登入狀態** 時才會加 `(您)/(You)`。
+
+- 修正位置：`Frontend/src/Announcement.jsx:225`（`getPostDisplayName` 加上 `auth?.user` 判斷）
+
+你再試一次登出後看 `(您)` 會不會消失；如果還會，下一步我會幫你在登出成功時強制重新抓 `GET /api/feedback/`（或清空留言狀態），以確保資料也同步更新。
