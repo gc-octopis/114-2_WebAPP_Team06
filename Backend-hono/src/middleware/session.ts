@@ -28,7 +28,7 @@ export async function sessionMiddleware(c: Context, next: any) {
       return await next()
     }
     const cookieHeader = c.req.header('cookie')
-    const cookies = parseCookies(cookieHeader)
+    const cookies = parseCookies(cookieHeader ?? null)
     const token = cookies['myntupp_session']
 
     // attach default

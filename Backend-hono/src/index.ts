@@ -9,7 +9,7 @@ import { links         } from "./routes/links";
 import { preferences   } from "./routes/preferences";
 import { auth } from "./routes/auth";
 import sessionMiddleware from './middleware/session'
-// import { search        } from "./routes/search";
+import { search        } from "./routes/search";
 import { feedback      } from "./routes/feedback";
 import { contact       } from "./routes/contact";
 
@@ -52,7 +52,7 @@ app.route("/api/calendar*",       calendar); // [v]
 app.route("/api/announcements*",  announcements); // [v]
 app.route("/api/links*",          links); // [v]
 app.route("/api/preferences*",    preferences); // [v]
-// app.route("/api/search*",         search);
+app.route("/api/search*",         search);
 app.route("/api/feedback*",       feedback); // [v]
 app.route("/api/contact*",        contact); // [v]
 // session middleware (resolve user from redis or fallback to Django)
