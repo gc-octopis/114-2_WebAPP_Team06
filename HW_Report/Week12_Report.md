@@ -25,7 +25,13 @@
 * 陳冠瑜： 25%
     * docker compose
 * 陳冠辰： 25%
-    * search
+    * 修改 `embed.ts` 和 `fetch_myntu_links.ts` 以使用 OpenRouter API
+        * 改為使用 `NVIDIA: Llama Nemotron Embed VL 1B V2 (free)` 免費模型
+        * 更新爬蟲方式，使能正確抓到英文資料
+    * 更新 `upsertLinks()` 以直接傳入有 embedding 的資料
+    * 移除舊 Backend 並將 `Backend-hono` 重新命名為 Backend
+    * 建立 root 的 `package.json` 方便一次安裝前後端
+    * 更新 README 開發指南，使之符合現狀
 * 王凱弘： 25%
   * 建立 Backend-hono Dockerfile
     - 採用 Bun 1.3.6 官方 image 為 base
