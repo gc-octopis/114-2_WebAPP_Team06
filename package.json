@@ -1,0 +1,16 @@
+{
+  "name": "my-ntu-pp",
+  "private": true,
+  "workspaces": [
+    "Frontend",
+    "Backend"
+  ],
+  "scripts": {
+    "dev": "bun run --filter '*' dev",
+    "dev:fe": "bun run --filter Frontend dev",
+    "dev:be": "bun run --filter Backend dev",
+    "install:all": "bun install",
+    "lint": "bun run --filter '*' lint",
+    "typecheck": "bun run --filter '*' typecheck"
+  }
+}

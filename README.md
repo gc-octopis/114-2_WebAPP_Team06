@@ -12,19 +12,19 @@
 * [Week6](./HW_Report/Week06_Report.md)
 * [Week7](./HW_Report/Week07_Report.md)
 * [Week11](./HW_Report/Week11_Report.md)
+* [Week12](./HW_Report/Week12_Report.md)
+
+---
+
+## 安裝指南
+
+（待前後端 docker 皆完成後填入）
 
 ---
 
 ## 開發指南
 
-目前已經分出前後端，分別在 `Frontend` 和 `Backend` 目錄下。
-**重要：目前 Backend 正在遷移到 Backend-hono，因此以下有關 Backend 的內容即將過時，屆時將放上新版本。**
-
-### 前端初始設定
-
-由於已經引入 React，因此不能「直接打開 html 檔」來預覽了。請按照以下步驟設定開發環境：
-
-1. 安裝 bun  
+### 1. 安裝 bun（若尚未安裝）  
 Linux / MacOS: 
 ```bash
 curl -fsSL https://bun.sh/install | bash
@@ -34,135 +34,29 @@ Windows:
 powershell -c "irm bun.sh/install.ps1 | iex"
 ```
 
-2. 安裝套件
-```bash
-cd Frontend/
-bun install
-```
-這個指令會自動安裝目前已安裝的套件。如果未來有人安裝新套件並推上來，請在同步（`pull`）後在自己的電腦再跑一次來取得新套件。
+### 2. 下載 git repo
 
-3. 啟動開發伺服器
+```bash
+git clone https://github.com/gc-octopis/114-2_WebAPP_Team06.git && cd 114-2_WebAPP_Team06
+```
+
+### 3. 安裝套件
+```bash
+bun install
+cp Backend/.env.example Backend/.env
+bun run sync:all
+```
+* **請填入 `.env` 中的必填欄位** （詳見 [下方章節](#env-設定)）
+* 如果其他開發者安裝了新套件，請在 `git pull` 後再次執行 `bun install`
+
+### 4. 啟動開發伺服器
 ```bash
 bun run dev
 ```
-這個指令會建立一個 localhost 的開發伺服器。請依照終端機提供的網址打開網頁。理論上每次儲存新進度時就會自動更新，不需要手動重新整理。
-
-### 後端初始設定
-
-**請確認系統已安裝 Python**
-
-1. 進入後端目錄
-```bash
-cd Backend/
-```
-
-2. 執行初始化 script  
-Linux:
-```bash
-bash ./setup.sh
-```
-
-macOS:
-```bash
-bash ./setup_macos.sh
-```
-
-Windows:
-```ps1
-powershell -File ./setup.ps1
-```
-
-### 雙語資料更新（中英切換用）
-
-**新架構說明**: Calendar events 與 Announcements 現已由後端 API 提供，前端按需動態獲取。快捷連結仍使用靜態 JSON 檔案。
-
-### 後端伺服器啟動
-開發時需要啟動 Django 後端伺服器：
-```bash
-cd Backend/
-source .venv/bin/activate
-python manage.py runserver 8000
-```
-
-### 資料同步命令
-
-建議改用統一腳本（在專案根目錄執行）：
-
-```bash
-chmod +x Backend/sync_data.sh
-
-# 全部同步（公告 + 行事曆 + links）
-./Backend/sync_data.sh all
-
-# 只同步公告（zh + en）
-./Backend/sync_data.sh announcements
-
-# 只同步行事曆（zh + en）
-./Backend/sync_data.sh calendar
-
-# 只處理 links（先產生 links.en.json，再匯入 DB）
-./Backend/sync_data.sh links
-
-# 可選：限制公告爬取頁數（測試時好用）
-SYNC_MAX_PAGES=3 ./Backend/sync_data.sh announcements
-
-# 可選：強制指定 Python（例如 conda/venv）
-PYTHON_BIN=/Users/yourname/miniforge3/envs/114Web/bin/python ./Backend/sync_data.sh all
-```
-
-`sync_data.sh` 目前行為：
-
-- 會自動選擇可用的 Python（優先順序：`PYTHON_BIN` > `Backend/.venv` > 目前啟用的 conda > 常見 miniforge/anaconda env > `python/python3`）。
-- 會先執行 `manage.py migrate --noinput`，避免缺 table（例如 `events_announcement`）導致同步失敗。
-- 執行 `links` 流程時，會先檢查 `Frontend/public/links.en.json` 是否所有連結都有 `label_en`；若有缺漏會直接中止，避免不完整資料被匯入 DB。
-
-若要手動逐條執行，請在 `Backend` 目錄下使用：
-
-```bash
-source .venv/bin/activate
-
-# 同步英文公告到 SQLite
-python manage.py sync_announcements --lang en
-
-# 同步中文公告到 SQLite
-python manage.py sync_announcements --lang zh
-
-# 建立 links （含向量）到 SQLite
-python manage.py import_links
-
-# 產生英文快捷連結（輸出到 Frontend/public/links.en.json）
-python scripts/links_en_builder.py
-
-# 同步英文行事曆到資料庫（從 acaEN xls/xlsx 解析）
-python scripts/calendar_en_builder.py
-
-# 同步中文版行事曆到資料庫（從 OWA 下載）
-python scripts/calendar_zh_builder.py
-```
-
-### 公告定時同步（後端排程）
-
-可使用 Django management command 在後端定時執行公告爬蟲：
-
-```bash
-cd Backend/
-source .venv/bin/activate
-
-# 每 60 分鐘同步一次（zh + en）
-python manage.py run_announcement_scheduler --interval-minutes 60
-
-# 只執行一次（測試用）
-python manage.py run_announcement_scheduler --once
-```
-
-Windows 可搭配工作排程器（Task Scheduler）定時啟動一次性同步：
-
-```ps1
-powershell -NoProfile -Command "Set-Location 'D:\NTU\Web\114-2_WebAPP_Team06\Backend'; .\.venv\Scripts\python.exe manage.py run_announcement_scheduler --once"
-```
+這個指令會一次啟動前、後端的開發伺服器
 
 ### API 端點
-前端在以下地址調用 API：
+前端在以下地址呼叫 API：
 
 - **Calendar URL**: `http://localhost:8000/api/calendar/`
 - **Calendar 查詢參數**:
@@ -192,9 +86,9 @@ curl "http://localhost:8000/api/announcements/?lang=en"
 curl "http://localhost:8000/api/announcements/?lang=zh&category=活動&page=2&page_size=10"
 ```
 
-### 設定 EMAIL 資訊
+### .env 設定
 
-**重要：請勿直接將 EMAIL 帳號密碼存於程式中，務必存於環境變數中，以避免被公開於 GitHub**
+**重要：請勿直接將 EMAIL 帳號密碼以及 API KEY 存於程式中，務必存於環境變數中，以避免被公開於 GitHub**
 
 若要使寄信功能正常運作，需在 `Backend/.env` 中新增三個環境變數：
 ```bash
@@ -210,6 +104,13 @@ EMAIL_HOST_PASSWORD=
 # 不限 Mail Provider，需包含 @ 後面的域名。
 # 可與寄件信箱相同
 ADMIN_EMAIL=
+```
+
+若要使用搜尋功能，請連接 OpenRouter API 使用免費模型  
+請先至 <https://openrouter.ai/keys> 註冊帳號並申請 API KEY
+```bash
+# 貼上複製好的 API KEY
+OPENROUTER_API_KEY=
 ```
 
 ---

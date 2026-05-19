@@ -8,6 +8,8 @@ import type {
   Language,
 } from "../src/types";
 
+import type { LinkCategoryWithEmbeddings } from "./fetch_myntu_links";
+
 export const HEADERS = {
   "User-Agent": "Mozilla/5.0",
 };
@@ -194,59 +196,54 @@ export function resetLinksAndInsertCategories(categories: LinkCategoryDTO[]): nu
   return categoryIdMap.size;
 }
 
-export async function upsertLinks(categories: LinkCategoryDTO[]): Promise<{ categories: number; links: number }> {
+export function upsertLinksWithEmbeddings(
+  categories: LinkCategoryWithEmbeddings[]
+): { categories: number; links: number } {
   clearLinkTables();
-
+ 
   let insertedCategories = 0;
   let insertedLinks = 0;
-
-  for (const category of categories) {
-    const categoryResult = db
-      .query(
+ 
+  // Use a transaction for atomicity — if anything fails, nothing is committed
+  const run = db.transaction(() => {
+    for (const category of categories) {
+      db.query(
         `INSERT INTO events_linkcategory (slug, icon, label, label_en)
          VALUES (?, ?, ?, ?)`
-      )
-      .run(category.id, category.icon, category.label, category.label_en);
-
-    const categoryRow = db
-      .query("SELECT id FROM events_linkcategory WHERE slug = ?")
-      .get(category.id) as { id: number } | null;
-
-    if (!categoryRow) {
-      throw new Error(`Failed to resolve category id for ${category.id}`);
+      ).run(category.id, category.icon, category.label, category.label_en ?? "");
+ 
+      const categoryRow = db
+        .query("SELECT id FROM events_linkcategory WHERE slug = ?")
+        .get(category.id) as { id: number } | null;
+ 
+      if (!categoryRow) {
+        throw new Error(`Failed to resolve category id for slug="${category.id}"`);
+      }
+ 
+      insertedCategories += 1;
+ 
+      for (const link of category.links) {
+        db.query(
+          `INSERT INTO events_linkitem
+             (category_id, label, label_en, url, url_en, icon, keywords, embeddings)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        ).run(
+          categoryRow.id,
+          link.label,
+          link.label_en ?? "",
+          link.url,
+          link.url_en ?? "",
+          link.icon,
+          link.keywords,
+          JSON.stringify(link.embeddings),
+        );
+ 
+        insertedLinks += 1;
+      }
     }
-
-    insertedCategories += categoryResult.changes > 0 ? 1 : 0;
-
-    for (const link of category.links) {
-      const embeddings = await buildLinkEmbeddings([
-        link.label,
-        link.label_en || "",
-        category.label,
-        category.label_en || "",
-      ]);
-      const keywords = [link.label, link.label_en, category.label, category.label_en]
-        .filter(Boolean)
-        .join(" ");
-
-      db.query(
-        `INSERT INTO events_linkitem
-          (category_id, label, label_en, url, url_en, icon, keywords, embeddings)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-      ).run(
-        categoryRow.id,
-        link.label,
-        link.label_en,
-        link.url,
-        link.url_en,
-        link.icon,
-        keywords,
-        JSON.stringify(embeddings),
-      );
-
-      insertedLinks += 1;
-    }
-  }
-
+  });
+ 
+  run();
+ 
   return { categories: insertedCategories, links: insertedLinks };
 }
