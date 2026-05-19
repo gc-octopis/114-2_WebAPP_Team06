@@ -41,13 +41,25 @@ function Settings() {
 
     setSaving(true);
     try {
-      const res = await fetch(`${authApiBase}/api/auth/profile/`, {
+      let res = await fetch(`${authApiBase}/api/auth/profile/`, {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: nickname }),
       });
-      const data = await res.json().catch(() => ({}));
+      let data = await res.json().catch(() => ({}));
+      // If PATCH isn't supported server-side, try POST as a fallback
+      if (!res.ok) {
+        if (res.status === 404 || res.status === 405 || res.status >= 500) {
+          res = await fetch(`${authApiBase}/api/auth/profile/`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: nickname }),
+          });
+          data = await res.json().catch(() => ({}));
+        }
+      }
       if (!res.ok) {
         throw new Error(data?.error || `API error: ${res.status}`);
       }

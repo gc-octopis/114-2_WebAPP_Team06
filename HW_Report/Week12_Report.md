@@ -50,4 +50,11 @@
     - 說明所有支援的環境變數及其預設值
     - 提供含 Redis 及 email 設定的完整範例命令
 * 孫怡臻： 25%
-    * 前端 + image
+    * 將前端以 Nginx 提供的 production image 建置完成，並確保在 Docker Compose 環境下能正確代理 `/api` 給後端。
+      * 修改:
+        - `Frontend/Dockerfile`：multi-stage build（Node build -> Nginx serve）。
+        - `Frontend/nginx.conf`：加入 SPA fallback（`try_files $uri /index.html`）與 `/api` 反向代理到 `backend:8000`（在 Compose network 中使用）。
+        - `Frontend/.dockerignore`：排除 `node_modules`、`db.sqlite3`、環境檔等以減小映像。
+        - 調整前端程式：將硬編碼的後端 URL 改為使用 `import.meta.env.VITE_API_BASE`（或相對路徑 `/api`），範例在 `src/SideBar.jsx`。
+  * 修正前端資源載入與 API 路徑設定（Vite build 與 Nginx 代理協同工作）。
+  * 針對 SPA 路由，設定 Nginx 做 fallback，避免直接輸入子路徑發生 404。

@@ -38,13 +38,17 @@ app.onError((err, c) => {
   if (err instanceof HTTPException) {
     return c.json({ error: err.message }, err.status);
   }
-  console.error(err);
+  console.error(err && err.stack ? err.stack : err);
   return c.json({ error: "Internal server error" }, 500);
 });
 
 // 404 fallback
 app.notFound((c) => c.json({ error: "Not found" }, 404));
 
+// ─── Mount routes ─────────────────────────────────────────────────────────────
+//  Each string here matches your existing Django URL patterns exactly,
+//  so your frontend needs zero changes.
+app.use('*', sessionMiddleware)
 // ─── Mount routes ─────────────────────────────────────────────────────────────
 //  Each string here matches your existing Django URL patterns exactly,
 //  so your frontend needs zero changes.
@@ -55,8 +59,6 @@ app.route("/api/preferences*",    preferences); // [v]
 app.route("/api/search*",         search);
 app.route("/api/feedback*",       feedback); // [v]
 app.route("/api/contact*",        contact); // [v]
-// session middleware (resolve user from redis or fallback to Django)
-app.use('*', sessionMiddleware)
 app.route('/api/auth', auth);
 
 // ─── Dev health check ────────────────────────────────────────────────────────

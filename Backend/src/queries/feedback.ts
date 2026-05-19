@@ -1,6 +1,17 @@
 import { db } from "../db";
 import type { FeedbackPost, FeedbackPostDTO, CreateFeedbackInput, PaginatedFeedback } from "../types";
 
+// Ensure `user_id` column exists in events_feedbackpost for linking posts to users
+try {
+  const cols = db.query("PRAGMA table_info(events_feedbackpost)").all() as any[];
+  const hasUserId = cols.some((c) => c && c.name === 'user_id');
+  if (!hasUserId) {
+    db.run("ALTER TABLE events_feedbackpost ADD COLUMN user_id TEXT;");
+  }
+} catch (err) {
+  // ignore — if table doesn't exist or ALTER not needed, continue
+}
+
 /**
  * Formats a UTC datetime string to Asia/Taipei local time.
  * Mirrors Django's: timezone.localtime(obj.created_at, ZoneInfo('Asia/Taipei'))
@@ -31,7 +42,7 @@ function formatTaipeiTime(utcString: string): string {
 function fetchReplies(parentId: number): FeedbackPostDTO[] {
   const rows = db
     .query(
-      `SELECT id, parent_id, nickname, avatar_color, title, content, created_at
+      `SELECT id, parent_id, user_id, nickname, avatar_color, title, content, created_at
        FROM events_feedbackpost
        WHERE parent_id = ?
        ORDER BY created_at ASC, id ASC`
@@ -41,6 +52,7 @@ function fetchReplies(parentId: number): FeedbackPostDTO[] {
     return rows.map((row) => ({
       id: row.id,
       parent_id: row.parent_id,
+      user_id: (row as any).user_id ?? null,
       nickname: row.nickname,
       avatar_color: row.avatar_color,
       title: row.title,
@@ -54,6 +66,7 @@ function toDTO(row: FeedbackPost): FeedbackPostDTO {
   return {
     id: row.id,
     parent_id: row.parent_id,
+      user_id: (row as any).user_id ?? null,
     nickname: row.nickname,
     avatar_color: row.avatar_color,
     title: row.title,
@@ -76,7 +89,7 @@ export function getTopLevelPosts(page: number = 1, page_size: number = 10): Pagi
 
   const rows = db
     .query(
-      `SELECT id, parent_id, nickname, avatar_color, title, content, created_at
+      `SELECT id, parent_id, user_id, nickname, avatar_color, title, content, created_at
        FROM events_feedbackpost
        WHERE parent_id IS NULL
        ORDER BY created_at DESC, id DESC
@@ -96,7 +109,7 @@ export function getTopLevelPosts(page: number = 1, page_size: number = 10): Pagi
 
 export function getPostById(id: number): FeedbackPostDTO | null {
   const row = db
-    .query("SELECT * FROM events_feedbackpost WHERE id = ?")
+    .query("SELECT *, user_id FROM events_feedbackpost WHERE id = ?")
     .get(id) as FeedbackPost | null;
 
   return row ? toDTO(row) : null;
@@ -115,12 +128,13 @@ export function createPost(input: CreateFeedbackInput): FeedbackPostDTO {
   const result = db
     .query(
       `INSERT INTO events_feedbackpost
-         (parent_id, nickname, avatar_color, title, content, created_at)
-       VALUES (?, ?, ?, ?, ?, ?)
-       RETURNING id, parent_id, nickname, avatar_color, title, content, created_at`
+         (parent_id, user_id, nickname, avatar_color, title, content, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)
+       RETURNING id, parent_id, user_id, nickname, avatar_color, title, content, created_at`
     )
     .get(
       input.parent_id ?? null,
+      (input as any).user_id ?? null,
       nickname,
       avatarColor,
       input.title,

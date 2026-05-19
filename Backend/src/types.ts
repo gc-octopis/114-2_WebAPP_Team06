@@ -124,6 +124,7 @@ export interface UserPreferenceDTO {
 export interface FeedbackPost {
   id: number;
   parent_id: number | null;
+  user_id?: string | null;
   nickname: string;
   avatar_color: string;
   title: string;
@@ -135,12 +136,14 @@ export interface FeedbackPost {
 export interface FeedbackPostDTO {
   id: number;
   parent_id: number | null;
+  user_id?: string | null;
   nickname: string;
   avatar_color: string;
   title: string;
   content: string;
   created_at: string; // formatted "YYYY-MM-DD HH:MM am/pm"
   replies: FeedbackPostDTO[];
+  is_me?: boolean;
 }
 
 export interface CreateFeedbackInput {

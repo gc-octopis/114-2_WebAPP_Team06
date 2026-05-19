@@ -78,20 +78,22 @@ function SideBar({ toggled = false }) {
             return;
         }
 
-        const delayDebounceFn = setTimeout(async () => {
-            setIsSearching(true);
-            try {
-                const res = await fetch(`http://localhost:8000/api/search/?q=${encodeURIComponent(searchQuery)}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setSearchResults(data);
+            const API_BASE = import.meta.env.VITE_API_BASE || '';
+
+            const delayDebounceFn = setTimeout(async () => {
+                setIsSearching(true);
+                try {
+                    const res = await fetch(`${API_BASE}/api/search/?q=${encodeURIComponent(searchQuery)}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        setSearchResults(data);
+                    }
+                } catch (error) {
+                    console.error("Search failed", error);
+                } finally {
+                    setIsSearching(false);
                 }
-            } catch (error) {
-                console.error("Search failed", error);
-            } finally {
-                setIsSearching(false);
-            }
-        }, 300); // 300ms debounce
+            }, 300); // 300ms debounce
 
         return () => clearTimeout(delayDebounceFn);
     }, [searchQuery]);

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: ntu_redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./Backend
+    container_name: ntu_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./Backend/db.sqlite3:/app/db.sqlite3
+      - ./Backend/.env:/app/.env
+    depends_on:
+      - redis
+    restart: unless-stopped
+    env_file:
+      - ./.env
+
+  frontend:
+    build:
+      context: ./Frontend
+    container_name: ntu_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  default:
+    name: ntu_network
