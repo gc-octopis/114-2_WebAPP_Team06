@@ -18,7 +18,70 @@
 
 ## 安裝指南
 
-（待前後端 docker 皆完成後填入）
+### 使用 Docker Compose
+
+本專案的 Docker 架構包含三個服務：
+
+- `frontend`: React/Vite build 後由 Nginx 提供靜態檔案，並將 `/api/*` 反向代理到後端
+- `backend`: Bun + Hono API server，使用 SQLite
+- `redis`: 提供登入 session 與開發用使用者資料儲存
+
+### 1. 準備環境變數
+
+```bash
+cp Backend/.env.example Backend/.env
+```
+
+若只測試首頁、公告、行事曆等基本功能，可先保留空值。若要測試寄信或搜尋功能，請填入 `.env` 中的 `EMAIL_HOST_USER`、`EMAIL_HOST_PASSWORD`、`ADMIN_EMAIL`、`OPENROUTER_API_KEY`。
+
+### 2. 建置並啟動
+
+```bash
+docker compose up --build -d
+```
+
+若你的 Docker 只支援舊版指令，將上方命令改成：
+
+```bash
+docker-compose up --build -d
+```
+
+啟動後可開啟：
+
+- 前端：<http://localhost:8080>
+- 後端健康檢查：<http://localhost:8000>
+- Redis：`localhost:6379`
+
+### 3. 查看狀態與 log
+
+```bash
+docker compose ps
+docker compose logs -f backend
+docker compose logs -f frontend
+```
+
+### 4. API 測試
+
+```bash
+curl "http://localhost:8000/"
+curl "http://localhost:8000/api/calendar/?lang=zh"
+curl "http://localhost:8000/api/announcements/?lang=zh&page=1&page_size=5"
+curl "http://localhost:8080/api/calendar/?lang=en"
+```
+
+最後一個指令會經過前端 Nginx 反向代理，可用來確認 compose 內部網路與 API proxy 正常。
+
+### 5. 停止服務
+
+```bash
+docker compose down
+```
+
+若要連 Redis volume 一起清掉：
+
+```bash
+docker compose down -v
+```
 
 ---
 

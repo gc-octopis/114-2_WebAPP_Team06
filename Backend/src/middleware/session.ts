@@ -2,7 +2,7 @@ import Redis from 'ioredis'
 import { Context } from 'hono'
 
 const redisUrl = process.env.REDIS_URL ?? 'redis://127.0.0.1:6379/0'
-const redis = new Redis(redisUrl)
+const redis = new Redis(redisUrl, { lazyConnect: true, maxRetriesPerRequest: 1 })
 redis.on('error', (err) => {
   // avoid unhandled error events from ioredis when Redis is down
   console.warn('ioredis error (ignored):', err && err.message ? err.message : err)

@@ -59,6 +59,7 @@ docker run --rm -p 8000:8000 \
 
 Environment variables (all optional):
 - `PORT`: Server port (default: 8000)
+- `DB_PATH`: SQLite database path (default: db.sqlite3)
 - `REDIS_URL`: Redis connection URL (default: redis://127.0.0.1:6379/0)
 - `OLLAMA_URL`: Ollama service URL (default: http://localhost:11434)
 - `EMBED_MODEL`: Embedding model name (default: all-minilm)

@@ -23,7 +23,11 @@
 ## 組員分工
 
 * 陳冠瑜： 25%
-    * docker compose
+    * 建立完整 `docker-compose.yml`，整合 `frontend`、`backend`、`redis` 三個服務。
+    * 設定容器內部網路，讓後端以 `redis://redis:6379/0` 連線 Redis，前端 Nginx 以 `backend:8000` 代理 `/api`。
+    * 處理環境變數與資料保存：使用 `env_file` 載入後端 `.env`，並掛載 SQLite 資料與 Redis volume。
+    * 加入 Redis 與後端 healthcheck，讓服務依序啟動，降低前端代理到尚未 ready 後端的問題。
+    * 補充 README 中 Docker Compose 的啟動、查看 log、API 測試與停止指令。
 * 陳冠辰： 25%
     * 修改 `embed.ts` 和 `fetch_myntu_links.ts` 以使用 OpenRouter API
         * 改為使用 `NVIDIA: Llama Nemotron Embed VL 1B V2 (free)` 免費模型

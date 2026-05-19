@@ -2,7 +2,7 @@ import { Context, Hono } from 'hono'
 import Redis from 'ioredis'
 
 const redisUrl = process.env.REDIS_URL ?? 'redis://127.0.0.1:6379/0'
-const redis = new Redis(redisUrl)
+const redis = new Redis(redisUrl, { lazyConnect: true, maxRetriesPerRequest: 1 })
 redis.on('error', () => {
   // suppress noisy unhandled errors; middleware handles cache misses gracefully
 })

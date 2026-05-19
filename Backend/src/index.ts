@@ -74,8 +74,12 @@ app.get("/", (c) => c.json({ status: "ok", routes: [
   "POST /api/contact/",
 ]}));
 
-// ─── Export for Bun ───────────────────────────────────────────────────────────
-export default {
-  port: Number(process.env.PORT ?? 8000),
+// ─── Start server ─────────────────────────────────────────────────────────────
+const port = Number(process.env.PORT ?? 8000);
+
+Bun.serve({
+  port,
   fetch: app.fetch,
-};
+});
+
+console.log(`Backend listening on http://localhost:${port}`);

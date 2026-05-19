@@ -1,5 +1,48 @@
 # 陳冠瑜
 
+USER:
+分析如何替本專案建構docker-compose，並告訴我如何用docker 執行並測試
+
+AGENT:
+已經幫專案把 Docker Compose 路線補齊並修正了幾個會卡住的點：
+
+- 修正 [docker-compose.yml](/Users/lazybug/Desktop/web/hehe/docker-compose.yml:1)：`frontend`、`backend`、`redis` 三服務，加入 healthcheck、Redis volume、SQLite `DB_PATH=/data/db.sqlite3`。
+- 修正 [Frontend/nginx.conf](/Users/lazybug/Desktop/web/hehe/Frontend/nginx.conf:1)：移除錯誤的巢狀 `server {}`，並讓 `/api/*` proxy 到 `backend:8000`。
+- 調整 [Frontend/Dockerfile](/Users/lazybug/Desktop/web/hehe/Frontend/Dockerfile:1)：改用 Bun lockfile 建置，和專案工具鏈一致。
+- 調整 [Backend/src/db.ts](/Users/lazybug/Desktop/web/hehe/Backend/src/db.ts:1)：支援 `DB_PATH`，讓 Docker 掛載 SQLite/WAL 更穩。
+- 補上 [README.md](/Users/lazybug/Desktop/web/hehe/README.md:21) 的 Docker 執行與測試步驟。
+
+執行方式：
+
+```bash
+cp Backend/.env.example Backend/.env
+docker compose up --build -d
+```
+
+開啟：
+
+```text
+http://localhost:8080
+```
+
+測試：
+
+```bash
+docker compose ps
+curl "http://localhost:8000/"
+curl "http://localhost:8000/api/calendar/?lang=zh"
+curl "http://localhost:8000/api/announcements/?lang=zh&page=1&page_size=5"
+curl "http://localhost:8080/api/calendar/?lang=en"
+```
+
+最後一個會經過前端 Nginx proxy，可確認 compose 內部網路正常。停止：
+
+```bash
+docker compose down
+```
+
+我這邊已驗證：前端 `bun run build` 通過，後端用 Dockerfile 同樣的啟動命令可正常回應健康檢查，calendar / announcements API smoke test 通過，Compose YAML 也能正確解析。實際 `docker compose up` 沒法在此環境跑，因為目前 Docker daemon 沒啟動，且 CLI 沒有 Compose plugin：需要先安裝/啟用 Docker Desktop 或 Docker Compose。
+
 # 陳冠辰
 
 ## docker 規劃

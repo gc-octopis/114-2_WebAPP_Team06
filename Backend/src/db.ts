@@ -1,7 +1,6 @@
 import { Database } from "bun:sqlite";
-import { join } from "path";
  
-const DB_PATH = join("db.sqlite3");
+const DB_PATH = process.env.DB_PATH || "db.sqlite3";
 
 export const db = new Database(DB_PATH);
  

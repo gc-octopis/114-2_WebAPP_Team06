@@ -1,11 +1,17 @@
-version: '3.8'
-
 services:
   redis:
     image: redis:7-alpine
     container_name: ntu_redis
+    command: ["redis-server", "--appendonly", "yes"]
     ports:
       - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
   backend:
@@ -17,14 +23,20 @@ services:
     environment:
       - PORT=8000
       - REDIS_URL=redis://redis:6379/0
-    volumes:
-      - ./Backend/db.sqlite3:/app/db.sqlite3
-      - ./Backend/.env:/app/.env
-    depends_on:
-      - redis
-    restart: unless-stopped
+      - DB_PATH=/data/db.sqlite3
     env_file:
-      - ./.env
+      - ./Backend/.env
+    volumes:
+      - ./Backend:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://127.0.0.1:8000/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   frontend:
     build:
@@ -33,9 +45,13 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
 
 networks:
   default:
     name: ntu_network
+
+volumes:
+  redis-data:
