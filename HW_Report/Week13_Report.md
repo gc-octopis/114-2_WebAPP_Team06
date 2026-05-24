@@ -19,6 +19,14 @@
 
 * 陳冠瑜： 25%
   * YouBike 資料整理
+  * 說明:
+    1. YouBike 2.0 臺北市公共自行車即時資訊
+        * JSON 格式，提供臺北市各 YouBike 站點的即時車況
+        * 主要使用欄位: `sno` 站點代號、`sna` 場站名稱、`sarea` 行政區、`ar` 地址、`latitude` / `longitude` 經緯度
+        * 車位相關欄位: `available_rent_bikes` 可借車數、`available_return_bikes` 可還空位、`Quantity` 總停車格
+        * 時間與狀態欄位: `mday` 站點資料更新時間、`act` 站點啟用狀態
+        * 資料來源: [臺北市資料大平臺 YouBike2.0臺北市公共自行車即時資訊](https://data.taipei/dataset/detail?id=c6bc8aed-557d-41d5-bfb1-8da24f78f2fb)
+        * API 介接網址: [youbike_immediate.json](https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json)
 * 陳冠辰： 25%
   * 公車 API 實作
 * 王凱弘： 25%

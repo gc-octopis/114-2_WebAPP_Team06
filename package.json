@@ -6,9 +6,9 @@
     "Backend"
   ],
   "scripts": {
-    "dev": "bun run --filter '*' dev",
-    "dev:fe": "bun run --filter Frontend dev",
-    "dev:be": "bun run --filter Backend dev",
+    "dev": "bun --cwd Backend run dev & bun --cwd Frontend run dev",
+    "dev:fe": "bun --cwd Frontend run dev",
+    "dev:be": "bun --cwd Backend run dev",
     "install:all": "bun install",
     "lint": "bun run --filter '*' lint",
     "typecheck": "bun run --filter '*' typecheck"

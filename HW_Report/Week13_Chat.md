@@ -1,4 +1,45 @@
 # 陳冠瑜
+USER:
+請查閱Week13_Report.md，我需要串接台北市youbike api，具體來說我要整理資料就好，用途如文件所述，你要幫我找來源與整理，請把youbike api內容整理的部分，篇幅要寫的剛剛好，就像孫怡臻整理好的那樣，短短的簡潔明了，請附上網址、資料來源
+
+AGENT:
+已補好 YouBike API 資料整理，放在 [Week13_Report.md](/Users/lazybug/Desktop/web/ntupp/HW_Report/Week13_Report.md:20) 的陳冠瑜分工下面。篇幅我控制成跟孫怡臻那段相近：簡短說明資料用途、主要欄位、車位欄位、時間/狀態欄位，並附上資料來源與 API 網址。
+
+資料來源我用的是官方臺北市資料大平臺：
+[YouBike2.0臺北市公共自行車即時資訊](https://data.taipei/dataset/detail?id=c6bc8aed-557d-41d5-bfb1-8da24f78f2fb)，以及其提供的 JSON 介接網址：
+[youbike_immediate.json](https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json)。
+
+---
+
+USER:
+目前已經實作好youbike api，請你研究下如何將網站運行起來，成功之後再想要如何將功能整合進docker，並且可以用docker運行
+
+AGENT:
+已經跑起來並整合進 Docker 了。現在 Docker Compose 服務還在執行中：
+
+- 前端：<http://localhost:8080>
+- 後端：<http://localhost:8000>
+- YouBike Docker proxy 驗證成功：`http://localhost:8080/api/youbike/?near=ntu&limit=1`
+
+我做了幾個必要修正：
+
+- [Backend/src/routes/youbike.ts](/Users/lazybug/Desktop/web/ntupp/Backend/src/routes/youbike.ts)：修正官方資料欄位 `Quantity` 沒被讀到，現在 `totalDocks` 會正常顯示，例如臺大第一活動中心西南側回傳 `totalDocks: 48`。
+- [docker-compose.yml](/Users/lazybug/Desktop/web/ntupp/docker-compose.yml)：加入 `YOUBIKE_API_URL`，Docker 內可直接使用臺北市 YouBike 公開資料來源。
+- [Frontend/Dockerfile](/Users/lazybug/Desktop/web/ntupp/Frontend/Dockerfile)、[Backend/Dockerfile](/Users/lazybug/Desktop/web/ntupp/Backend/Dockerfile)：改用 Bun `1.3.11`，並調整 Docker build 安裝流程，避免 Linux 容器內因 lockfile optional dependency 卡住。
+- [Backend/.dockerignore](/Users/lazybug/Desktop/web/ntupp/Backend/.dockerignore)：排除 `.venv`，backend build context 從約 148MB 降到幾 KB 等級。
+- [package.json](/Users/lazybug/Desktop/web/ntupp/package.json)：修正根目錄 `bun run dev`，原本 workspace filter 在這裡會失敗。
+- [README.md](/Users/lazybug/Desktop/web/ntupp/README.md)：補上 YouBike Docker 測試指令與資料來源設定。
+
+驗證結果：
+
+```bash
+docker compose up --build -d
+docker compose ps
+curl "http://localhost:8080/api/youbike/?near=ntu&limit=1"
+```
+
+都成功。前端 Nginx 的 `/api/*` 也確定會代理到 backend，所以網站用 Docker 打開 `localhost:8080` 就能使用 YouBike 功能。
+
 # 陳冠辰
 # 王凱弘
 USER:

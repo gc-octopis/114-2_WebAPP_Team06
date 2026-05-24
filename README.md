@@ -66,10 +66,12 @@ docker compose logs -f frontend
 curl "http://localhost:8000/"
 curl "http://localhost:8000/api/calendar/?lang=zh"
 curl "http://localhost:8000/api/announcements/?lang=zh&page=1&page_size=5"
+curl "http://localhost:8000/api/youbike/?near=ntu&limit=3"
+curl "http://localhost:8080/api/youbike/?near=ntu&limit=3"
 curl "http://localhost:8080/api/calendar/?lang=en"
 ```
 
-最後一個指令會經過前端 Nginx 反向代理，可用來確認 compose 內部網路與 API proxy 正常。
+`localhost:8080/api/*` 的指令會經過前端 Nginx 反向代理，可用來確認 compose 內部網路與 API proxy 正常。
 
 ### 5. 停止服務
 
@@ -174,6 +176,11 @@ ADMIN_EMAIL=
 ```bash
 # 貼上複製好的 API KEY
 OPENROUTER_API_KEY=
+```
+
+YouBike 即時車況使用臺北市公開資料，不需要 API KEY。Docker Compose 會預設使用：
+```bash
+YOUBIKE_API_URL=https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json
 ```
 
 ---

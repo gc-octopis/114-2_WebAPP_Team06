@@ -5,6 +5,7 @@ import { z } from "zod";
 export const youbike = new Hono();
 
 const YOUBIKE_API_URL =
+  process.env.YOUBIKE_API_URL ??
   "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json";
 const CACHE_TTL_MS = 60_000;
 const NTU_MAIN_GATE = { lat: 25.01734, lng: 121.53975 };
@@ -17,6 +18,7 @@ type RawYouBikeStation = {
   ar?: string;
   total?: number | string;
   quantity?: number | string;
+  Quantity?: number | string;
   available_rent_bikes?: number | string;
   available_return_bikes?: number | string;
   latitude?: number | string;
@@ -91,7 +93,7 @@ function normalizeStation(station: RawYouBikeStation): YouBikeStation {
     name: normalizeName(station.sna),
     area: station.sarea ?? "",
     address: station.ar ?? "",
-    totalDocks: toNumber(station.quantity ?? station.total),
+    totalDocks: toNumber(station.quantity ?? station.Quantity ?? station.total),
     availableBikes: toNumber(station.available_rent_bikes),
     availableReturns: toNumber(station.available_return_bikes),
     latitude,
