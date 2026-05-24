@@ -11,6 +11,8 @@ import {
 import { useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 
+const THEME_STORAGE_KEY = "myntu_theme";
+
 // 單一個可排序的釘選項目
 function SortablePinItem({ item, lang, onRemove, isHighlighted, isGrayedOut }) {
     const linkLabel = getLocalizedValue(item, lang, "label", "");
@@ -80,7 +82,18 @@ function TopBar({setSideBarToggled, title})
     const auth = useAuth();
     const navigate = useNavigate();
     const authApiBase = import.meta.env.VITE_AUTH_API_BASE || '';
-    const [isDarkTheme, setIsDarkTheme] = useState(false);
+    const [isDarkTheme, setIsDarkTheme] = useState(() => {
+        if (typeof window === "undefined") {
+            return false;
+        }
+
+        const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme) {
+            return savedTheme === "dark";
+        }
+
+        return document.body.classList.contains("dark");
+    });
     const { pinnedLinks, updatePinnedLinks, activeItem, dragOverPinnedUrl, isDuplicateDrag, duplicateUrl, isAuthed } = UseLinkContext();
     const canPin = !!auth?.user && !!isAuthed;
 
@@ -94,6 +107,7 @@ function TopBar({setSideBarToggled, title})
 
     useEffect(() => {
         document.body.className = isDarkTheme ? "dark" : "light";
+        window.localStorage.setItem(THEME_STORAGE_KEY, isDarkTheme ? "dark" : "light");
     }, [isDarkTheme]);
 
     const pinnedIds = pinnedLinks.map(l => l.url);
@@ -118,11 +132,21 @@ function TopBar({setSideBarToggled, title})
             </button>
 
             {/*首頁按鈕*/}
-            <a href="/" className="icon-btn" aria-label={lang === "en" ? "Home" : "回首頁"}>
+            <Link to="/" className="icon-btn" aria-label={lang === "en" ? "Home" : "回首頁"}>
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                 </svg>
-            </a>
+            </Link>
+
+            {/*YouBike 按鈕*/}
+            <Link to="/youbike" className="icon-btn" aria-label={lang === "en" ? "YouBike" : "YouBike 即時車況"}>
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="6.5" cy="17" r="3.5" strokeWidth="2"></circle>
+                    <circle cx="17.5" cy="17" r="3.5" strokeWidth="2"></circle>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17l3-7h3l2.5 7M12 10l-3.5 7M12 10l3.5 7M10 7h3M14.5 7h2"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16.5 7l-1.5 3"></path>
+                </svg>
+            </Link>
         </div>
 
         {/*2. 本頁標題*/}
