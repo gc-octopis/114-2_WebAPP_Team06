@@ -11,6 +11,10 @@
 
 ## 使用額外技術
 
+* Hono 後端代理與資料正規化：避免前端直接綁死外部 API 欄位
+* 前端 React component：即時顯示 YouBike 可借車數、可還空位與站點搜尋
+* Leaflet + OpenStreetMap：在真實互動地圖上顯示 YouBike 站點位置
+
 ## 組員分工
 
 * 陳冠瑜： 25%
@@ -19,6 +23,14 @@
   * 公車 API 實作
 * 王凱弘： 25%
   * YouBike API 實作
+    * 新增後端 `/api/youbike/`，串接臺北市 YouBike 2.0 即時資訊資料集
+    * 後端將原始欄位整理成前端容易使用的 `name`、`area`、`availableBikes`、`availableReturns`、`updatedAt`
+    * 加入 60 秒快取，降低每次刷新首頁時對外部 API 的重複請求
+    * 支援 `q` 關鍵字搜尋、`area` 行政區篩選、`near=ntu` 台大附近站點排序與 `limit` 筆數限制
+    * 首頁新增 YouBike 即時車況區塊，預設以 Leaflet 地圖顯示台大附近站點，並可搜尋站名、行政區或地址
+    * 使用 OpenStreetMap 圖磚當作真實地圖底圖，依照 YouBike API 回傳的經緯度放置站點 marker
+    * 地圖縮放或拖曳後，前端會用目前地圖視野範圍重新查詢後端，動態增減顯示的 YouBike 站點
+    * 每個站點卡片顯示可借車數、可還空位、行政區、地址與距離資訊
 * 孫怡臻： 25%
   * 臺大周邊公車站點與路線對應資料整理
     * [整理試算表](https://docs.google.com/spreadsheets/d/1GlQzAWw3_Mfvn2-YZoYO65qCEscIqpyWHeZSLnfPO40/edit?usp=sharing)

@@ -557,6 +557,260 @@ p {
     border-radius: 0.5rem;
 }
 
+/* YouBike section */
+.youbike-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.youbike-heading .section-title {
+    margin-bottom: 0;
+    flex: 1;
+}
+
+.youbike-updated {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.youbike-toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.youbike-search {
+    width: 100%;
+    background-color: var(--bg-surface);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.youbike-search::placeholder {
+    color: var(--text-light);
+}
+
+.youbike-search:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.youbike-view-toggle {
+    display: inline-flex;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+}
+
+.youbike-view-toggle button {
+    background: transparent;
+    border: none;
+    border-radius: 0.375rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    min-width: 4rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.youbike-view-toggle button.active {
+    background-color: var(--primary-color);
+    color: var(--text-invert);
+}
+
+.youbike-map-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.youbike-map {
+    height: 25rem;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: var(--bg-surface);
+}
+
+.youbike-map .leaflet-control-attribution {
+    font-size: 0.65rem;
+}
+
+.youbike-map .leaflet-popup-content {
+    color: #1E293B;
+    font-family: 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    line-height: 1.5;
+}
+
+.youbike-leaflet-marker {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+    background-color: #1E40AF;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 800;
+    box-shadow: 0 0.35rem 1rem rgba(15, 23, 42, 0.32);
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.youbike-leaflet-marker:hover,
+.youbike-leaflet-marker.active {
+    background-color: #1E3A8A;
+    transform: scale(1.14);
+    box-shadow: 0 0.6rem 1.3rem rgba(15, 23, 42, 0.4);
+}
+
+.youbike-map-detail {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.youbike-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
+}
+
+.youbike-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    min-height: 12rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.youbike-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.youbike-pagination button {
+    background-color: var(--bg-surface);
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding: 0.45rem 0.75rem;
+}
+
+.youbike-pagination button:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.youbike-pagination button:disabled {
+    color: var(--text-light);
+    cursor: not-allowed;
+}
+
+.youbike-pagination span {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    min-width: 3.5rem;
+    text-align: center;
+}
+
+.youbike-station-name {
+    color: var(--text-main);
+    font-size: 1rem;
+    line-height: 1.4;
+    margin: 0 0 0.25rem 0;
+}
+
+.youbike-station-meta,
+.youbike-address,
+.youbike-message {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.youbike-counts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.youbike-counts > div {
+    background-color: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+}
+
+.youbike-count {
+    display: block;
+    color: var(--primary-color);
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.youbike-label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    margin-top: 0.35rem;
+}
+
+@media (max-width: 640px) {
+    .youbike-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .youbike-toolbar,
+    .youbike-map-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .youbike-view-toggle {
+        width: 100%;
+    }
+
+    .youbike-view-toggle button {
+        flex: 1;
+    }
+
+    .youbike-map {
+        height: 20rem;
+    }
+}
+
 /* announcements section */
 .announcement-list {
     display: flex;

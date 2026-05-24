@@ -12,6 +12,7 @@ import sessionMiddleware from './middleware/session'
 import { search        } from "./routes/search";
 import { feedback      } from "./routes/feedback";
 import { contact       } from "./routes/contact";
+import { youbike       } from "./routes/youbike";
 
 // ─── App ─────────────────────────────────────────────────────────────────────
 const app = new Hono();
@@ -59,6 +60,7 @@ app.route("/api/preferences*",    preferences); // [v]
 app.route("/api/search*",         search);
 app.route("/api/feedback*",       feedback); // [v]
 app.route("/api/contact*",        contact); // [v]
+app.route("/api/youbike*",        youbike); // [v]
 app.route('/api/auth', auth);
 
 // ─── Dev health check ────────────────────────────────────────────────────────
@@ -72,6 +74,7 @@ app.get("/", (c) => c.json({ status: "ok", routes: [
   "GET  /api/feedback/",
   "POST /api/feedback/",
   "POST /api/contact/",
+  "GET  /api/youbike/",
 ]}));
 
 // ─── Start server ─────────────────────────────────────────────────────────────
