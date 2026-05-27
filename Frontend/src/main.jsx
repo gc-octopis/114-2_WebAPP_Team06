@@ -12,6 +12,7 @@ import Calendar from './Calendar';
 import Login from './Login';
 import Settings from './Settings';
 import YouBikePage from './YouBikePage';
+import BusPage from './BusPage';
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <LanguageProvider>
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/about" element={<About />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/youbike" element={<YouBikePage />} />
+            <Route path="/bus" element={<BusPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>

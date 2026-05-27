@@ -29,6 +29,10 @@
         * API 介接網址: [youbike_immediate.json](https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json)
 * 陳冠辰： 25%
   * 公車 API 實作
+    * 新增後端 `/api/bus` 的多項 API，先整理台北市公車的資料，變成方便本應用使用的內容
+    * 首頁新增公車即時車況區塊，預設以 Leaflet 地圖顯示台大附近站點
+    * 使用 OpenStreetMap 圖磚當作真實地圖底圖，依照 API 回傳的經緯度放置站點 marker
+    * 每個站點依照到站時間排序所有公車
 * 王凱弘： 25%
   * YouBike API 實作
     * 新增後端 `/api/youbike/`，串接臺北市 YouBike 2.0 即時資訊資料集

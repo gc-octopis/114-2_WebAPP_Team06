@@ -41,6 +41,36 @@ curl "http://localhost:8080/api/youbike/?near=ntu&limit=1"
 都成功。前端 Nginx 的 `/api/*` 也確定會代理到 backend，所以網站用 Docker 打開 `localhost:8080` 就能使用 YouBike 功能。
 
 # 陳冠辰
+USER: 
+the first 2 files are from backend, the rest are from frontend, finish the bus.ts to create multi api endpoint to get the locations of bus stations and the updated eta of each bus. and create a similar frontend as we did for ubike, create a map that shows the locations of stations and for each location, when click, list the Bus routes and sorted by the eta and update it once every 10 seconds (note that eta is calculated in seconds and -1：尚未發車 -2：交管不停靠 -3：末班車已過 -4：今日未營運) create just the ZH version
+
+AGENT:
+Now let me write the backend and frontend files:Now the frontend — a Bus map component modelled after YouBike.jsx:Now the CSS — designed to match YouBike's existing class conventions while being bus-specific:Here's what was built:
+
+---
+
+**Backend — `bus.ts`** (4 endpoints)
+
+| Endpoint | What it returns |
+|---|---|
+| `GET /api/bus/locations` | All stop locations with coordinates, stopIds, and station names — used to paint the map markers |
+| `GET /api/bus/stops` | All individual stops with their route and location info |
+| `GET /api/bus/eta` | All live ETAs, filterable by `?stopId=`, `?locationId=`, `?routeId=` |
+| `GET /api/bus/eta/location/:id` | Best ETA per (route × direction) for one map pin, sorted arrivals-first — the one the panel calls |
+
+ETA is cached for 10 s (matching the frontend refresh interval), negative codes are mapped to their Chinese labels, and the sort puts arriving buses first with special-status codes at the bottom.
+
+---
+
+**Frontend — 5 files**
+
+- **`busAPI.js`** — thin fetch wrapper mirroring `youbikeAPI.js`
+- **`Bus.jsx`** — Leaflet map + right-side ETA panel. Click any pin → panel shows sorted bus routes with colour-coded time badges (進站中 / soon / ok / far / 特殊). Auto-refreshes every **10 seconds** with a live countdown; manual refresh button too.
+- **`BusPage.jsx`** — page wrapper (same pattern as `YouBikePage`)
+- **`bus.css`** — all styles; import it wherever you import your main stylesheet
+
+ETA badge colours: 🟢 進站中 · 🟡 < 2 min · 🔵 2–5 min · ⚪ > 5 min · ── 特殊狀態
+
 # 王凱弘
 USER:
 現在是week13 我要把youbike api實作進來我們的網站 請幫我做 並且還要將我做了什麼整理進week13_report.md
